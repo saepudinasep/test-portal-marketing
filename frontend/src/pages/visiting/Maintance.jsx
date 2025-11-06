@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 export default function Maintance() {
     const navigate = useNavigate();
@@ -10,6 +11,8 @@ export default function Maintance() {
     const [photo, setPhoto] = useState(null); // 📸 simpan foto
 
     const [form, setForm] = useState({
+        region: "",
+        cabang: "",
         namaMA: "",
         noRef: "",
         occupation: "",
@@ -43,6 +46,8 @@ export default function Maintance() {
 
         setForm((prev) => ({
             ...prev,
+            region: parsedUser.region || "",
+            cabang: parsedUser.cabang || "",
             namaPIC: parsedUser.name || "",
             nik: parsedUser.nik || "",
             jabatan: parsedUser.position || "",
@@ -114,36 +119,99 @@ export default function Maintance() {
     };
 
     // 🔹 Submit form
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Validasi jumlah kata
         const wordCount = form.detail.trim().split(/\s+/).length;
         if (wordCount < 5) {
-            alert("Detail Maintenance minimal 5 kata!");
+            Swal.fire({
+                icon: "warning",
+                title: "Detail Terlalu Singkat",
+                text: "Detail Maintenance minimal 5 kata!",
+                confirmButtonColor: "#3085d6",
+            });
             return;
         }
 
+        // Validasi foto
         if (!photo) {
-            alert("Harap ambil foto terlebih dahulu!");
+            Swal.fire({
+                icon: "warning",
+                title: "Foto Belum Diambil",
+                text: "Harap ambil foto terlebih dahulu!",
+                confirmButtonColor: "#3085d6",
+            });
             return;
         }
 
-        console.log("Data Maintenance:", form);
-        console.log("Foto (base64):", photo);
-        alert("Form dan foto berhasil dikirim!");
+        // Siapkan payload
+        const payload = {
+            ...form,
+            photoBase64: photo,
+        };
 
-        setForm({
-            namaMA: "",
-            noRef: "",
-            occupation: "",
-            namaPIC: userData?.name || "",
-            nik: userData?.nik || "",
-            jabatan: userData?.position || "",
-            aktivitas: "",
-            hasil: "",
-            detail: "",
-        });
-        setPhoto(null);
+        try {
+            // Tampilkan loading SweetAlert
+            Swal.fire({
+                title: "Menyimpan data...",
+                text: "Mohon tunggu sebentar",
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+
+            const response = await fetch(
+                "https://script.google.com/macros/s/AKfycbyHOHL96Pe7ZiQW5HHmjz5rqNyM6fE0StpajvwauuIejJ32bWQL2UB0UCaIPUr3x7wZ/exec",
+                {
+                    method: "POST",
+                    // headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                }
+            );
+
+            const result = await response.json();
+            Swal.close();
+
+            if (result.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Berhasil!",
+                    text: "Data berhasil disimpan.",
+                    confirmButtonColor: "#16a34a",
+                });
+
+                setForm({
+                    namaMA: "",
+                    noRef: "",
+                    occupation: "",
+                    namaPIC: userData?.name || "",
+                    nik: userData?.nik || "",
+                    jabatan: userData?.position || "",
+                    aktivitas: "",
+                    hasil: "",
+                    detail: "",
+                });
+                setPhoto(null);
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Gagal Menyimpan",
+                    text: result.message || "Terjadi kesalahan saat menyimpan data.",
+                    confirmButtonColor: "#d33",
+                });
+            }
+        } catch (error) {
+            Swal.close();
+            console.error(error);
+            Swal.fire({
+                icon: "error",
+                title: "Koneksi Gagal",
+                text: "Terjadi kesalahan koneksi, periksa jaringan Anda!" + error,
+                confirmButtonColor: "#d33",
+            });
+        }
     };
 
     // ⏳ Loading Fullscreen

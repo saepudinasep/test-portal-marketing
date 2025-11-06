@@ -53,7 +53,7 @@ export default function Navbar({ userData }) {
             name: "Agency",
             submenu: isHeadOffice
                 ? [
-                    { name: "Maintance", path: "/dashboard/maintance" },
+                    { name: "Maintance", path: "/dashboard/maintanceMA" },
                     { name: "Visiting", path: "/dashboard/visit" },
                 ]
                 : [
