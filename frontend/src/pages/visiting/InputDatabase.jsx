@@ -1,220 +1,117 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 export default function InputDatabase() {
     const navigate = useNavigate();
-    const [userData, setUserData] = useState(null);
-    const [dataMA, setDataMA] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showDropdown, setShowDropdown] = useState(false);
-    const [photo, setPhoto] = useState(null); // 📸 simpan foto
+    const [userData, setUserData] = useState(null);
 
     const [form, setForm] = useState({
         region: "",
         cabang: "",
-        namaMA: "",
-        noRef: "",
-        occupation: "",
-        namaPIC: "",
+        nama: "",
         nik: "",
-        jabatan: "",
-        aktivitas: "",
-        hasil: "",
-        detail: "",
+        position: "",
+        namaKonsumen: "",
+        noHpKonsumen: "",
+        alamat: "",
+        brand: "",
+        tipe: "",
+        estimasi: "",
+        setuju: false,
     });
 
-    const aktivitasList = [
-        "Membangun Ikatan Emosional",
-        "Refreshment SK Berlaku",
-    ];
-
-    const hasilList = ["Dapat Prospect", "Tidak Dapat Prospect"];
-
-    // ✅ Proteksi route & ambil data dari Apps Script
+    // 🔹 Cek session dan tampilkan data
     useEffect(() => {
-        const user = sessionStorage.getItem("userData");
-        const loggedIn = sessionStorage.getItem("loggedIn");
-
-        if (!loggedIn || !user) {
+        const session = sessionStorage.getItem("userData");
+        if (!session) {
             navigate("/");
             return;
         }
-
-        const parsedUser = JSON.parse(user);
-        setUserData(parsedUser);
-
+        const parsed = JSON.parse(session);
+        setUserData(parsed);
         setForm((prev) => ({
             ...prev,
-            region: parsedUser.region || "",
-            cabang: parsedUser.cabang || "",
-            namaPIC: parsedUser.name || "",
-            nik: parsedUser.nik || "",
-            jabatan: parsedUser.position || "",
+            region: parsed.region || "",
+            cabang: parsed.cabang || "",
+            nama: parsed.name || "",
+            nik: parsed.nik || "",
+            position: parsed.position || "",
         }));
-
-        const nik = parsedUser.nik;
-        const scriptURL =
-            "https://script.google.com/macros/s/AKfycbzzaiDDLH_7ymXLzP617kDaV7aRHFlSfOVdMknkOJg2-qN2-seYeM-B-Kx9OBGEfs7zQw/exec?nik=" +
-            nik;
-
-        setLoading(true);
-
-        fetch(scriptURL)
-            .then((res) => res.json())
-            .then((data) => {
-                if (data && data.data) {
-                    setDataMA(data.data);
-                }
-            })
-            .catch((err) => console.error("Error fetching data:", err))
-            .finally(() => setLoading(false));
+        setTimeout(() => setLoading(false), 800);
     }, [navigate]);
 
-    // 🔍 Filter hasil pencarian Nama MA
-    const filteredMA = dataMA.filter((item) =>
-        item["NAMA MA (ISI HURUF BESAR)"]
-            ?.toLowerCase()
-            .includes(form.namaMA.toLowerCase())
-    );
-
-    // 🔹 Saat memilih MA
-    const handleSelectMA = (item) => {
-        setForm((prev) => ({
-            ...prev,
-            namaMA: item["NAMA MA (ISI HURUF BESAR)"],
-            noRef: item["NO REF MA"] || "",
-            occupation: item["OCCUPATION WISE"] || "",
-        }));
-        setShowDropdown(false);
+    // 🔹 Format Rupiah
+    const formatRupiah = (value) => {
+        const angka = value.replace(/[^\d]/g, "");
+        const formatted = new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+        }).format(angka);
+        return formatted.replace("Rp", "Rp ");
     };
 
-    // 🔹 Input berubah
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setForm({ ...form, [name]: value });
-    };
-
-    // 🔹 Tutup dropdown saat klik di luar
-    useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (!e.target.closest(".dropdown-ma")) {
-                setShowDropdown(false);
-            }
-        };
-        document.addEventListener("click", handleClickOutside);
-        return () => document.removeEventListener("click", handleClickOutside);
-    }, []);
-
-    // 📸 Ambil foto dari kamera
-    const handleTakePhoto = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPhoto(reader.result); // simpan base64
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    // 🔹 Submit form
+    // 🔹 Submit Form
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Validasi jumlah kata
-        const wordCount = form.detail.trim().split(/\s+/).length;
-        if (wordCount < 5) {
-            Swal.fire({
-                icon: "warning",
-                title: "Detail Terlalu Singkat",
-                text: "Detail Maintenance minimal 5 kata!",
-                confirmButtonColor: "#3085d6",
-            });
+        if (!form.setuju) {
+            Swal.fire("Peringatan", "Anda harus menyetujui syarat & ketentuan!", "warning");
             return;
         }
 
-        // Validasi foto
-        if (!photo) {
-            Swal.fire({
-                icon: "warning",
-                title: "Foto Belum Diambil",
-                text: "Harap ambil foto terlebih dahulu!",
-                confirmButtonColor: "#3085d6",
-            });
-            return;
-        }
-
-        // Siapkan payload
-        const payload = {
-            ...form,
-            photoBase64: photo,
-        };
-
+        setLoading(true);
         try {
-            // Tampilkan loading SweetAlert
-            Swal.fire({
-                title: "Menyimpan data...",
-                text: "Mohon tunggu sebentar",
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                },
-            });
-
             const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbyHOHL96Pe7ZiQW5HHmjz5rqNyM6fE0StpajvwauuIejJ32bWQL2UB0UCaIPUr3x7wZ/exec",
+                "https://script.google.com/macros/s/AKfycbyKq9ek8KxSx-1mZimL7oXQ7vi5Hu_Cfx6ERQb-9Qb-pe9Rxrcso9gYjwQBXBnUb5hmGA/exec", // Ganti dengan URL Apps Script kamu
                 {
                     method: "POST",
-                    // headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload),
+                    body: JSON.stringify({ action: "inputDatabase", data: form }),
                 }
             );
-
             const result = await response.json();
-            Swal.close();
 
-            if (result.success) {
-                Swal.fire({
-                    icon: "success",
-                    title: "Berhasil!",
-                    text: "Data berhasil disimpan.",
-                    confirmButtonColor: "#16a34a",
-                });
-
+            if (result.status === "success") {
+                Swal.fire("Sukses", "Data berhasil dikirim!", "success");
                 setForm({
-                    namaMA: "",
-                    noRef: "",
-                    occupation: "",
-                    namaPIC: userData?.name || "",
-                    nik: userData?.nik || "",
-                    jabatan: userData?.position || "",
-                    aktivitas: "",
-                    hasil: "",
-                    detail: "",
+                    ...form,
+                    namaKonsumen: "",
+                    noHpKonsumen: "",
+                    alamat: "",
+                    brand: "",
+                    tipe: "",
+                    estimasi: "",
+                    setuju: false,
                 });
-                setPhoto(null);
             } else {
-                Swal.fire({
-                    icon: "error",
-                    title: "Gagal Menyimpan",
-                    text: result.message || "Terjadi kesalahan saat menyimpan data.",
-                    confirmButtonColor: "#d33",
-                });
+                Swal.fire("Gagal", "Terjadi kesalahan saat mengirim data", "error");
             }
         } catch (error) {
-            Swal.close();
-            console.error(error);
-            Swal.fire({
-                icon: "error",
-                title: "Koneksi Gagal",
-                text: "Terjadi kesalahan koneksi, periksa jaringan Anda!" + error,
-                confirmButtonColor: "#d33",
-            });
+            Swal.fire("Error", error.message, "error");
+        } finally {
+            setLoading(false);
         }
     };
 
-    // ⏳ Loading Fullscreen
+    // 🔹 Handle input text
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+
+        if (name === "namaKonsumen" || name === "tipe") {
+            setForm({ ...form, [name]: value.toUpperCase() });
+        } else if (name === "noHpKonsumen") {
+            const angka = value.replace(/\D/g, "");
+            setForm({ ...form, [name]: angka });
+        } else if (name === "estimasi") {
+            setForm({ ...form, [name]: formatRupiah(value) });
+        } else if (type === "checkbox") {
+            setForm({ ...form, [name]: checked });
+        } else {
+            setForm({ ...form, [name]: value });
+        }
+    };
+
     if (loading) {
         return (
             <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-[9999]">
@@ -223,243 +120,167 @@ export default function InputDatabase() {
         );
     }
 
-    // ✅ Tampilan utama
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
-            <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-3xl">
-                {/* 🧑‍💼 Info User
-                <div className="mb-6 text-center border-b pb-4">
-                    <h1 className="text-2xl font-bold text-indigo-700 mb-2">
-                        Maintenance MA
-                    </h1>
-                    <p className="text-gray-700 font-medium">
-                        Selamat datang,{" "}
-                        <span className="text-indigo-600">{userData?.name}</span>
-                    </p>
-                    <p className="text-gray-500 text-sm">
-                        Cabang: {userData?.cabang} | Role: {userData?.akses}
-                    </p>
-                </div> */}
+        <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-xl">
+            <h1 className="text-2xl font-bold text-indigo-700 mb-6 text-center">
+                Input Database Konsumen
+            </h1>
 
-                {/* 🧾 Form Maintenance */}
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Nama MA & No Ref */}
-                    <div className="grid md:grid-cols-2 gap-4">
-                        <div className="relative dropdown-ma">
-                            <label className="block text-sm font-medium mb-1">
-                                Nama MA
-                            </label>
-                            <input
-                                type="text"
-                                placeholder="Cari Nama MA..."
-                                value={form.namaMA}
-                                onChange={(e) =>
-                                    setForm((prev) => ({
-                                        ...prev,
-                                        namaMA: e.target.value,
-                                    }))
-                                }
-                                onFocus={() => setShowDropdown(true)}
-                                className="w-full border rounded-lg p-2"
-                                required
-                            />
-
-                            {showDropdown && (
-                                <ul className="absolute z-10 bg-white border rounded-lg w-full max-h-48 overflow-y-auto shadow-md mt-1">
-                                    {filteredMA.length > 0 ? (
-                                        filteredMA.map((item, idx) => (
-                                            <li
-                                                key={idx}
-                                                onClick={() =>
-                                                    handleSelectMA(item)
-                                                }
-                                                className="px-3 py-2 hover:bg-indigo-100 cursor-pointer text-sm"
-                                            >
-                                                {
-                                                    item[
-                                                    "NAMA MA (ISI HURUF BESAR)"
-                                                    ]
-                                                }
-                                            </li>
-                                        ))
-                                    ) : (
-                                        <li className="px-3 py-2 text-gray-500 text-sm">
-                                            Tidak ditemukan
-                                        </li>
-                                    )}
-                                </ul>
-                            )}
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">
-                                No Ref
-                            </label>
-                            <input
-                                type="text"
-                                name="noRef"
-                                value={form.noRef}
-                                onChange={handleChange}
-                                className="w-full border rounded-lg p-2 bg-gray-100"
-                                readOnly
-                            />
-                        </div>
-                    </div>
-
-                    {/* Occupation & Nama PIC */}
-                    <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium mb-1">
-                                Occupation
-                            </label>
-                            <input
-                                type="text"
-                                name="occupation"
-                                value={form.occupation}
-                                onChange={handleChange}
-                                className="w-full border rounded-lg p-2 bg-gray-100"
-                                readOnly
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-1">
-                                Nama PIC
-                            </label>
-                            <input
-                                type="text"
-                                name="namaPIC"
-                                value={form.namaPIC}
-                                className="w-full border rounded-lg p-2 bg-gray-100"
-                                readOnly
-                            />
-                        </div>
-                    </div>
-
-                    {/* NIK & Jabatan */}
-                    <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium mb-1">
-                                NIK
-                            </label>
-                            <input
-                                type="text"
-                                name="nik"
-                                value={form.nik}
-                                className="w-full border rounded-lg p-2 bg-gray-100"
-                                readOnly
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-1">
-                                Jabatan
-                            </label>
-                            <input
-                                type="text"
-                                name="jabatan"
-                                value={form.jabatan}
-                                className="w-full border rounded-lg p-2 bg-gray-100"
-                                readOnly
-                            />
-                        </div>
-                    </div>
-
-                    {/* Aktivitas & Hasil */}
-                    <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium mb-1">
-                                Aktivitas Maintenance
-                            </label>
-                            <select
-                                name="aktivitas"
-                                value={form.aktivitas}
-                                onChange={handleChange}
-                                className="w-full border rounded-lg p-2"
-                                required
-                            >
-                                <option value="">Pilih Aktivitas</option>
-                                {aktivitasList.map((act, idx) => (
-                                    <option key={idx} value={act}>
-                                        {act}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">
-                                Hasil Maintenance
-                            </label>
-                            <select
-                                name="hasil"
-                                value={form.hasil}
-                                onChange={handleChange}
-                                className="w-full border rounded-lg p-2"
-                                required
-                            >
-                                <option value="">Pilih Hasil</option>
-                                {hasilList.map((hasil, idx) => (
-                                    <option key={idx} value={hasil}>
-                                        {hasil}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Detail Maintenance */}
-                    <div>
-                        <label className="block text-sm font-medium mb-1">
-                            Detail Maintenance
-                        </label>
-                        <textarea
-                            name="detail"
-                            value={form.detail}
-                            onChange={handleChange}
-                            rows="4"
-                            placeholder="Tuliskan detail maintenance minimal 5 kata..."
-                            className="w-full border rounded-lg p-2"
-                            required
-                        />
-                    </div>
-
-                    {/* 📸 Ambil Foto */}
-                    <div>
-                        <label className="block text-sm font-medium mb-1">
-                            Ambil Foto Maintenance
-                        </label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            capture="environment" // 👉 langsung buka kamera belakang
-                            onChange={handleTakePhoto}
-                            className="w-full border rounded-lg p-2"
-                        />
-
-                        {photo && (
-                            <div className="mt-3">
-                                <p className="text-sm text-gray-600 mb-1">
-                                    Preview Foto:
-                                </p>
-                                <img
-                                    src={photo}
-                                    alt="Preview"
-                                    className="rounded-lg border w-full max-h-64 object-contain"
-                                />
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Tombol Submit & Logout */}
-                    <div className="flex justify-end gap-4 pt-4">
-                        <button
-                            type="submit"
-                            className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-500"
-                        >
-                            Submit
-                        </button>
-                    </div>
-                </form>
+            {/* Info PIC */}
+            <div className="grid md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label className="block text-sm font-medium mb-1">Nama PIC</label>
+                    <input
+                        type="text"
+                        value={userData?.name || ""}
+                        readOnly
+                        className="w-full border rounded-lg p-2 bg-gray-100"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium mb-1">NIK</label>
+                    <input
+                        type="text"
+                        value={userData?.nik || ""}
+                        readOnly
+                        className="w-full border rounded-lg p-2 bg-gray-100"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium mb-1">Jabatan</label>
+                    <input
+                        type="text"
+                        value={userData?.position || ""}
+                        readOnly
+                        className="w-full border rounded-lg p-2 bg-gray-100"
+                    />
+                </div>
             </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+                {/* NAMA KONSUMEN */}
+                <div>
+                    <label className="text-sm font-semibold">Nama Konsumen</label>
+                    <input
+                        type="text"
+                        name="namaKonsumen"
+                        value={form.namaKonsumen}
+                        onChange={handleChange}
+                        required
+                        className="w-full border rounded-lg p-2 uppercase"
+                        placeholder="Masukan Nama Konsumen"
+                    />
+                </div>
+
+                {/* NO HP */}
+                <div>
+                    <label className="text-sm font-semibold">No HP Konsumen</label>
+                    <input
+                        type="text"
+                        name="noHpKonsumen"
+                        value={form.noHpKonsumen}
+                        onChange={handleChange}
+                        required
+                        className="w-full border rounded-lg p-2"
+                        inputMode="numeric"
+                        placeholder="Masukan No HP Konsumen"
+                    />
+                </div>
+
+                {/* ALAMAT */}
+                <div>
+                    <label className="text-sm font-semibold">Alamat Domisili</label>
+                    <textarea
+                        name="alamat"
+                        value={form.alamat}
+                        onChange={handleChange}
+                        required
+                        className="w-full border rounded-lg p-2"
+                        rows={3}
+                        placeholder="Masukan Alamat Domisili Konsumen"
+                    />
+                </div>
+
+                {/* BRAND */}
+                <div>
+                    <label className="text-sm font-semibold">Brand Kendaraan</label>
+                    <select
+                        name="brand"
+                        value={form.brand}
+                        onChange={handleChange}
+                        required
+                        className="w-full border rounded-lg p-2"
+                    >
+                        <option value="">Pilih Brand</option>
+                        <option value="HONDA">Honda</option>
+                        <option value="SUZUKI">Suzuki</option>
+                        <option value="YAMAHA">Yamaha</option>
+                        <option value="KAWASAKI">Kawasaki</option>
+                        <option value="KTM">KTM</option>
+                        <option value="MINERVA">Minerva</option>
+                        <option value="VESPA">Vespa</option>
+                        <option value="BAJAJ">Bajaj</option>
+                    </select>
+                </div>
+
+                {/* TIPE */}
+                <div>
+                    <label className="text-sm font-semibold">Tipe Unit Kendaraan</label>
+                    <input
+                        type="text"
+                        name="tipe"
+                        value={form.tipe}
+                        onChange={handleChange}
+                        required
+                        className="w-full border rounded-lg p-2 uppercase"
+                        placeholder="Masukan Tipe Unit"
+                    />
+                </div>
+
+                {/* ESTIMASI */}
+                <div>
+                    <label className="text-sm font-semibold">Estimasi Pencairan</label>
+                    <input
+                        type="text"
+                        name="estimasi"
+                        value={form.estimasi}
+                        onChange={handleChange}
+                        required
+                        className="w-full border rounded-lg p-2"
+                        placeholder="Rp 0"
+                    />
+                </div>
+
+                {/* TERMS */}
+                <div className="flex items-start space-x-2">
+                    <input
+                        id="setuju"
+                        type="checkbox"
+                        name="setuju"
+                        checked={form.setuju}
+                        onChange={handleChange}
+                        className="mt-1 cursor-pointer"
+                    />
+                    <label
+                        htmlFor="setuju"
+                        className="text-sm leading-snug cursor-pointer select-none"
+                    >
+                        Saya setuju memberikan data Nomor Telepon dan Alamat tinggal untuk
+                        dilakukan penawaran oleh WOM Finance dan grupnya maupun pihak lain
+                        yang ditunjuk WOM Finance.
+                    </label>
+                </div>
+
+                {/* Tombol Submit */}
+                <div className="flex justify-end pt-4">
+                    <button
+                        type="submit"
+                        className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-500"
+                    >
+                        Submit
+                    </button>
+                </div>
+            </form>
         </div>
     );
 }

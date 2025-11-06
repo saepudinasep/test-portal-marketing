@@ -23,6 +23,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import RekrutMA from "./pages/visiting/RekrutMA";
+import InputDatabase from "./pages/visiting/InputDatabase";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -100,6 +101,7 @@ export default function App() {
         <Route path="maintance" element={<Maintance user={userData} />} />
         <Route path="visiting" element={<Visiting user={userData} />} />
         <Route path="rekrutMA" element={<RekrutMA user={userData} />} />
+        <Route path="leads" element={<InputDatabase user={userData} />} />
       </Route>
 
       {/* Fallback 404 */}
