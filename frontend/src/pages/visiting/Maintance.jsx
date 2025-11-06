@@ -50,7 +50,7 @@ export default function Maintance() {
 
         const nik = parsedUser.nik;
         const scriptURL =
-            "https://script.google.com/macros/s/AKfycbyV9vCL3G_AKh8YwCtyYH8Zf_3oGNySTd9ROBRf_N9VaqmpBTWabtuxCnOlQocKezP40A/exec?nik=" +
+            "https://script.google.com/macros/s/AKfycbzzaiDDLH_7ymXLzP617kDaV7aRHFlSfOVdMknkOJg2-qN2-seYeM-B-Kx9OBGEfs7zQw/exec?nik=" +
             nik;
 
         setLoading(true);

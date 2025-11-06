@@ -43,12 +43,10 @@ export default function Navbar({ userData }) {
                 ? [
                     { name: "Ticket", path: "/dashboard/ticket" },
                     { name: "Report", path: "/dashboard/report" },
-                    { name: "Panduan", path: "/dashboard/panduan" },
                 ]
                 : [
                     { name: "Ticket", path: "/dashboard/ticket" },
                     { name: "New Ticket", path: "/dashboard/ticket/new" },
-                    { name: "Panduan", path: "/dashboard/panduan" },
                 ],
         },
         {
@@ -64,6 +62,7 @@ export default function Navbar({ userData }) {
                     { name: "Input Leads", path: "/dashboard/leads" },
                 ],
         },
+        { name: "Panduan", path: "/dashboard/panduan" },
         { name: "Setting", path: "/dashboard/setting" },
     ];
 
