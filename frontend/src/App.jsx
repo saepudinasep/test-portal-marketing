@@ -68,25 +68,7 @@ export default function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 
-      {/* Visiting routes (tidak pakai MainLayout) */}
-      <Route
-        path="/maintance"
-        element={
-          <ProtectedRoute>
-            <Maintance />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/visiting"
-        element={
-          <ProtectedRoute>
-            <Visiting />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Dashboard & halaman utama dalam MainLayout */}
+      {/* Main layout routes */}
       <Route
         path="/dashboard"
         element={
@@ -99,7 +81,10 @@ export default function App() {
           </ProtectedRoute>
         }
       >
+        {/* Dashboard */}
         <Route index element={<Dashboard user={userData} />} />
+
+        {/* Issue Pages */}
         <Route path="ticket" element={<Ticket user={userData} />} />
         <Route path="ticket/new" element={<NewTicket user={userData} />} />
         <Route path="ticket/:id" element={<DetailTicket user={userData} />} />
@@ -109,10 +94,17 @@ export default function App() {
           path="setting"
           element={<Setting userData={userData} setIsLoggedIn={setIsLoggedIn} />}
         />
+
+        {/* Visiting Pages */}
+        <Route path="maintance" element={<Maintance user={userData} />} />
+        <Route path="visiting" element={<Visiting user={userData} />} />
       </Route>
 
       {/* Fallback 404 */}
-      <Route path="*" element={<div className="p-8 text-center">404 | Page Not Found</div>} />
+      <Route
+        path="*"
+        element={<div className="p-8 text-center">404 | Page Not Found</div>}
+      />
     </Routes>
   );
 }

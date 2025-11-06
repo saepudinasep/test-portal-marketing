@@ -146,12 +146,6 @@ export default function Maintance() {
         setPhoto(null);
     };
 
-    // 🔹 Logout
-    const handleLogout = () => {
-        sessionStorage.clear();
-        navigate("/");
-    };
-
     // ⏳ Loading Fullscreen
     if (loading) {
         return (
@@ -165,7 +159,7 @@ export default function Maintance() {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
             <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-3xl">
-                {/* 🧑‍💼 Info User */}
+                {/* 🧑‍💼 Info User
                 <div className="mb-6 text-center border-b pb-4">
                     <h1 className="text-2xl font-bold text-indigo-700 mb-2">
                         Maintenance MA
@@ -177,7 +171,7 @@ export default function Maintance() {
                     <p className="text-gray-500 text-sm">
                         Cabang: {userData?.cabang} | Role: {userData?.akses}
                     </p>
-                </div>
+                </div> */}
 
                 {/* 🧾 Form Maintenance */}
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -389,13 +383,6 @@ export default function Maintance() {
 
                     {/* Tombol Submit & Logout */}
                     <div className="flex justify-end gap-4 pt-4">
-                        <button
-                            type="button"
-                            onClick={handleLogout}
-                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-400"
-                        >
-                            Logout
-                        </button>
                         <button
                             type="submit"
                             className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-500"
