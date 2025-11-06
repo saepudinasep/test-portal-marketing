@@ -22,6 +22,7 @@ import Setting from "./pages/issue/Setting";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/Dashboard";
+import RekrutMA from "./pages/visiting/RekrutMA";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -98,6 +99,7 @@ export default function App() {
         {/* Visiting Pages */}
         <Route path="maintance" element={<Maintance user={userData} />} />
         <Route path="visiting" element={<Visiting user={userData} />} />
+        <Route path="rekrutMA" element={<RekrutMA user={userData} />} />
       </Route>
 
       {/* Fallback 404 */}

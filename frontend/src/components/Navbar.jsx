@@ -58,7 +58,7 @@ export default function Navbar({ userData }) {
                 ]
                 : [
                     { name: "Maintance", path: "/dashboard/maintance" },
-                    { name: "Rekrut MA", path: "/dashboard/rekrut" },
+                    { name: "Rekrut MA", path: "/dashboard/rekrutMA" },
                     { name: "Input Database", path: "/dashboard/leads" },
                 ],
         },

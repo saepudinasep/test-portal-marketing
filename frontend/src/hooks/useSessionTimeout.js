@@ -13,7 +13,7 @@ export default function useSessionTimeout(timeout = 10 * 60 * 1000) {
 
       Swal.fire({
         title: "Sesi Berakhir",
-        text: "Sesi Anda berakhir karena tidak ada aktivitas selama 5 menit.",
+        text: "Sesi Anda berakhir karena tidak ada aktivitas selama 10 menit.",
         icon: "warning",
         confirmButtonText: "OK",
         confirmButtonColor: "#3085d6",

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
-export default function Maintance() {
+export default function InputDatabase() {
     const navigate = useNavigate();
     const [userData, setUserData] = useState(null);
     const [dataMA, setDataMA] = useState([]);
@@ -163,7 +163,7 @@ export default function Maintance() {
             });
 
             const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbxohNGjRPXU_8e_wFNOPRMpmbrAheW3uP5k9C3CIC_J9tRHpezdaLhE7st33rESZ-j1/exec",
+                "https://script.google.com/macros/s/AKfycbyHOHL96Pe7ZiQW5HHmjz5rqNyM6fE0StpajvwauuIejJ32bWQL2UB0UCaIPUr3x7wZ/exec",
                 {
                     method: "POST",
                     // headers: { "Content-Type": "application/json" },
