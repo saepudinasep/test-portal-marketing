@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
-export default function useSessionTimeout(timeout = 5 * 60 * 1000) {
+export default function useSessionTimeout(timeout = 10 * 60 * 1000) {
   const navigate = useNavigate();
   const timerRef = useRef(null);
 
