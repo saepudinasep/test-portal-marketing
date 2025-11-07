@@ -163,7 +163,7 @@ export default function Maintance() {
             });
 
             const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbxohNGjRPXU_8e_wFNOPRMpmbrAheW3uP5k9C3CIC_J9tRHpezdaLhE7st33rESZ-j1/exec",
+                "https://script.google.com/macros/s/AKfycbxtAk5bPLduvDZ5N2VAolIDPYVE6Dt2LQfPBc2G39FJrJZ2E5wi0sYIe23OEanbhqLI/exec",
                 {
                     method: "POST",
                     // headers: { "Content-Type": "application/json" },

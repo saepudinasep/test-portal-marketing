@@ -154,7 +154,7 @@ export default function RekrutMA() {
         setLoading(true);
         try {
             const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbylKvfbV2hRoFnTkQDQaa6J1IJ68JafRavWN4O_6tS-YCPQilGRH-ojkOgxIVuhE-NP/exec",
+                "https://script.google.com/macros/s/AKfycbwgu74cLCAvFOv_udojPOTPztLkYZjzeWX9NXHVo-AXV7Jtpb7K-aEhIwBowJ3Gd3gV/exec",
                 {
                     method: "POST",
                     // headers: { "Content-Type": "application/json" },
