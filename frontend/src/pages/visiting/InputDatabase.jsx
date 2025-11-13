@@ -60,6 +60,10 @@ export default function InputDatabase() {
             Swal.fire("Peringatan", "Anda harus menyetujui syarat & ketentuan!", "warning");
             return;
         }
+        if (form.noHpKonsumen && (form.noHpKonsumen.length < 11 || form.noHpKonsumen.length > 13)) {
+            Swal.fire("Peringatan", "No HP Konsumen harus antara 11-13 digit!", "warning");
+            return;
+        }
 
         setLoading(true);
         try {
@@ -101,7 +105,7 @@ export default function InputDatabase() {
         if (name === "namaKonsumen" || name === "tipe") {
             setForm({ ...form, [name]: value.toUpperCase() });
         } else if (name === "noHpKonsumen") {
-            const angka = value.replace(/\D/g, "");
+            const angka = value.replace(/\D/g, "").slice(0, 13);
             setForm({ ...form, [name]: angka });
         } else if (name === "estimasi") {
             setForm({ ...form, [name]: formatRupiah(value) });

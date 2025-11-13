@@ -118,9 +118,9 @@ export default function RekrutMA() {
         if (name === "namaMA") {
             setForm({ ...form, [name]: value.toUpperCase() });
         }
-        // No HP: hanya angka
+        // No HP: hanya angka, max 13 digit
         else if (name === "noHP") {
-            const numericValue = value.replace(/\D/g, ""); // hapus huruf
+            const numericValue = value.replace(/\D/g, "").slice(0, 13); // hapus huruf, max 13 digit
             setForm({ ...form, [name]: numericValue });
         } else {
             setForm({ ...form, [name]: value });
@@ -133,6 +133,10 @@ export default function RekrutMA() {
 
         if (!form.tipe || !form.namaMA || !form.noHP || !form.sektor || !form.jabatan) {
             Swal.fire("Peringatan", "Harap lengkapi semua field!", "warning");
+            return;
+        }
+        if (form.noHP && (form.noHP.length < 11 || form.noHP.length > 13)) {
+            Swal.fire("Peringatan", "No HP harus antara 11-13 digit!", "warning");
             return;
         }
 

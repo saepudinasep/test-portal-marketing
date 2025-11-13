@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 
 export default function Visiting() {
     const navigate = useNavigate();
-    const [userData, setUserData] = useState(null);
+
     const [dataKontrak, setDataKontrak] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -63,7 +63,6 @@ export default function Visiting() {
         }
 
         const parsedUser = JSON.parse(user);
-        setUserData(parsedUser);
 
         setForm((prev) => ({
             ...prev,
@@ -147,6 +146,14 @@ export default function Visiting() {
                 icon: "warning",
                 title: "Detail Terlalu Singkat",
                 text: "Detail Visiting minimal 5 kata!",
+            });
+            return;
+        }
+        if (form.noHp && (form.noHp.length < 11 || form.noHp.length > 13)) {
+            Swal.fire({
+                icon: "warning",
+                title: "No HP Tidak Valid",
+                text: "No HP Konsumen harus antara 11-13 digit!",
             });
             return;
         }
@@ -423,9 +430,13 @@ export default function Visiting() {
                                     type="text"
                                     name="noHp"
                                     value={form.noHp}
-                                    onChange={handleChange}
+                                    onChange={(e) => {
+                                        const value = e.target.value.replace(/\D/g, "").slice(0, 13);
+                                        setForm({ ...form, noHp: value });
+                                    }}
                                     placeholder="Masukkan nomor HP"
                                     className="w-full border rounded-lg p-2"
+                                    inputMode="numeric"
                                 />
                             </div>
 
