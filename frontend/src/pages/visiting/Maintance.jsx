@@ -53,10 +53,18 @@ export default function Maintance() {
             jabatan: parsedUser.position || "",
         }));
 
-        const nik = parsedUser.nik;
+        // const nik = parsedUser.nik;
+        // const scriptURL =
+        //     "https://script.google.com/macros/s/AKfycbzzaiDDLH_7ymXLzP617kDaV7aRHFlSfOVdMknkOJg2-qN2-seYeM-B-Kx9OBGEfs7zQw/exec?nik=" +
+        //     nik;
+
         const scriptURL =
-            "https://script.google.com/macros/s/AKfycbzzaiDDLH_7ymXLzP617kDaV7aRHFlSfOVdMknkOJg2-qN2-seYeM-B-Kx9OBGEfs7zQw/exec?nik=" +
-            nik;
+            "https://script.google.com/macros/s/AKfycbwjTMpSGb1dWoKV0O0XhFbmWHXzB5kvkRsTmpfD_vbuCvtnA3KKzcE5Cr8CD3SXcoyD5Q/exec" +
+            "?nik=" + parsedUser.nik +
+            "&akses=" + encodeURIComponent(parsedUser.akses || "") +
+            "&region=" + encodeURIComponent(parsedUser.region || "") +
+            "&cabang=" + encodeURIComponent(parsedUser.cabang || "");
+
 
         setLoading(true);
 
@@ -73,7 +81,7 @@ export default function Maintance() {
 
     // 🔍 Filter hasil pencarian Nama MA
     const filteredMA = dataMA.filter((item) =>
-        item["NAMA MA (ISI HURUF BESAR)"]
+        item["TRIM NAMA"]
             ?.toLowerCase()
             .includes(form.namaMA.toLowerCase())
     );
@@ -82,8 +90,8 @@ export default function Maintance() {
     const handleSelectMA = (item) => {
         setForm((prev) => ({
             ...prev,
-            namaMA: item["NAMA MA (ISI HURUF BESAR)"],
-            noRef: item["NO REF MA"] || "",
+            namaMA: item["TRIM NAMA"],
+            noRef: item["TRIM NO REF"] || "",
             occupation: item["OCCUPATION WISE"] || "",
         }));
         setShowDropdown(false);
@@ -264,7 +272,7 @@ export default function Maintance() {
                                             >
                                                 {
                                                     item[
-                                                    "NAMA MA (ISI HURUF BESAR)"
+                                                    "TRIM NAMA"
                                                     ]
                                                 }
                                             </li>
