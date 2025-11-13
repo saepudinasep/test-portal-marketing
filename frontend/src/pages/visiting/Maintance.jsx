@@ -163,10 +163,9 @@ export default function Maintance() {
             });
 
             const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbxtAk5bPLduvDZ5N2VAolIDPYVE6Dt2LQfPBc2G39FJrJZ2E5wi0sYIe23OEanbhqLI/exec",
+                "https://script.google.com/macros/s/AKfycbzvOYbHsodW61sX9Y3VZrIB3RuLwR2KnNqXY6DdoCXiXenae6TDWQkMjPlbzlCejKqd/exec",
                 {
                     method: "POST",
-                    // headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload),
                 }
             );
@@ -177,10 +176,11 @@ export default function Maintance() {
             if (result.success) {
                 Swal.fire({
                     icon: "success",
-                    title: "Berhasil!",
-                    text: "Data berhasil disimpan.",
+                    title: "Data berhasil disimpan!",
+                    text: result.message || "Data berhasil disimpan.",
                     confirmButtonColor: "#16a34a",
                 });
+
 
                 setForm({
                     namaMA: "",
@@ -196,10 +196,10 @@ export default function Maintance() {
                 setPhoto(null);
             } else {
                 Swal.fire({
-                    icon: "error",
-                    title: "Gagal Menyimpan",
-                    text: result.message || "Terjadi kesalahan saat menyimpan data.",
-                    confirmButtonColor: "#d33",
+                    icon: "warning",
+                    title: "Batas Input Tercapai",
+                    text: result.message || "MA ini sudah mencapai batas input bulan ini.",
+                    confirmButtonColor: "#f59e0b",
                 });
             }
         } catch (error) {
@@ -227,19 +227,6 @@ export default function Maintance() {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
             <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-3xl">
-                {/* 🧑‍💼 Info User
-                <div className="mb-6 text-center border-b pb-4">
-                    <h1 className="text-2xl font-bold text-indigo-700 mb-2">
-                        Maintenance MA
-                    </h1>
-                    <p className="text-gray-700 font-medium">
-                        Selamat datang,{" "}
-                        <span className="text-indigo-600">{userData?.name}</span>
-                    </p>
-                    <p className="text-gray-500 text-sm">
-                        Cabang: {userData?.cabang} | Role: {userData?.akses}
-                    </p>
-                </div> */}
 
                 {/* 🧾 Form Maintenance */}
                 <form onSubmit={handleSubmit} className="space-y-6">
