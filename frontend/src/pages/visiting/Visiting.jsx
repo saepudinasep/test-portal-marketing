@@ -16,6 +16,7 @@ export default function Visiting() {
         noKontrak: "",
         namaDebitur: "",
         sumberData: "",
+        picVisit: "",
         nik: "",
         jabatan: "",
         hasil: "",
@@ -68,6 +69,7 @@ export default function Visiting() {
             ...prev,
             region: parsedUser.region || "",
             cabang: parsedUser.cabang || "",
+            picVisit: parsedUser.name || "",
             nik: parsedUser.nik || "",
             jabatan: parsedUser.position || "",
         }));
@@ -169,7 +171,7 @@ export default function Visiting() {
             });
 
             const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbzSubmitVisiting1234/exec",
+                "https://script.google.com/macros/s/AKfycbyqfIctQZimHt8JiFRrYGfYaw1D0OPZYyTYhbMXAHaywImw7eX4IfPTM_SJx8EoBERN3g/exec",
                 {
                     method: "POST",
                     body: JSON.stringify(payload),
@@ -282,6 +284,19 @@ export default function Visiting() {
                                 type="text"
                                 name="namaDebitur"
                                 value={form.namaDebitur}
+                                className="w-full border rounded-lg p-2 bg-gray-100"
+                                readOnly
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                Sumber Data
+                            </label>
+                            <input
+                                type="text"
+                                name="sumberData"
+                                value={form.sumberData}
                                 className="w-full border rounded-lg p-2 bg-gray-100"
                                 readOnly
                             />

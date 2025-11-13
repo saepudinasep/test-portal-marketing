@@ -11,20 +11,20 @@ export default function Navbar({ userData }) {
     const [user, setUser] = useState(userData || null);
     const [dropdownOpen, setDropdownOpen] = useState(null);
 
-    // Ambil data user dari sessionStorage (fallback jika props tidak dikirim)
+    // Ambil user dari sessionStorage
     useEffect(() => {
         const storedUser = JSON.parse(sessionStorage.getItem("userData"));
         if (storedUser) setUser(storedUser);
     }, [userData]);
 
-    // Efek scroll untuk shadow / backdrop
+    // Efek scroll (shadow)
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 10);
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    // Redirect ke login bila belum ada session
+    // Redirect ke login bila belum login
     useEffect(() => {
         if (!user) {
             const isLoggedIn = sessionStorage.getItem("loggedIn") === "true";
@@ -32,74 +32,96 @@ export default function Navbar({ userData }) {
         }
     }, [user, navigate]);
 
-    // Helper flags
+    // Flags
     const isHeadOffice = user?.cabang?.toLowerCase() === "kantor pusat";
     const isCMO = user?.akses === "CMO";
     const isMAO = user?.akses === "MAO";
 
-    // Build submenu Agency sesuai aturan:
-    // - HeadOffice => maintanceMA + visit
-    // - not HO & MAO => maintance, rekrutMA, leads
-    // - not HO & CMO => visit konsumen
-    // - not HO & other => all (maintance, rekrut, leads, visit)
-    const agencySubmenu = (() => {
-        if (isHeadOffice) {
-            return [
-                { name: "Maintance", path: "/dashboard/maintanceMA" },
-                { name: "Visiting", path: "/dashboard/visit" },
-            ];
-        }
+    // === Build navItems berdasarkan role ===
+    let navItems = [];
 
-        // not head office
-        if (isMAO) {
-            return [
-                { name: "Maintance", path: "/dashboard/maintance" },
-                { name: "Rekrut MA", path: "/dashboard/rekrutMA" },
-                { name: "Input Database", path: "/dashboard/leads" },
-            ];
-        }
-
-        if (isCMO) {
-            return [{ name: "Visit Konsumen", path: "/dashboard/visiting" }];
-        }
-
-        // other non-HO roles => show all
-        return [
-            { name: "Maintance", path: "/dashboard/maintance" },
-            { name: "Rekrut MA", path: "/dashboard/rekrutMA" },
-            { name: "Input Database", path: "/dashboard/leads" },
-            { name: "Visit Konsumen", path: "/dashboard/visiting" },
+    if (isHeadOffice) {
+        navItems = [
+            { name: "Dashboard", path: "/dashboard" },
+            {
+                name: "Pelaporan Issue",
+                submenu: [
+                    { name: "Ticket", path: "/dashboard/ticket" },
+                    { name: "Report", path: "/dashboard/report" },
+                ],
+            },
+            { name: "MaintanceMA", path: "/dashboard/maintanceMA" },
+            { name: "Visiting", path: "/dashboard/visit" },
+            { name: "Panduan", path: "/dashboard/panduan" },
+            { name: "Setting", path: "/dashboard/setting" },
         ];
-    })();
-
-    const navItems = [
-        { name: "Dashboard", path: "/dashboard" },
-        {
-            name: "Pelaporan Issue",
-            submenu:
-                isHeadOffice
-                    ? [
-                        { name: "Ticket", path: "/dashboard/ticket" },
-                        { name: "Report", path: "/dashboard/report" },
-                    ]
-                    : [
-                        { name: "Ticket", path: "/dashboard/ticket" },
-                        { name: "New Ticket", path: "/dashboard/ticket/new" },
-                    ],
-        },
-        {
-            name: "Agency",
-            submenu: agencySubmenu,
-        },
-        { name: "Panduan", path: "/dashboard/panduan" },
-        { name: "Setting", path: "/dashboard/setting" },
-    ];
+    } else if (isCMO) {
+        navItems = [
+            { name: "Dashboard", path: "/dashboard" },
+            {
+                name: "Pelaporan Issue",
+                submenu: [
+                    { name: "Ticket", path: "/dashboard/ticket" },
+                    { name: "New Ticket", path: "/dashboard/ticket/new" },
+                ],
+            },
+            { name: "Visit Konsumen", path: "/dashboard/visiting" },
+            { name: "Panduan", path: "/dashboard/panduan" },
+            { name: "Setting", path: "/dashboard/setting" },
+        ];
+    } else if (isMAO) {
+        navItems = [
+            { name: "Dashboard", path: "/dashboard" },
+            {
+                name: "Pelaporan Issue",
+                submenu: [
+                    { name: "Ticket", path: "/dashboard/ticket" },
+                    { name: "New Ticket", path: "/dashboard/ticket/new" },
+                ],
+            },
+            {
+                name: "Agency",
+                submenu: [
+                    { name: "Maintance", path: "/dashboard/maintance" },
+                    { name: "Rekrut MA", path: "/dashboard/rekrutMA" },
+                    { name: "Input Database", path: "/dashboard/leads" },
+                ],
+            },
+            { name: "Panduan", path: "/dashboard/panduan" },
+            { name: "Setting", path: "/dashboard/setting" },
+        ];
+    } else {
+        // Non-HO & bukan CMO/MAO
+        navItems = [
+            { name: "Dashboard", path: "/dashboard" },
+            {
+                name: "Pelaporan Issue",
+                submenu: [
+                    { name: "Ticket", path: "/dashboard/ticket" },
+                    { name: "New Ticket", path: "/dashboard/ticket/new" },
+                ],
+            },
+            {
+                name: "Agency",
+                submenu: [
+                    { name: "Maintance", path: "/dashboard/maintance" },
+                    { name: "Rekrut MA", path: "/dashboard/rekrutMA" },
+                    { name: "Input Database", path: "/dashboard/leads" },
+                ],
+            },
+            { name: "Visit Konsumen", path: "/dashboard/visiting" },
+            { name: "Panduan", path: "/dashboard/panduan" },
+            { name: "Setting", path: "/dashboard/setting" },
+        ];
+    }
 
     const isActive = (path) => location.pathname === path;
 
     return (
         <nav
-            className={`sticky top-0 z-50 transition-all duration-300 backdrop-blur-md ${isScrolled ? "bg-white/70 shadow-sm border-b border-gray-200" : "bg-white"
+            className={`sticky top-0 z-50 transition-all duration-300 backdrop-blur-md ${isScrolled
+                ? "bg-white/70 shadow-sm border-b border-gray-200"
+                : "bg-white"
                 }`}
         >
             <div className="flex justify-between items-center px-6 py-4 md:justify-center">
@@ -129,8 +151,8 @@ export default function Navbar({ userData }) {
                                 <span
                                     onClick={() => navigate(item.path)}
                                     className={`cursor-pointer px-3 py-1.5 text-lg font-medium transition-all duration-200 ${isActive(item.path)
-                                            ? "text-blue-600 border-b-2 border-blue-600"
-                                            : "text-gray-800 hover:text-blue-500 hover:border-b-2 hover:border-blue-300"
+                                        ? "text-blue-600 border-b-2 border-blue-600"
+                                        : "text-gray-800 hover:text-blue-500 hover:border-b-2 hover:border-blue-300"
                                         }`}
                                 >
                                     {item.name}
@@ -167,7 +189,9 @@ export default function Navbar({ userData }) {
                                                             navigate(sub.path);
                                                             setDropdownOpen(null);
                                                         }}
-                                                        className={`px-4 py-2 cursor-pointer text-gray-700 hover:bg-blue-50 hover:text-blue-600 ${isActive(sub.path) ? "bg-blue-100 text-blue-600 font-semibold" : ""
+                                                        className={`px-4 py-2 cursor-pointer text-gray-700 hover:bg-blue-50 hover:text-blue-600 ${isActive(sub.path)
+                                                            ? "bg-blue-100 text-blue-600 font-semibold"
+                                                            : ""
                                                             }`}
                                                     >
                                                         {sub.name}
@@ -201,7 +225,9 @@ export default function Navbar({ userData }) {
                                             navigate(item.path);
                                             setMenuOpen(false);
                                         }}
-                                        className={`py-2 text-lg font-medium cursor-pointer ${isActive(item.path) ? "text-blue-600 bg-blue-50" : "text-gray-800 hover:text-blue-600 hover:bg-gray-100"
+                                        className={`py-2 text-lg font-medium cursor-pointer ${isActive(item.path)
+                                            ? "text-blue-600 bg-blue-50"
+                                            : "text-gray-800 hover:text-blue-600 hover:bg-gray-100"
                                             }`}
                                     >
                                         {item.name}
@@ -210,7 +236,10 @@ export default function Navbar({ userData }) {
                                     <details className="group">
                                         <summary className="py-2 flex justify-center items-center gap-1 text-lg font-medium cursor-pointer text-gray-800 hover:text-blue-600 list-none">
                                             {item.name}
-                                            <ChevronDown size={18} className="text-gray-600 group-open:rotate-180 transition-transform duration-200" />
+                                            <ChevronDown
+                                                size={18}
+                                                className="text-gray-600 group-open:rotate-180 transition-transform duration-200"
+                                            />
                                         </summary>
                                         <ul className="flex flex-col gap-1">
                                             {item.submenu.map((sub) => (
@@ -220,7 +249,9 @@ export default function Navbar({ userData }) {
                                                         navigate(sub.path);
                                                         setMenuOpen(false);
                                                     }}
-                                                    className={`py-2 text-base text-gray-700 hover:bg-blue-50 hover:text-blue-600 ${isActive(sub.path) ? "text-blue-600 bg-blue-100 font-semibold" : ""
+                                                    className={`py-2 text-base text-gray-700 hover:bg-blue-50 hover:text-blue-600 ${isActive(sub.path)
+                                                        ? "text-blue-600 bg-blue-100 font-semibold"
+                                                        : ""
                                                         }`}
                                                 >
                                                     {sub.name}
