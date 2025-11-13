@@ -178,7 +178,7 @@ export default function Visiting() {
             });
 
             const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbyqfIctQZimHt8JiFRrYGfYaw1D0OPZYyTYhbMXAHaywImw7eX4IfPTM_SJx8EoBERN3g/exec",
+                "https://script.google.com/macros/s/AKfycbz0xKowQF_jbEpxacxhnWVWu6cb_gbpc69Hm_Vg_eOQbGUzvVzfpE-hkcXPMZe_Crzvcw/exec",
                 {
                     method: "POST",
                     body: JSON.stringify(payload),
@@ -191,8 +191,8 @@ export default function Visiting() {
             if (result.success) {
                 Swal.fire({
                     icon: "success",
-                    title: "Berhasil!",
-                    text: "Data visiting berhasil disimpan.",
+                    title: "Data visit Berhasil disimpan!",
+                    text: result.message,
                     confirmButtonColor: "#16a34a",
                 });
 
@@ -208,6 +208,13 @@ export default function Visiting() {
                     detail: "",
                 });
                 setPhoto(null);
+            } else if (result.limitReached) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Batas Input Tercapai",
+                    text: result.message,
+                    confirmButtonColor: "#f59e0b",
+                });
             } else {
                 Swal.fire({
                     icon: "error",
