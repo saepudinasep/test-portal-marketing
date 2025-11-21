@@ -34,7 +34,7 @@ export default function ResetPassword() {
         try {
             // Gunakan pola insert sebelumnya: fetch dengan no-cors, respon langsung Swal
             await fetch(
-                "https://script.google.com/macros/s/AKfycbwD1G4_c5i2-NgiDGjRKlyZfQ7_SSwvC0Uf4Ax65SpdK1uO1T-trTbfuaEUUKQgaJQDzw/exec",
+                "https://script.google.com/macros/s/AKfycbwjovPVj73v58NfSyqikihlCkv10rLBiPpZUx7Toxb-opSlqpFN1IcqUnKBShD6XV7uEA/exec",
                 {
                     method: "POST",
                     mode: "no-cors", // ✅ supaya bisa jalan walau CORS
@@ -43,7 +43,7 @@ export default function ResetPassword() {
                         action: "updatePassword",
                         username: pending.username,
                         password: newPassword,
-                        NIK: pending.NIK,
+                        NIK: pending.EMPLOYEE_ID,
                     }),
                 }
             );

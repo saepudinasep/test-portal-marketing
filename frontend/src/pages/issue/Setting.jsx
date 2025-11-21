@@ -34,7 +34,7 @@ export default function Setting({ userData, setIsLoggedIn }) {
 
         try {
             const res = await fetch(
-                "https://script.google.com/macros/s/AKfycbysNBu67g1k3IpGCFBMqU6YjaG_vKxmrP6cXkPfCW4mV0I31V4NzotxxVDPyWY0cdvrcg/exec",
+                "https://script.google.com/macros/s/AKfycbwnCTjndSExZUsv1rNqwdaQE0QagkzbdFupYdP62_wP9AtifrIoMn8wUcjK0Fwce-wv5A/exec",
                 {
                     method: "POST",
                     body: JSON.stringify({

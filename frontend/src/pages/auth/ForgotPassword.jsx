@@ -8,7 +8,7 @@ export default function ForgotPassword() {
     const [loading, setLoading] = useState(false);
 
     const APP_SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbxYMJzNMPQIu7e607kh9tD46xTP27-HsUZ_YUjnJGyAQ-pT8M4vNSTcrScC8eFk7I66cw/exec";
+        "https://script.google.com/macros/s/AKfycbxcN8GKEkYz-Z-m_WCUpo-ZwHwEHLrUBDt1ZaEgvKGBLjz_-mEmXhXkfaZguWQ1Kpve2A/exec";
 
     const handleResetPassword = async () => {
         if (!nikOrUsername || !newPassword || !confirmPassword) {

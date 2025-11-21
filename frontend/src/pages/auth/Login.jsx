@@ -11,7 +11,7 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const API_URL = "https://script.google.com/macros/s/AKfycbxrUAGgsesLWDluUtrG_yB4-LhBhcllAdtXVGEgsR5WDQe7F7WL93NUnlfj5xA8cl7fwg/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbw7W4Z6f06LtWF1mXtHhWNe-18AE8Jt2V2ZUQw3wfxX5_Uy6Bb-o8q70tYfX6gc5KD0xA/exec";
 
     useEffect(() => {
         if (sessionStorage.getItem("loggedIn") === "true") {
@@ -41,7 +41,7 @@ export default function Login() {
             }
 
             const user = result.data;
-            const defaultPassword = getDefaultPassword(user.NAME_KTP, user.NIK);
+            const defaultPassword = getDefaultPassword(user.NAME_KTP, user.EMPLOYEE_ID);
 
             if (user.password?.toLowerCase() === defaultPassword.toLowerCase()) {
                 sessionStorage.setItem("pendingReset", JSON.stringify(user));
@@ -52,9 +52,9 @@ export default function Login() {
             const userData = {
                 username: user.username,
                 name: user.NAME_KTP,
-                nik: user.NIK,
-                region: user.Region,
-                cabang: user.Cabang,
+                nik: user.EMPLOYEE_ID,
+                region: user.REGION_NAME,
+                cabang: user.COMP_OFFICE_NAME,
                 position: user.POSITION_NAME,
                 product: user.PRODUCT,
                 status: user.EMPLOYEE_STATUS,
