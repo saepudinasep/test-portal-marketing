@@ -16,16 +16,28 @@ export default function TicketTable({ tickets, userData }) {
     const isHeadOffice = userData?.cabang === "Kantor Pusat";
 
     const allRegions = [
-        "BU XV - KALIMANTAN",
-        "BU IX - SULAWESI",
-        "BU VI - JATIM BALI",
-        "BU III - JAWA BARAT",
-        "BU I - JABODEBEK",
-        "BU XIII - BANTEN",
-        "BU XIV - JATENG UTARA",
-        "BU V - JATENG SELATAN",
-        "BU VII - SUMBAGUT",
-        "BU VIII - SUMBAGSEL",
+        "BANTEN 1",
+        "BANTEN 2",
+        "JABAR 1",
+        "JABAR 2",
+        "JABODEBEK 1",
+        "JABODEBEK 2",
+        "JABODEBEK 3",
+        "JATENGSEL 1",
+        "JATENGSEL 2",
+        "JATENGUT 1",
+        "JATENGUT 2",
+        "JATIM 1",
+        "JATIM 2",
+        "JATIM 3",
+        "JATIM 5",
+        "KALIMANTAN",
+        "SULAWESI 1",
+        "SULAWESI 2",
+        "SUMBAGSEL 1",
+        "SUMBAGSEL 2",
+        "SUMBAGUT 1",
+        "SUMBAGUT 2"
     ];
 
     const allBrands = ["HAJIKU", "MASKU", "MOBILKU", "MOTORKU", "REGULER"];

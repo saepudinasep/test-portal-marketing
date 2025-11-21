@@ -9,7 +9,7 @@ export default function Ticket() {
     const [userData, setUserData] = useState(null);
 
     const API_URL =
-        "https://script.google.com/macros/s/AKfycbzRHpSwMjsmPbRCR6qRsvEqkPcYJUDwtk_NNi1YK1qflV0hl2H2wRFkLU_eNDDLfok9MQ/exec";
+        "https://script.google.com/macros/s/AKfycbxQ9ZpBhykc5-_HyMZG7J3lVh-JboZDrJsci0QJDW1IO0GCXZfdvrnQElbA4_N0A_HQ3g/exec";
 
     // Fungsi untuk ambil data tiket
     const fetchTickets = async (storedUser) => {

@@ -25,7 +25,7 @@ export default function DetailTicket() {
         async function fetchTicket() {
             try {
                 const res = await fetch(
-                    `https://script.google.com/macros/s/AKfycbz9wzE8jqaWFSnTESjAY4bz1WKmZma-N8v3FuhdaKANV1Y9o3Tp8_BqfoaduNQeg8Jp/exec?action=getTicket&id=${id}`
+                    `https://script.google.com/macros/s/AKfycbwATI3cgS_1BITlLplk50GQPYU_ESmERZjW7Oj1MaJeDSB49Yyzx0cG1LcjpQJ4Iuse/exec?action=getTicket&id=${id}`
                 );
                 const json = await res.json();
                 const dataTicket = json.data;
@@ -72,7 +72,7 @@ export default function DetailTicket() {
                 const base64 = reader.result.split(",")[1];
                 try {
                     const res = await fetch(
-                        "https://script.google.com/macros/s/AKfycbz9wzE8jqaWFSnTESjAY4bz1WKmZma-N8v3FuhdaKANV1Y9o3Tp8_BqfoaduNQeg8Jp/exec",
+                        "https://script.google.com/macros/s/AKfycbwATI3cgS_1BITlLplk50GQPYU_ESmERZjW7Oj1MaJeDSB49Yyzx0cG1LcjpQJ4Iuse/exec",
                         {
                             method: "POST",
                             // headers: { "Content-Type": "application/json" },
@@ -116,7 +116,7 @@ export default function DetailTicket() {
             }
 
             const resChat = await fetch(
-                "https://script.google.com/macros/s/AKfycbz9wzE8jqaWFSnTESjAY4bz1WKmZma-N8v3FuhdaKANV1Y9o3Tp8_BqfoaduNQeg8Jp/exec",
+                "https://script.google.com/macros/s/AKfycbwATI3cgS_1BITlLplk50GQPYU_ESmERZjW7Oj1MaJeDSB49Yyzx0cG1LcjpQJ4Iuse/exec",
                 {
                     method: "POST",
                     // headers: { "Content-Type": "application/json" },
@@ -176,7 +176,7 @@ export default function DetailTicket() {
 
         try {
             const resUpdate = await fetch(
-                "https://script.google.com/macros/s/AKfycbz9wzE8jqaWFSnTESjAY4bz1WKmZma-N8v3FuhdaKANV1Y9o3Tp8_BqfoaduNQeg8Jp/exec",
+                "https://script.google.com/macros/s/AKfycbwATI3cgS_1BITlLplk50GQPYU_ESmERZjW7Oj1MaJeDSB49Yyzx0cG1LcjpQJ4Iuse/exec",
                 {
                     method: "POST",
                     // mode: "no-cors",
