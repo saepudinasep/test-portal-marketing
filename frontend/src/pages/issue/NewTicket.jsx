@@ -30,7 +30,7 @@ export default function NewTicket() {
         async function fetchKendala() {
             try {
                 const res = await fetch(
-                    "https://script.google.com/macros/s/AKfycbxip4b63sk6jJxSj4Y5rrT9eV9_vupUacRgX3umRGjBeGrA0937BJJslD-3690k2AVk/exec"
+                    "https://script.google.com/macros/s/AKfycbyXGQZxpPWuNMR661Rev36OEiz5anP_jabIlcWdPr8j4K6WLpMIyFK4ysXGzJtXfUq_/exec"
                 );
                 const json = await res.json();
                 if (json.data) setKendalaList(json.data);

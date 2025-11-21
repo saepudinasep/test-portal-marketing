@@ -7,7 +7,7 @@ export default function Panduan() {
 
     useEffect(() => {
         // Ganti URL ini dengan URL Apps Script kamu yang sudah dipublish
-        fetch("https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLjE3PAtrzb5GD1-q4Lc2uGqhF3y5868Ke0FhnzbgSruntmzArMCkDx55vO8fKveCCQsd5DbtoVvg6o2zqaXxOrX7teGDidkK3_6zOUINi5Qvyx_eKR8wK1Aq4Fy4IRz2VPfaQPXiFNpoEhywuNwxssQ97JBsLtl26vnYfMhGy32-eORt-LF3_c8Qz9g8Y8NVce0HELm1ft8FUObDxtasWfPezm55vNULFe8UEMZE0uY-MQ6GD2yTatmKK4KH8hpyJlLR7AbLU5aX7AFfBlp2mXZP0e_pdev1kiszP0V&lib=MLmAgPI267WLPxlqoi4oB9JrQcJ2HCqVX")
+        fetch("https://script.google.com/macros/s/AKfycbztmtKSvOIcEq5ZEHLy483IAt1KCmPyfhY31tI-LL46hhuHABD3ILVItk8tnAWSQn7gdw/exec")
             .then((res) => res.json())
             .then((data) => {
                 setFaqList(data.data || []);
