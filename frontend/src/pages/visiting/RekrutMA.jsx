@@ -147,7 +147,7 @@ export default function RekrutMA() {
 
         const payload = {
             ...form,
-            namaMA: form.namaMA.toUppercase(),
+            namaMA: form.namaMA.toUpperCase(),
             photoBase64: photo,
             createdBy: userData?.name || "",
             nik: userData?.nik || "",
