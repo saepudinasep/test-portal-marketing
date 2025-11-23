@@ -338,7 +338,7 @@ export default function RekrutMA() {
                                 onChange={(e) =>
                                     setForm((prev) => ({
                                         ...prev,
-                                        sektor: e.target.value.toUpperCase(),
+                                        sektor: e.target.value,
                                     }))
                                 }
                                 onFocus={() => setShowDropdownSektor(true)}
@@ -384,7 +384,7 @@ export default function RekrutMA() {
                                 onChange={(e) =>
                                     setForm((prev) => ({
                                         ...prev,
-                                        jabatan: e.target.value.toUpperCase(),
+                                        jabatan: e.target.value,
                                     }))
                                 }
                                 onFocus={() => setShowDropdownJabatan(true)}
