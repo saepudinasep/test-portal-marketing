@@ -7,6 +7,9 @@ export default function RekrutMA() {
     const [userData, setUserData] = useState(null);
     const [photo, setPhoto] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [filteredSektor, setFilteredSektor] = useState([]);
+    const [filteredJabatan, setFilteredJabatan] = useState([]);
+
 
     const [form, setForm] = useState({
         tipe: "",
@@ -65,7 +68,7 @@ export default function RekrutMA() {
         "YAKULT LADY",
     ];
 
-    const jabatanList = [
+    const jabatanMAList = [
         "AREA MANAGER",
         "BENDAHARA ORGANISASI",
         "BRANCH MANAGER",
@@ -305,43 +308,69 @@ export default function RekrutMA() {
                     {/* 🏢 Sektor & Jabatan */}
                     <div className="grid md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium mb-1">
-                                Sektor Pekerjaan
-                            </label>
-                            <select
+                            <label className="text-sm font-semibold">Sektor Pekerjaan</label>
+                            <input
+                                type="text"
                                 name="sektor"
                                 value={form.sektor}
-                                onChange={handleChange}
-                                className="w-full border rounded-lg p-2"
-                                required
-                            >
-                                <option value="">Pilih Sektor</option>
-                                {sektorList.map((s, i) => (
-                                    <option key={i} value={s}>
-                                        {s}
-                                    </option>
-                                ))}
-                            </select>
+                                onChange={(e) => {
+                                    const v = e.target.value.toUpperCase();
+                                    setForm({ ...form, sektor: v });
+                                    setFilteredSektor(sektorList.filter(s => s.includes(v)));
+                                }}
+                                className="w-full border rounded-lg p-2 uppercase"
+                                placeholder="Pilih Sektor Pekerjaan"
+                            />
+
+                            {filteredSektor.length > 0 && (
+                                <div className="border rounded-lg mt-1 max-h-40 overflow-auto bg-white shadow-lg z-50">
+                                    {filteredSektor.map((item, index) => (
+                                        <div
+                                            key={index}
+                                            className="p-2 hover:bg-indigo-100 cursor-pointer"
+                                            onClick={() => {
+                                                setForm({ ...form, sektor: item });
+                                                setFilteredSektor([]);
+                                            }}
+                                        >
+                                            {item}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium mb-1">
-                                Jabatan Marketing Agent
-                            </label>
-                            <select
+                            <label className="text-sm font-semibold">Jabatan Marketing Agent</label>
+                            <input
+                                type="text"
                                 name="jabatan"
                                 value={form.jabatan}
-                                onChange={handleChange}
-                                className="w-full border rounded-lg p-2"
-                                required
-                            >
-                                <option value="">Pilih Jabatan</option>
-                                {jabatanList.map((j, i) => (
-                                    <option key={i} value={j}>
-                                        {j}
-                                    </option>
-                                ))}
-                            </select>
+                                onChange={(e) => {
+                                    const v = e.target.value.toUpperCase();
+                                    setForm({ ...form, jabatan: v });
+                                    setFilteredJabatan(jabatanMAList.filter(j => j.includes(v)));
+                                }}
+                                className="w-full border rounded-lg p-2 uppercase"
+                                placeholder="Pilih Jabatan Marketing"
+                            />
+
+                            {filteredJabatan.length > 0 && (
+                                <div className="border rounded-lg mt-1 max-h-40 overflow-auto bg-white shadow-lg z-50">
+                                    {filteredJabatan.map((item, index) => (
+                                        <div
+                                            key={index}
+                                            className="p-2 hover:bg-indigo-100 cursor-pointer"
+                                            onClick={() => {
+                                                setForm({ ...form, jabatan: item });
+                                                setFilteredJabatan([]);
+                                            }}
+                                        >
+                                            {item}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
 
