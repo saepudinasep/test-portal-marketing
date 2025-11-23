@@ -59,7 +59,7 @@ export default function Maintance() {
         //     nik;
 
         const scriptURL =
-            "https://script.google.com/macros/s/AKfycbwjTMpSGb1dWoKV0O0XhFbmWHXzB5kvkRsTmpfD_vbuCvtnA3KKzcE5Cr8CD3SXcoyD5Q/exec" +
+            "https://script.google.com/macros/s/AKfycbzGRa5M4G8a1yGe5YmTYmbLyzGCFnHdnF0x6JICx-0UMUp_iwC-Sx-orII0WL3vAACpyA/exec" +
             "?nik=" + parsedUser.nik +
             "&akses=" + encodeURIComponent(parsedUser.akses || "") +
             "&region=" + encodeURIComponent(parsedUser.region || "") +
@@ -284,7 +284,7 @@ export default function Maintance() {
                                     }))
                                 }
                                 onFocus={() => setShowDropdown(true)}
-                                className="w-full border rounded-lg p-2"
+                                className="w-full border rounded-lg p-2 uppercase"
                                 required
                             />
 
