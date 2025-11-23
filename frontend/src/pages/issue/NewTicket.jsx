@@ -10,13 +10,13 @@ export default function NewTicket() {
         subKendala: "",
         namaCustomer: "",
         custId: "",
-        noKawanInternal: "",
-        taskIdPolo: "",
+        noKawanInternal: "KWN",
+        taskIdPolo: "POL",
         dukcapil: "",
         negativeStatus: "",
         biometric: "",
-        noOdr: "",
-        noApp: "",
+        noOdr: "ODRNO",
+        noApp: "APP",
         issueSummary: "",
         detailError: "",
         file: null,
@@ -77,7 +77,7 @@ export default function NewTicket() {
     // helper: field editable logic
     const isEditable = (field) => {
         // always editable
-        if (["issueSummary", "detailError", "file"].includes(field)) return true;
+        if (["kendalaSystem", "subKendala", "issueSummary", "detailError", "file"].includes(field)) return true;
 
         // kendala dependent
         if (isKI(form.kendalaSystem)) {
@@ -156,6 +156,33 @@ export default function NewTicket() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        // PREFIX RULES
+        const prefixRules = {
+            noKawanInternal: "KWN",
+            taskIdPolo: "POL",
+            noOdr: "ODRNO",
+            noApp: "APP"
+        };
+
+        if (prefixRules[name]) {
+            const prefix = prefixRules[name];
+
+            // Jika user menghapus prefix → tetap dipaksa ada prefix
+            let newValue = value.startsWith(prefix)
+                ? value
+                : prefix + value.replace(prefix, "");
+
+            // Hilangkan semua karakter selain angka setelah prefix
+            newValue = prefix + newValue.replace(prefix, "").replace(/[^0-9]/g, "");
+
+            setForm((prev) => ({
+                ...prev,
+                [name]: newValue,
+            }));
+            return;
+        }
+
         setForm((prev) => ({ ...prev, [name]: value }));
         // realtime validate only if field is editable
         if (isEditable(name)) validateField(name, value);
@@ -168,6 +195,12 @@ export default function NewTicket() {
     // build final required list for submit time
     const getAllRequired = () => {
         return [...new Set([...baseRequired, ...dynamicRequired()])];
+    };
+
+    const cleanPrefix = (value, prefix) => {
+        if (!value) return "";
+        const trimmed = String(value).trim();
+        return trimmed === prefix ? "" : trimmed;
     };
 
     // on submit validate everything
@@ -226,13 +259,16 @@ export default function NewTicket() {
                         subKendala: form.subKendala,
                         namaCustomer: form.namaCustomer,
                         custId: form.custId,
-                        noKawanInternal: form.noKawanInternal,
-                        taskIdPolo: form.taskIdPolo,
+
+                        // ⬇️ Jadi kosong kalau hanya prefix
+                        noKawanInternal: cleanPrefix(form.noKawanInternal, "KWN"),
+                        taskIdPolo: cleanPrefix(form.taskIdPolo, "POL"),
                         dukcapil: form.dukcapil,
                         negativeStatus: form.negativeStatus,
                         biometric: form.biometric,
-                        noOdr: form.noOdr,
-                        noApp: form.noApp,
+                        noOdr: cleanPrefix(form.noOdr, "ODRNO"),
+                        noApp: cleanPrefix(form.noApp, "APP"),
+
                         detailError: form.detailError,
                         file: fileBase64,
                         filename: form.file?.name || "",
@@ -265,8 +301,15 @@ export default function NewTicket() {
         }
     };
 
-    const inputStyle = (field) =>
-        `w-full rounded-lg p-2 ${errors[field] ? "border-red-500 border" : "border-gray-300 border"}`;
+    const inputStyle = (field) => {
+        const disabled = !isEditable(field);
+
+        return `
+        w-full rounded-lg p-2 border 
+        ${errors[field] ? "border-red-500" : "border-gray-300"}
+        ${disabled ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""}
+    `;
+    }
 
     return (
         <div className="bg-white p-6 rounded-xl shadow-md max-w-4xl mx-auto">
@@ -515,7 +558,7 @@ export default function NewTicket() {
                                 value={form.detailError}
                                 onChange={handleChange}
                                 rows="3"
-                                className={inputStyle("detailError")}
+                                className={`${inputStyle("detailError")} resize-none`}
                             />
                         </div>
 
