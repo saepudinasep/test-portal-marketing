@@ -124,17 +124,46 @@ export default function Visiting() {
         return () => document.removeEventListener("click", handleClickOutside);
     }, []);
 
-    // 📸 Ambil foto
+    // 📸 Ambil foto dari kamera
     const handleTakePhoto = (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setPhoto(reader.result);
+            reader.onloadend = async () => {
+                const compressed = await compressBase64(reader.result, 900, 0.7);
+                setPhoto(compressed);
             };
             reader.readAsDataURL(file);
         }
     };
+
+    function compressBase64(base64Str, maxWidth = 900, quality = 0.7) {
+        return new Promise((resolve) => {
+            let img = new Image();
+            img.src = base64Str;
+
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                let width = img.width;
+                let height = img.height;
+
+                // resize jika terlalu besar
+                if (width > maxWidth) {
+                    height *= maxWidth / width;
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const compressed = canvas.toDataURL("image/jpeg", quality);
+                resolve(compressed);
+            };
+        });
+    }
 
     // 🔹 Submit form
     const handleSubmit = async (e) => {
@@ -178,7 +207,7 @@ export default function Visiting() {
             });
 
             const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbz8yTvBYBN0GN6elwx36Z8JAZPyrJLlVdAoIIqoZA3ASea68-Edx0bax7RzaarWSmk/exec",
+                "https://script.google.com/macros/s/AKfycbx4jvr5BpD6p8G5hE3tv8RC9WxUi5iMix1r35jkc3npryF_80A-aNWKfAW1hDtR0Fwj/exec",
                 {
                     method: "POST",
                     body: JSON.stringify(payload),
