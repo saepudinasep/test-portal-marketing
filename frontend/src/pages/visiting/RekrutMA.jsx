@@ -116,7 +116,7 @@ export default function RekrutMA() {
 
         // Nama MA: huruf besar semua
         if (name === "namaMA") {
-            setForm({ ...form, [name]: value.toUpperCase() });
+            setForm({ ...form, [name]: value });
         }
         // No HP: hanya angka, max 13 digit
         else if (name === "noHP") {
@@ -147,6 +147,7 @@ export default function RekrutMA() {
 
         const payload = {
             ...form,
+            namaMA: form.namaMA.toUppercase(),
             photoBase64: photo,
             createdBy: userData?.name || "",
             nik: userData?.nik || "",
@@ -279,7 +280,7 @@ export default function RekrutMA() {
                             name="namaMA"
                             value={form.namaMA}
                             onChange={handleChange}
-                            className="w-full border rounded-lg p-2"
+                            className="w-full border rounded-lg p-2 uppercase"
                             placeholder="Masukan Nama Agent"
                             required
                         />
