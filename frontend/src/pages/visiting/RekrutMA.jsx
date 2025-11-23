@@ -7,8 +7,8 @@ export default function RekrutMA() {
     const [userData, setUserData] = useState(null);
     const [photo, setPhoto] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [filteredSektor, setFilteredSektor] = useState([]);
-    const [filteredJabatan, setFilteredJabatan] = useState([]);
+    const [showDropdownSektor, setShowDropdownSektor] = useState(false);
+    const [showDropdownJabatan, setShowDropdownJabatan] = useState(false);
 
 
     const [form, setForm] = useState({
@@ -102,6 +102,23 @@ export default function RekrutMA() {
 
         setUserData(JSON.parse(user));
     }, [navigate]);
+
+    const filteredSektor = sektorList.filter((s) =>
+        s.toLowerCase().includes(form.sektor.toLowerCase())
+    );
+
+    const filteredJabatan = jabatanMAList.filter((j) =>
+        j.toLowerCase().includes(form.jabatan.toLowerCase())
+    );
+
+    useEffect(() => {
+        const closeAll = (e) => {
+            if (!e.target.closest(".dropdown-sektor")) setShowDropdownSektor(false);
+            if (!e.target.closest(".dropdown-jabatan")) setShowDropdownJabatan(false);
+        };
+        document.addEventListener("click", closeAll);
+        return () => document.removeEventListener("click", closeAll);
+    }, []);
 
     // 📸 Ambil foto dari kamera
     const handleTakePhoto = (e) => {
@@ -307,69 +324,95 @@ export default function RekrutMA() {
 
                     {/* 🏢 Sektor & Jabatan */}
                     <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="text-sm font-semibold">Sektor Pekerjaan</label>
+                        {/* ⭐ Sektor Pekerjaan */}
+                        <div className="relative dropdown-sektor">
+                            <label className="block text-sm font-medium mb-1">
+                                Sektor Pekerjaan
+                            </label>
+
                             <input
                                 type="text"
                                 name="sektor"
                                 value={form.sektor}
-                                onChange={(e) => {
-                                    const v = e.target.value.toUpperCase();
-                                    setForm({ ...form, sektor: v });
-                                    setFilteredSektor(sektorList.filter(s => s.includes(v)));
-                                }}
+                                placeholder="Cari sektor..."
+                                onChange={(e) =>
+                                    setForm((prev) => ({
+                                        ...prev,
+                                        sektor: e.target.value.toUpperCase(),
+                                    }))
+                                }
+                                onFocus={() => setShowDropdownSektor(true)}
                                 className="w-full border rounded-lg p-2 uppercase"
-                                placeholder="Pilih Sektor Pekerjaan"
+                                required
                             />
 
-                            {filteredSektor.length > 0 && (
-                                <div className="border rounded-lg mt-1 max-h-40 overflow-auto bg-white shadow-lg z-50">
-                                    {filteredSektor.map((item, index) => (
-                                        <div
-                                            key={index}
-                                            className="p-2 hover:bg-indigo-100 cursor-pointer"
-                                            onClick={() => {
-                                                setForm({ ...form, sektor: item });
-                                                setFilteredSektor([]);
-                                            }}
-                                        >
-                                            {item}
-                                        </div>
-                                    ))}
-                                </div>
+                            {showDropdownSektor && (
+                                <ul className="absolute z-10 bg-white border rounded-lg w-full max-h-48 overflow-y-auto shadow-md mt-1">
+                                    {filteredSektor.length > 0 ? (
+                                        filteredSektor.map((s, idx) => (
+                                            <li
+                                                key={idx}
+                                                onClick={() => {
+                                                    setForm((prev) => ({ ...prev, sektor: s }));
+                                                    setShowDropdownSektor(false);
+                                                }}
+                                                className="px-3 py-2 hover:bg-indigo-100 cursor-pointer text-sm"
+                                            >
+                                                {s}
+                                            </li>
+                                        ))
+                                    ) : (
+                                        <li className="px-3 py-2 text-gray-500 text-sm">
+                                            Tidak ditemukan
+                                        </li>
+                                    )}
+                                </ul>
                             )}
                         </div>
 
-                        <div>
-                            <label className="text-sm font-semibold">Jabatan Marketing Agent</label>
+                        {/* ⭐ Jabatan Marketing Agent */}
+                        <div className="relative dropdown-jabatan">
+                            <label className="block text-sm font-medium mb-1">
+                                Jabatan Marketing Agent
+                            </label>
+
                             <input
                                 type="text"
                                 name="jabatan"
                                 value={form.jabatan}
-                                onChange={(e) => {
-                                    const v = e.target.value.toUpperCase();
-                                    setForm({ ...form, jabatan: v });
-                                    setFilteredJabatan(jabatanMAList.filter(j => j.includes(v)));
-                                }}
+                                placeholder="Cari jabatan..."
+                                onChange={(e) =>
+                                    setForm((prev) => ({
+                                        ...prev,
+                                        jabatan: e.target.value.toUpperCase(),
+                                    }))
+                                }
+                                onFocus={() => setShowDropdownJabatan(true)}
                                 className="w-full border rounded-lg p-2 uppercase"
-                                placeholder="Pilih Jabatan Marketing"
+                                required
                             />
 
-                            {filteredJabatan.length > 0 && (
-                                <div className="border rounded-lg mt-1 max-h-40 overflow-auto bg-white shadow-lg z-50">
-                                    {filteredJabatan.map((item, index) => (
-                                        <div
-                                            key={index}
-                                            className="p-2 hover:bg-indigo-100 cursor-pointer"
-                                            onClick={() => {
-                                                setForm({ ...form, jabatan: item });
-                                                setFilteredJabatan([]);
-                                            }}
-                                        >
-                                            {item}
-                                        </div>
-                                    ))}
-                                </div>
+                            {showDropdownJabatan && (
+                                <ul className="absolute z-10 bg-white border rounded-lg w-full max-h-48 overflow-y-auto shadow-md mt-1">
+                                    {filteredJabatan.length > 0 ? (
+                                        filteredJabatan.map((j, idx) => (
+                                            <li
+                                                key={idx}
+                                                onClick={() => {
+                                                    setForm((prev) => ({ ...prev, jabatan: j }));
+                                                    setShowDropdownJabatan(false);
+                                                }}
+                                                className="px-3 py-2 hover:bg-indigo-100 cursor-pointer text-sm"
+                                            >
+                                                {j}
+                                            </li>
+                                        ))
+                                    ) : (
+                                        <li className="px-3 py-2 text-gray-500 text-sm">
+                                            Tidak ditemukan
+                                        </li>
+                                    )}
+                                </ul>
                             )}
                         </div>
                     </div>
