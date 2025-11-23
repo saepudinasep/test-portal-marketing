@@ -74,7 +74,7 @@ export default function Visiting() {
         }));
 
         const scriptURL =
-            "https://script.google.com/macros/s/AKfycbyAy_2hf4dPvhvRGOhFBbD3q8dMjDfYHR8gF9jN6eVqa9RAfcHZnLbOpEV3Nyn0qda8gg/exec" +
+            "https://script.google.com/macros/s/AKfycbySnIjrMiKTShsigaAEusZ0GYm1CMPOpF_Gb1L16k_1dnV2ieOeNT2TsK8YQ39IwMRL/exec" +
             `?region=${parsedUser.region}&cabang=${parsedUser.cabang}`;
 
         setLoading(true);
@@ -178,7 +178,7 @@ export default function Visiting() {
             });
 
             const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbz0xKowQF_jbEpxacxhnWVWu6cb_gbpc69Hm_Vg_eOQbGUzvVzfpE-hkcXPMZe_Crzvcw/exec",
+                "https://script.google.com/macros/s/AKfycbz8yTvBYBN0GN6elwx36Z8JAZPyrJLlVdAoIIqoZA3ASea68-Edx0bax7RzaarWSmk/exec",
                 {
                     method: "POST",
                     body: JSON.stringify(payload),
