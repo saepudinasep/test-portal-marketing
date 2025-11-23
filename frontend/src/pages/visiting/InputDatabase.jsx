@@ -65,13 +65,19 @@ export default function InputDatabase() {
             return;
         }
 
+        const payload = {
+            ...form,
+            namaKonsumen: form.namaKonsumen.toUpperCase(),
+            tipe: form.tipe.toUpperCase(),
+        };
+
         setLoading(true);
         try {
             const response = await fetch(
                 "https://script.google.com/macros/s/AKfycbyKq9ek8KxSx-1mZimL7oXQ7vi5Hu_Cfx6ERQb-9Qb-pe9Rxrcso9gYjwQBXBnUb5hmGA/exec", // Ganti dengan URL Apps Script kamu
                 {
                     method: "POST",
-                    body: JSON.stringify({ action: "inputDatabase", data: form }),
+                    body: JSON.stringify({ action: "inputDatabase", data: payload }),
                 }
             );
             const result = await response.json();
@@ -103,7 +109,7 @@ export default function InputDatabase() {
         const { name, value, type, checked } = e.target;
 
         if (name === "namaKonsumen" || name === "tipe") {
-            setForm({ ...form, [name]: value.toUpperCase() });
+            setForm({ ...form, [name]: value });
         } else if (name === "noHpKonsumen") {
             const angka = value.replace(/\D/g, "").slice(0, 13);
             setForm({ ...form, [name]: angka });
