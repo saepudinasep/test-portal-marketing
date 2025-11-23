@@ -1,11 +1,23 @@
 import { Outlet } from "react-router-dom";
 import TopBar from "../components/TopBar";
 import Navbar from "../components/Navbar";
+import { Toaster } from "react-hot-toast";
 
 export default function MainLayout({ userData, setIsLoggedIn }) {
-
     return (
         <div className="min-h-screen flex flex-col">
+
+            {/* Toaster Global */}
+            <Toaster
+                position="top-center"
+                toastOptions={{
+                    duration: 2500,
+                    style: {
+                        fontSize: "14px",
+                    }
+                }}
+            />
+
             {/* Header */}
             <TopBar userData={userData} setIsLoggedIn={setIsLoggedIn} />
 
@@ -23,6 +35,7 @@ export default function MainLayout({ userData, setIsLoggedIn }) {
                     © 2025 - {new Date().getFullYear()} Marketing Development Sub Division V1.10.23.2025
                 </p>
             </footer>
+
         </div>
     );
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import toast from "react-hot-toast";
 
 export default function NewTicket() {
     const user = JSON.parse(sessionStorage.getItem("userData")) || {};
@@ -21,11 +22,12 @@ export default function NewTicket() {
         file: null,
     });
 
+    const [errors, setErrors] = useState({});
     const [kendalaList, setKendalaList] = useState([]);
     const [subList, setSubList] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // 🔹 Ambil list kendala dari Apps Script
+    // Ambil kendala dari apps script
     useEffect(() => {
         async function fetchKendala() {
             try {
@@ -41,7 +43,7 @@ export default function NewTicket() {
         fetchKendala();
     }, []);
 
-    // 🔹 Update subkendala ketika kendala berubah
+    // update subList saat kendalaSystem berubah
     useEffect(() => {
         if (form.kendalaSystem) {
             const filtered = kendalaList.filter(
@@ -52,25 +54,147 @@ export default function NewTicket() {
         } else {
             setSubList([]);
         }
+        // reset errors related to dynamic fields
+        setErrors((prev) => ({
+            ...prev,
+            namaCustomer: false,
+            custId: false,
+            noKawanInternal: false,
+            taskIdPolo: false,
+            dukcapil: false,
+            negativeStatus: false,
+            biometric: false,
+            noOdr: false,
+            noApp: false,
+        }));
     }, [form.kendalaSystem, kendalaList]);
+
+    // helper: apakah kendalaSystem termasuk grup tertentu
+    const isKI = (k) => String(k || "").toUpperCase() === "KI";
+    const isAllEditableGroup = (k) =>
+        ["MSS", "WISE", "POLO"].includes(String(k || "").toUpperCase());
+
+    // helper: field editable logic
+    const isEditable = (field) => {
+        // always editable
+        if (["issueSummary", "detailError", "file"].includes(field)) return true;
+
+        // kendala dependent
+        if (isKI(form.kendalaSystem)) {
+            return ["namaCustomer", "custId", "noKawanInternal"].includes(field);
+        }
+        if (isAllEditableGroup(form.kendalaSystem)) {
+            // all fields editable for MSS/WISE/POLO
+            return true;
+        }
+        // default: disabled
+        return false;
+    };
+
+    // required fields depending on kendalaSystem
+    const baseRequired = ["issueSummary", "detailError", "kendalaSystem", "subKendala"];
+    const dynamicRequired = () => {
+        if (isKI(form.kendalaSystem)) {
+            return ["namaCustomer"]; // only namaCustomer required
+        }
+        if (isAllEditableGroup(form.kendalaSystem)) {
+            // all editable except custId and noApp are NOT required
+            return [
+                "namaCustomer",
+                "noKawanInternal",
+                "taskIdPolo",
+                "dukcapil",
+                "negativeStatus",
+                "biometric",
+                "noOdr",
+            ];
+        }
+        // default: no extra required
+        return [];
+    };
+
+    // validate a single field for realtime validation
+    const validateField = (name, value) => {
+        const required = [...baseRequired, ...dynamicRequired()];
+        if (required.includes(name)) {
+            const ok = value !== null && String(value || "").trim() !== "";
+            setErrors((prev) => ({ ...prev, [name]: !ok }));
+            if (!ok) {
+                // show small toast but not spamming: use short toast
+                toast.error(`${labelFor(name)} wajib diisi`, { duration: 2000 });
+            } else {
+                setErrors((prev) => ({ ...prev, [name]: false }));
+            }
+            return ok;
+        } else {
+            // clear error if not required
+            setErrors((prev) => ({ ...prev, [name]: false }));
+            return true;
+        }
+    };
+
+    // mapping field name -> pretty label
+    const labelFor = (name) => {
+        const map = {
+            product: "Product",
+            kendalaSystem: "Kendala System",
+            subKendala: "Sub Kendala",
+            namaCustomer: "Nama Customer",
+            custId: "Cust ID",
+            noKawanInternal: "No Kawan Internal",
+            taskIdPolo: "Task ID POLO",
+            dukcapil: "Dukcapil",
+            negativeStatus: "Negative Status",
+            biometric: "Biometric",
+            noOdr: "No ODR",
+            noApp: "No APP",
+            issueSummary: "Issue Summary",
+            detailError: "Summary Error",
+        };
+        return map[name] || name;
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setForm({ ...form, [name]: value });
+        setForm((prev) => ({ ...prev, [name]: value }));
+        // realtime validate only if field is editable
+        if (isEditable(name)) validateField(name, value);
     };
 
     const handleFileChange = (e) => {
-        setForm({ ...form, file: e.target.files[0] });
+        setForm((prev) => ({ ...prev, file: e.target.files[0] }));
     };
 
+    // build final required list for submit time
+    const getAllRequired = () => {
+        return [...new Set([...baseRequired, ...dynamicRequired()])];
+    };
+
+    // on submit validate everything
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // if (!form.product || !form.kendalaSystem || !form.issueSummary) {
-        //     Swal.fire("Oops!", "Lengkapi data wajib terlebih dahulu.", "warning");
-        //     return;
-        // }
+        // validate base + dynamic required
+        const required = getAllRequired();
+        let hasError = false;
 
+        required.forEach((field) => {
+            const value = form[field];
+            const ok = value !== null && String(value || "").trim() !== "";
+            setErrors((prev) => ({ ...prev, [field]: !ok }));
+            if (!ok) {
+                hasError = true;
+            }
+        });
+
+        if (hasError) {
+            // highlight first missing
+            const firstMissing = required.find((f) => !form[f] || String(form[f]).trim() === "");
+            toast.error(`Field wajib belum lengkap: ${labelFor(firstMissing)}`);
+            return;
+        }
+
+        // proceed submit
         setLoading(true);
         Swal.fire({
             title: "Mengirim Ticket...",
@@ -92,7 +216,6 @@ export default function NewTicket() {
                 "https://script.google.com/macros/s/AKfycbySMMzPBhCHslPtjRz2zE2rLg60NGi1T9JobZChFbgP7_-R42nOWgfDrkxe5Qhc85IrAA/exec",
                 {
                     method: "POST",
-                    // headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         action: "createTicket",
                         region: user.region || "-",
@@ -123,36 +246,13 @@ export default function NewTicket() {
 
             const json = await res.json();
             if (json.success) {
-                console.log(json);
                 Swal.fire({
                     title: "Berhasil!",
                     text: "Ticket berhasil dibuat No " + json.ticketId + ".",
                     icon: "success",
                     confirmButtonText: "OK",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Arahkan ke halaman Ticket
-                        window.location.href = "/dashboard/ticket";
-                        // atau jika kamu pakai react-router-dom v6:
-                        // navigate("/dashboard/ticket");
-                    }
-                });
-                setForm({
-                    product: "",
-                    kendalaSystem: "",
-                    subKendala: "",
-                    namaCustomer: "",
-                    custId: "",
-                    noKawanInternal: "",
-                    taskIdPolo: "",
-                    dukcapil: "",
-                    negativeStatus: "",
-                    biometric: "",
-                    noOdr: "",
-                    noApp: "",
-                    issueSummary: "",
-                    detailError: "",
-                    file: null,
+                }).then(() => {
+                    window.location.href = "/dashboard/ticket";
                 });
             } else {
                 Swal.fire("Gagal", json.message || "Terjadi kesalahan.", "error");
@@ -165,28 +265,29 @@ export default function NewTicket() {
         }
     };
 
+    const inputStyle = (field) =>
+        `w-full rounded-lg p-2 ${errors[field] ? "border-red-500 border" : "border-gray-300 border"}`;
+
     return (
         <div className="bg-white p-6 rounded-xl shadow-md max-w-4xl mx-auto">
-            <h1 className="text-2xl font-bold mb-6 text-indigo-700">
-                📝 New Ticket
-            </h1>
+            <h1 className="text-2xl font-bold mb-6 text-indigo-700">📝 New Ticket</h1>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                {/* === Ticket Info === */}
                 <div>
-                    <h2 className="text-lg font-semibold text-gray-700 mb-3">
-                        Ticket Info
-                    </h2>
+                    <h2 className="text-lg font-semibold text-gray-700 mb-3">Ticket Info</h2>
 
                     <div className="grid md:grid-cols-2 gap-4">
-                        {/* Product */}
+                        {/* Product (hidden if user.product !== ALL BRAND) */}
                         <div hidden={user.product !== "ALL BRAND"}>
-                            <label className="block text-sm font-medium mb-1">Product</label>
+                            <label className="block text-sm font-medium mb-1">
+                                Product <span className="text-red-500">*</span>
+                            </label>
                             <select
                                 name="product"
                                 value={form.product}
                                 onChange={handleChange}
-                                className="w-full border rounded-lg p-2"
+                                className={inputStyle("product")}
+                                disabled={!isEditable("product")}
                             >
                                 <option value="">Pilih Product</option>
                                 <option value="REGULER">MOTOR BARU</option>
@@ -199,12 +300,14 @@ export default function NewTicket() {
 
                         {/* Kendala System */}
                         <div>
-                            <label className="block text-sm font-medium mb-1">Kendala System</label>
+                            <label className="block text-sm font-medium mb-1">
+                                Kendala System <span className="text-red-500">*</span>
+                            </label>
                             <select
                                 name="kendalaSystem"
                                 value={form.kendalaSystem}
                                 onChange={handleChange}
-                                className="w-full border rounded-lg p-2"
+                                className={inputStyle("kendalaSystem")}
                             >
                                 <option value="">Pilih Kendala</option>
                                 {[...new Set(kendalaList.map((k) => k["Kendala System"]))].map(
@@ -219,17 +322,17 @@ export default function NewTicket() {
 
                         {/* Sub Kendala */}
                         <div>
-                            <label className="block text-sm font-medium mb-1">Sub Kendala</label>
+                            <label className="block text-sm font-medium mb-1">
+                                Sub Kendala <span className="text-red-500">*</span>
+                            </label>
                             <select
                                 name="subKendala"
                                 value={form.subKendala}
                                 onChange={handleChange}
                                 disabled={!form.kendalaSystem}
-                                className="w-full border rounded-lg p-2"
+                                className={inputStyle("subKendala")}
                             >
-                                <option value="">
-                                    {form.kendalaSystem ? "Pilih Kendala" : "Pilih Kendala"}
-                                </option>
+                                <option value="">Pilih Sub Kendala</option>
                                 {subList.map((sub, i) => (
                                     <option key={i} value={sub}>
                                         {sub}
@@ -240,62 +343,75 @@ export default function NewTicket() {
 
                         {/* Nama Customer */}
                         <div>
-                            <label className="block text-sm font-medium mb-1">Nama Customer</label>
+                            <label className="block text-sm font-medium mb-1">
+                                Nama Customer {dynamicRequired().includes("namaCustomer") && <span className="text-red-500">*</span>}
+                            </label>
                             <input
                                 type="text"
                                 name="namaCustomer"
                                 value={form.namaCustomer}
                                 onChange={handleChange}
-                                className="w-full border rounded-lg p-2"
+                                className={inputStyle("namaCustomer")}
+                                disabled={!isEditable("namaCustomer")}
                             />
                         </div>
 
                         {/* Cust ID */}
                         <div>
-                            <label className="block text-sm font-medium mb-1">Cust ID</label>
+                            <label className="block text-sm font-medium mb-1">
+                                Cust ID {isAllEditableGroup(form.kendalaSystem) ? <span className="text-gray-400 text-xs">(opsional)</span> : null}
+                            </label>
                             <input
                                 type="text"
                                 name="custId"
                                 value={form.custId}
                                 onChange={handleChange}
-                                className="w-full border rounded-lg p-2"
+                                className={inputStyle("custId")}
+                                disabled={!isEditable("custId")}
                             />
                         </div>
 
                         {/* No Kawan Internal */}
                         <div>
                             <label className="block text-sm font-medium mb-1">
-                                No Kawan Internal
+                                No Kawan Internal {dynamicRequired().includes("noKawanInternal") && <span className="text-red-500">*</span>}
                             </label>
                             <input
                                 type="text"
                                 name="noKawanInternal"
                                 value={form.noKawanInternal}
                                 onChange={handleChange}
-                                className="w-full border rounded-lg p-2"
+                                className={inputStyle("noKawanInternal")}
+                                disabled={!isEditable("noKawanInternal")}
                             />
                         </div>
 
                         {/* Task ID POLO */}
                         <div>
-                            <label className="block text-sm font-medium mb-1">Task ID POLO</label>
+                            <label className="block text-sm font-medium mb-1">
+                                Task ID POLO {dynamicRequired().includes("taskIdPolo") && <span className="text-red-500">*</span>}
+                            </label>
                             <input
                                 type="text"
                                 name="taskIdPolo"
                                 value={form.taskIdPolo}
                                 onChange={handleChange}
-                                className="w-full border rounded-lg p-2"
+                                className={inputStyle("taskIdPolo")}
+                                disabled={!isEditable("taskIdPolo")}
                             />
                         </div>
 
                         {/* Dukcapil */}
                         <div>
-                            <label className="block text-sm font-medium mb-1">Dukcapil</label>
+                            <label className="block text-sm font-medium mb-1">
+                                Dukcapil {dynamicRequired().includes("dukcapil") && <span className="text-red-500">*</span>}
+                            </label>
                             <select
                                 name="dukcapil"
                                 value={form.dukcapil}
                                 onChange={handleChange}
-                                className="w-full border rounded-lg p-2"
+                                className={inputStyle("dukcapil")}
+                                disabled={!isEditable("dukcapil")}
                             >
                                 <option value="">Pilih</option>
                                 <option value="Match">Match</option>
@@ -306,12 +422,15 @@ export default function NewTicket() {
 
                         {/* Negative Status */}
                         <div>
-                            <label className="block text-sm font-medium mb-1">Negative Status</label>
+                            <label className="block text-sm font-medium mb-1">
+                                Negative Status {dynamicRequired().includes("negativeStatus") && <span className="text-red-500">*</span>}
+                            </label>
                             <select
                                 name="negativeStatus"
                                 value={form.negativeStatus}
                                 onChange={handleChange}
-                                className="w-full border rounded-lg p-2"
+                                className={inputStyle("negativeStatus")}
+                                disabled={!isEditable("negativeStatus")}
                             >
                                 <option value="">Pilih</option>
                                 <option value="Match">Match</option>
@@ -321,12 +440,15 @@ export default function NewTicket() {
 
                         {/* Biometric */}
                         <div>
-                            <label className="block text-sm font-medium mb-1">Biometric</label>
+                            <label className="block text-sm font-medium mb-1">
+                                Biometric {dynamicRequired().includes("biometric") && <span className="text-red-500">*</span>}
+                            </label>
                             <select
                                 name="biometric"
                                 value={form.biometric}
                                 onChange={handleChange}
-                                className="w-full border rounded-lg p-2"
+                                className={inputStyle("biometric")}
+                                disabled={!isEditable("biometric")}
                             >
                                 <option value="">Pilih</option>
                                 <option value="Match">Match</option>
@@ -336,72 +458,70 @@ export default function NewTicket() {
 
                         {/* No ODR */}
                         <div>
-                            <label className="block text-sm font-medium mb-1">No ODR</label>
+                            <label className="block text-sm font-medium mb-1">
+                                No ODR {dynamicRequired().includes("noOdr") && <span className="text-red-500">*</span>}
+                            </label>
                             <input
                                 type="text"
                                 name="noOdr"
                                 value={form.noOdr}
                                 onChange={handleChange}
-                                className="w-full border rounded-lg p-2"
+                                className={inputStyle("noOdr")}
+                                disabled={!isEditable("noOdr")}
                             />
                         </div>
 
                         {/* No APP */}
                         <div>
-                            <label className="block text-sm font-medium mb-1">No APP</label>
+                            <label className="block text-sm font-medium mb-1">
+                                No APP {isAllEditableGroup(form.kendalaSystem) ? <span className="text-gray-400 text-xs">(opsional)</span> : null}
+                            </label>
                             <input
                                 type="text"
                                 name="noApp"
                                 value={form.noApp}
                                 onChange={handleChange}
-                                className="w-full border rounded-lg p-2"
+                                className={inputStyle("noApp")}
+                                disabled={!isEditable("noApp")}
                             />
                         </div>
                     </div>
                 </div>
 
-                {/* === Ticket Details === */}
+                {/* DETAILS */}
                 <div>
-                    <h2 className="text-lg font-semibold text-gray-700 mb-3">
-                        Ticket Details
-                    </h2>
+                    <h2 className="text-lg font-semibold text-gray-700 mb-3">Ticket Details</h2>
 
                     <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium mb-1">
-                                Issue Summary
+                                Issue Summary <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 name="issueSummary"
                                 value={form.issueSummary}
                                 onChange={handleChange}
-                                className="w-full border rounded-lg p-2"
+                                className={inputStyle("issueSummary")}
                             />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium mb-1">
-                                Summary Error
+                                Summary Error <span className="text-red-500">*</span>
                             </label>
                             <textarea
                                 name="detailError"
                                 value={form.detailError}
                                 onChange={handleChange}
                                 rows="3"
-                                className="w-full border rounded-lg p-2"
+                                className={inputStyle("detailError")}
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium mb-1">
-                                Upload File
-                            </label>
-                            <input
-                                type="file"
-                                onChange={handleFileChange}
-                                className="w-full border rounded-lg p-2 text-sm"
-                            />
+                            <label className="block text-sm font-medium mb-1">Upload File</label>
+                            <input type="file" onChange={handleFileChange} className="w-full border rounded-lg p-2 text-sm" />
                         </div>
                     </div>
                 </div>

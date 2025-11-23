@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+.input-error {
+  border-color: #dc2626 !important; /* merah */
+  background-color: #fef2f2; /* merah muda */
+}
+
+.text-error {
+  color: #dc2626;
+  font-size: 0.75rem;
+}
