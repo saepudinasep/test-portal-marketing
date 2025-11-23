@@ -31,6 +31,7 @@ export default function NewTicket() {
     useEffect(() => {
         async function fetchKendala() {
             try {
+                setLoading(true);
                 const res = await fetch(
                     "https://script.google.com/macros/s/AKfycbyXGQZxpPWuNMR661Rev36OEiz5anP_jabIlcWdPr8j4K6WLpMIyFK4ysXGzJtXfUq_/exec"
                 );
@@ -38,6 +39,8 @@ export default function NewTicket() {
                 if (json.data) setKendalaList(json.data);
             } catch (err) {
                 console.error("Gagal mengambil data kendala:", err);
+            } finally {
+                setLoading(false);
             }
         }
         fetchKendala();
@@ -272,7 +275,7 @@ export default function NewTicket() {
                         detailError: form.detailError,
                         file: fileBase64,
                         filename: form.file?.name || "",
-                        issueSummary: form.issueSummary,
+                        issueSummary: form.issueSummary.toUpperCase(),
                         userNik: "'" + user.nik || "-",
                         userName: user.name || "-",
                         position: user.position || "-",
@@ -309,6 +312,15 @@ export default function NewTicket() {
         ${errors[field] ? "border-red-500" : "border-gray-300"}
         ${disabled ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""}
     `;
+    }
+
+    // ⏳ Loading Fullscreen
+    if (loading) {
+        return (
+            <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-[9999]">
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-indigo-500 border-t-transparent"></div>
+            </div>
+        );
     }
 
     return (
@@ -545,7 +557,7 @@ export default function NewTicket() {
                                 name="issueSummary"
                                 value={form.issueSummary}
                                 onChange={handleChange}
-                                className={inputStyle("issueSummary")}
+                                className={`${inputStyle("issueSummary")} uppercase`}
                             />
                         </div>
 
