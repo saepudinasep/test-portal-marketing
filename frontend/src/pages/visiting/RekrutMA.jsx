@@ -125,10 +125,41 @@ export default function RekrutMA() {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => setPhoto(reader.result);
+            reader.onloadend = async () => {
+                const compressed = await compressBase64(reader.result, 900, 0.7);
+                setPhoto(compressed);
+            };
             reader.readAsDataURL(file);
         }
     };
+
+    function compressBase64(base64Str, maxWidth = 900, quality = 0.7) {
+        return new Promise((resolve) => {
+            let img = new Image();
+            img.src = base64Str;
+
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                let width = img.width;
+                let height = img.height;
+
+                // resize jika terlalu besar
+                if (width > maxWidth) {
+                    height *= maxWidth / width;
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const compressed = canvas.toDataURL("image/jpeg", quality);
+                resolve(compressed);
+            };
+        });
+    }
 
     // 🔹 Input berubah
     const handleChange = (e) => {
@@ -179,7 +210,7 @@ export default function RekrutMA() {
         setLoading(true);
         try {
             const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbwgu74cLCAvFOv_udojPOTPztLkYZjzeWX9NXHVo-AXV7Jtpb7K-aEhIwBowJ3Gd3gV/exec",
+                "https://script.google.com/macros/s/AKfycbxWnypU6wzN8_bqk7l0UlzNyfdCShmOstNwpndS32DzzV4IwAIqt1f99VV48ig_tblB/exec",
                 {
                     method: "POST",
                     // headers: { "Content-Type": "application/json" },
