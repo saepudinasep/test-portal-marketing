@@ -80,7 +80,7 @@ export default function NewTicket() {
     // helper: field editable logic
     const isEditable = (field) => {
         // always editable
-        if (["kendalaSystem", "subKendala", "issueSummary", "detailError", "file"].includes(field)) return true;
+        if (["product", "kendalaSystem", "subKendala", "issueSummary", "detailError", "file"].includes(field)) return true;
 
         // kendala dependent
         if (isKI(form.kendalaSystem)) {
