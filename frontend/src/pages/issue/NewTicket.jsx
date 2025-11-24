@@ -206,6 +206,42 @@ export default function NewTicket() {
         return trimmed === prefix ? "" : trimmed;
     };
 
+    // 📌 Fungsi compress image menggunakan Canvas
+    const compressImage = (file, quality = 0.6, maxWidth = 1500) => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Resize jika terlalu besar
+                    if (width > maxWidth) {
+                        height = (maxWidth / width) * height;
+                        width = maxWidth;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Convert ke kualitas lebih rendah
+                    const compressedBase64 = canvas.toDataURL("image/jpeg", quality);
+
+                    resolve(compressedBase64);
+                };
+            };
+        });
+    };
+
     // on submit validate everything
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -241,11 +277,8 @@ export default function NewTicket() {
         try {
             let fileBase64 = "";
             if (form.file) {
-                fileBase64 = await new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = (ev) => resolve(ev.target.result);
-                    reader.readAsDataURL(form.file);
-                });
+                // 👉 Compress foto ukuran max width 900px & kualitas 60%
+                fileBase64 = await compressImage(form.file, 0.7, 900);
             }
 
             const res = await fetch(
