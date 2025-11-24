@@ -36,7 +36,7 @@ export default function Ticket() {
                     ticketId: row["Ticket ID"] || "-",
                     createDate,
                     rawTimestamp,
-                    errorSystem: row["Kendala System"] || "-",
+                    errorSystem: row["Sub Kendala"] || "-",
                     status: row["Status Ticket"] || "-",
                     brand: row["Brand"] || "-",
                     region: row["Region"] || "-",
