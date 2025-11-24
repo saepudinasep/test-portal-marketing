@@ -240,6 +240,7 @@ export default function DetailTicket() {
             didOpen: () => Swal.showLoading(),
         });
 
+
         try {
             const resUpdate = await fetch(
                 "https://script.google.com/macros/s/AKfycbwATI3cgS_1BITlLplk50GQPYU_ESmERZjW7Oj1MaJeDSB49Yyzx0cG1LcjpQJ4Iuse/exec",
