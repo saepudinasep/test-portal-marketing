@@ -64,36 +64,102 @@ export default function DetailTicket() {
             </p>
         );
 
-    // === Upload file base64 ke Apps Script ===
-    const uploadFileBase = async (file, folderUrl) => {
-        const reader = new FileReader();
-        return new Promise((resolve, reject) => {
-            reader.onload = async () => {
-                const base64 = reader.result.split(",")[1];
-                try {
-                    const res = await fetch(
-                        "https://script.google.com/macros/s/AKfycbwATI3cgS_1BITlLplk50GQPYU_ESmERZjW7Oj1MaJeDSB49Yyzx0cG1LcjpQJ4Iuse/exec",
-                        {
-                            method: "POST",
-                            // headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                action: "uploadFileBase",
-                                folderUrl,
-                                filename: file.name,
-                                filedata: base64,
-                            }),
-                        }
-                    );
-                    const json = await res.json();
-                    if (json.success) resolve(json.fileUrl);
-                    else reject(json.message);
-                } catch (err) {
-                    reject(err);
-                }
-            };
-            reader.onerror = reject;
+    // === Compress Image Menggunakan Canvas ===
+    const compressImage = (file, quality = 0.7, maxWidth = 900) => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
             reader.readAsDataURL(file);
+
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxWidth) {
+                        height = (maxWidth / width) * height;
+                        width = maxWidth;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const compressedBase64 = canvas.toDataURL("image/jpeg", quality);
+                    resolve(compressedBase64);
+                };
+            };
         });
+    };
+
+    // === Upload file base64 ke Apps Script ===
+    // const uploadFileBase = async (file, folderUrl) => {
+    //     const reader = new FileReader();
+    //     return new Promise((resolve, reject) => {
+    //         reader.onload = async () => {
+    //             const base64 = reader.result.split(",")[1];
+    //             try {
+    //                 const res = await fetch(
+    //                     "https://script.google.com/macros/s/AKfycbwATI3cgS_1BITlLplk50GQPYU_ESmERZjW7Oj1MaJeDSB49Yyzx0cG1LcjpQJ4Iuse/exec",
+    //                     {
+    //                         method: "POST",
+    //                         // headers: { "Content-Type": "application/json" },
+    //                         body: JSON.stringify({
+    //                             action: "uploadFileBase",
+    //                             folderUrl,
+    //                             filename: file.name,
+    //                             filedata: base64,
+    //                         }),
+    //                     }
+    //                 );
+    //                 const json = await res.json();
+    //                 if (json.success) resolve(json.fileUrl);
+    //                 else reject(json.message);
+    //             } catch (err) {
+    //                 reject(err);
+    //             }
+    //         };
+    //         reader.onerror = reject;
+    //         reader.readAsDataURL(file);
+    //     });
+    // };
+
+    // === Upload file base64 ke Apps Script + Compress ===
+    const uploadFileBase = async (file, folderUrl) => {
+        try {
+            // 👉 1. Compress dulu
+            const compressedBase64 = await compressImage(file, 0.6, 1500);
+
+            // 👉 2. Ambil base64 saja tanpa prefix
+            const pureBase64 = compressedBase64.split(",")[1];
+
+            // 👉 3. Upload ke Apps Script
+            const res = await fetch(
+                "https://script.google.com/macros/s/AKfycbwATI3cgS_1BITlLplk50GQPYU_ESmERZjW7Oj1MaJeDSB49Yyzx0cG1LcjpQJ4Iuse/exec",
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        action: "uploadFileBase",
+                        folderUrl,
+                        filename: file.name,
+                        filedata: pureBase64,
+                    }),
+                }
+            );
+
+            const json = await res.json();
+            if (json.success) return json.fileUrl;
+
+            throw new Error(json.message || "Upload gagal");
+        } catch (err) {
+            console.error("Upload error:", err);
+            throw err;
+        }
     };
 
     // === Fungsi submit chat ===
