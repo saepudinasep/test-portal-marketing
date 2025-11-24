@@ -267,7 +267,7 @@ export default function NewTicket() {
         }
 
         // proceed submit
-        setLoading(true);
+        // setLoading(true);
         Swal.fire({
             title: "Mengirim Ticket...",
             allowOutsideClick: false,
@@ -332,9 +332,10 @@ export default function NewTicket() {
         } catch (err) {
             console.error(err);
             Swal.fire("Error", "Gagal mengirim ticket.", "error");
-        } finally {
-            setLoading(false);
         }
+        //  finally {
+        //     setLoading(false);
+        // }
     };
 
     const inputStyle = (field) => {
