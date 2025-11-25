@@ -77,10 +77,16 @@ export default function Maintance() {
             .finally(() => setLoading(false));
     }, [navigate]);
 
+    const activeProduct =
+        userData?.product === "ALL BRAND"
+            ? form.product
+            : userData?.product || "";
+
     // 🔍 Filter hasil pencarian Nama MA + PRODUCT
     const filteredMA = dataMA.filter((item) => {
         const productMatch =
-            !form.product || item["PRODUCT"]?.toUpperCase() === form.product.toUpperCase();
+            !activeProduct ||
+            item["PRODUCT"]?.toUpperCase() === activeProduct.toUpperCase();
 
         const namaMatch = item["TRIM NAMA"]
             ?.toLowerCase()
@@ -324,7 +330,9 @@ export default function Maintance() {
                             <input
                                 type="text"
                                 placeholder={
-                                    !form.product ? "Pilih PRODUCT terlebih dahulu" : "Cari Nama MA..."
+                                    !activeProduct
+                                        ? "Pilih PRODUCT terlebih dahulu"
+                                        : "Cari Nama MA..."
                                 }
                                 value={form.namaMA}
                                 onChange={(e) =>
@@ -334,18 +342,17 @@ export default function Maintance() {
                                     }))
                                 }
                                 onFocus={() => {
-                                    if (form.product) setShowDropdown(true);
+                                    if (activeProduct) setShowDropdown(true);
                                 }}
-                                readOnly={!form.product} // ❗ Disable jika product belum dipilih
-                                className={`w-full border rounded-lg p-2 uppercase transition ${!form.product
+                                readOnly={!activeProduct}  // ❗ hanya disable jika ALL BRAND & belum pilih product
+                                className={`w-full border rounded-lg p-2 uppercase transition ${!activeProduct
                                     ? "bg-gray-100 cursor-not-allowed text-gray-500"
                                     : "bg-white"
                                     }`}
                                 required
                             />
 
-                            {/* Dropdown muncul hanya jika product sudah dipilih */}
-                            {form.product && showDropdown && (
+                            {activeProduct && showDropdown && (
                                 <ul className="absolute z-10 bg-white border rounded-lg w-full max-h-48 overflow-y-auto shadow-md mt-1">
                                     {filteredMA.length > 0 ? (
                                         filteredMA.map((item, idx) => (
