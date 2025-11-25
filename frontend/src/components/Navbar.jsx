@@ -50,8 +50,15 @@ export default function Navbar({ userData }) {
                     { name: "Report", path: "/dashboard/report" },
                 ],
             },
-            { name: "MaintanceMA", path: "/dashboard/maintanceMA" },
-            { name: "Visiting", path: "/dashboard/visit" },
+            {
+                name: "Agency",
+                submenu: [
+                    { name: "Maintain", path: "/dashboard/maintance" },
+                    { name: "Rekrut MA", path: "/dashboard/rekrutMA" },
+                    { name: "Input Database", path: "/dashboard/leads" },
+                ],
+            },
+            { name: "Visit Konsumen", path: "/dashboard/visiting" },
             { name: "Panduan", path: "/dashboard/panduan" },
             { name: "Setting", path: "/dashboard/setting" },
         ];
@@ -82,7 +89,7 @@ export default function Navbar({ userData }) {
             {
                 name: "Agency",
                 submenu: [
-                    { name: "Maintance", path: "/dashboard/maintance" },
+                    { name: "Maintain", path: "/dashboard/maintance" },
                     { name: "Rekrut MA", path: "/dashboard/rekrutMA" },
                     { name: "Input Database", path: "/dashboard/leads" },
                 ],
@@ -104,7 +111,7 @@ export default function Navbar({ userData }) {
             {
                 name: "Agency",
                 submenu: [
-                    { name: "Maintance", path: "/dashboard/maintance" },
+                    { name: "Maintain", path: "/dashboard/maintance" },
                     { name: "Rekrut MA", path: "/dashboard/rekrutMA" },
                     { name: "Input Database", path: "/dashboard/leads" },
                 ],
