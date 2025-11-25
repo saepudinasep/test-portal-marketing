@@ -25,8 +25,10 @@ export default function Maintance() {
     });
 
     const aktivitasList = [
-        "Membangun Ikatan Emosional",
-        "Refreshment SK Berlaku",
+        "Mengembangkan Ikatan Emosional",
+        "Informasi SK",
+        "Sosialisasi Program",
+        "SLA Order In",
     ];
 
     const hasilList = ["Dapat Prospect", "Tidak Dapat Prospect"];
