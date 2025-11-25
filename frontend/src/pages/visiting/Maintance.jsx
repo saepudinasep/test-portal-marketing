@@ -13,6 +13,7 @@ export default function Maintance() {
     const [form, setForm] = useState({
         region: "",
         cabang: "",
+        product: "",
         namaMA: "",
         noRef: "",
         occupation: "",
@@ -55,13 +56,8 @@ export default function Maintance() {
             jabatan: parsedUser.position || "",
         }));
 
-        // const nik = parsedUser.nik;
-        // const scriptURL =
-        //     "https://script.google.com/macros/s/AKfycbzzaiDDLH_7ymXLzP617kDaV7aRHFlSfOVdMknkOJg2-qN2-seYeM-B-Kx9OBGEfs7zQw/exec?nik=" +
-        //     nik;
-
         const scriptURL =
-            "https://script.google.com/macros/s/AKfycbzGRa5M4G8a1yGe5YmTYmbLyzGCFnHdnF0x6JICx-0UMUp_iwC-Sx-orII0WL3vAACpyA/exec" +
+            "https://script.google.com/macros/s/AKfycbygLFZbJjdttYH3WKQ70hwINCunESyqyzZhtbvJG-T2qgxRjOlykvqtWjR4qzSwJ5fgzg/exec" +
             "?nik=" + parsedUser.nik +
             "&akses=" + encodeURIComponent(parsedUser.akses || "") +
             "&region=" + encodeURIComponent(parsedUser.region || "") +
@@ -81,12 +77,17 @@ export default function Maintance() {
             .finally(() => setLoading(false));
     }, [navigate]);
 
-    // 🔍 Filter hasil pencarian Nama MA
-    const filteredMA = dataMA.filter((item) =>
-        item["TRIM NAMA"]
+    // 🔍 Filter hasil pencarian Nama MA + PRODUCT
+    const filteredMA = dataMA.filter((item) => {
+        const productMatch =
+            !form.product || item["PRODUCT"]?.toUpperCase() === form.product.toUpperCase();
+
+        const namaMatch = item["TRIM NAMA"]
             ?.toLowerCase()
-            .includes(form.namaMA.toLowerCase())
-    );
+            .includes(form.namaMA.toLowerCase());
+
+        return productMatch && namaMatch;
+    });
 
     // 🔹 Saat memilih MA
     const handleSelectMA = (item) => {
@@ -102,6 +103,18 @@ export default function Maintance() {
     // 🔹 Input berubah
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        if (name === "product") {
+            setForm({
+                ...form,
+                product: value,
+                namaMA: "",
+                noRef: "",
+                occupation: ""
+            });
+            return;
+        }
+
         setForm({ ...form, [name]: value });
     };
 
@@ -161,13 +174,26 @@ export default function Maintance() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validasi jumlah kata
+        // 1) Validasi minimal 5 kata
         const wordCount = form.detail.trim().split(/\s+/).length;
         if (wordCount < 5) {
             Swal.fire({
                 icon: "warning",
                 title: "Detail Terlalu Singkat",
                 text: "Detail Maintenance minimal 5 kata!",
+                confirmButtonColor: "#3085d6",
+            });
+            return;
+        }
+
+        // 2) Validasi 5 karakter awal wajib huruf A-Z
+        const firstFive = form.detail.substring(0, 5);
+
+        if (!/^[A-Za-z]{5}$/.test(firstFive)) {
+            Swal.fire({
+                icon: "warning",
+                title: "Format Detail Salah",
+                text: "5 karakter awal harus huruf tanpa angka, simbol, atau spasi!",
                 confirmButtonColor: "#3085d6",
             });
             return;
@@ -202,7 +228,7 @@ export default function Maintance() {
             });
 
             const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbyXXUb6pBFukSLrPl8vcV2ezr4xPbq7ef3-HkRiiz7fzUzE-BobbbEU7DsfI1hjUBNF/exec",
+                "https://script.google.com/macros/s/AKfycbxfBAJJkSuMH-bWfap1Ld2p2NZtqn0-rzKzb6tbRg4wfBpqiPLqJkil9Yx8Q6zjIU53/exec",
                 {
                     method: "POST",
                     body: JSON.stringify(payload),
@@ -269,15 +295,37 @@ export default function Maintance() {
 
                 {/* 🧾 Form Maintenance */}
                 <form onSubmit={handleSubmit} className="space-y-6">
+                    <div>
+                        {/* Product */}
+                        <div hidden={userData.product !== "ALL BRAND"}>
+                            <label className="block text-sm font-medium mb-1">
+                                Product
+                            </label>
+                            <select
+                                name="product"
+                                value={form.product}
+                                onChange={handleChange}
+                                className="w-full rounded-lg p-2 border border-gray-300"
+                            >
+                                <option value="">Pilih Product</option>
+                                <option value="MOTORKU">MOTORKU</option>
+                                <option value="MOBILKU">MOBILKU</option>
+                            </select>
+                        </div>
+                    </div>
                     {/* Nama MA & No Ref */}
                     <div className="grid md:grid-cols-2 gap-4">
+                        {/* Nama MA hanya muncul jika product sudah dipilih */}
                         <div className="relative dropdown-ma">
                             <label className="block text-sm font-medium mb-1">
                                 Nama MA
                             </label>
+
                             <input
                                 type="text"
-                                placeholder="Cari Nama MA..."
+                                placeholder={
+                                    !form.product ? "Pilih PRODUCT terlebih dahulu" : "Cari Nama MA..."
+                                }
                                 value={form.namaMA}
                                 onChange={(e) =>
                                     setForm((prev) => ({
@@ -285,27 +333,28 @@ export default function Maintance() {
                                         namaMA: e.target.value,
                                     }))
                                 }
-                                onFocus={() => setShowDropdown(true)}
-                                className="w-full border rounded-lg p-2 uppercase"
+                                onFocus={() => {
+                                    if (form.product) setShowDropdown(true);
+                                }}
+                                readOnly={!form.product} // ❗ Disable jika product belum dipilih
+                                className={`w-full border rounded-lg p-2 uppercase transition ${!form.product
+                                    ? "bg-gray-100 cursor-not-allowed text-gray-500"
+                                    : "bg-white"
+                                    }`}
                                 required
                             />
 
-                            {showDropdown && (
+                            {/* Dropdown muncul hanya jika product sudah dipilih */}
+                            {form.product && showDropdown && (
                                 <ul className="absolute z-10 bg-white border rounded-lg w-full max-h-48 overflow-y-auto shadow-md mt-1">
                                     {filteredMA.length > 0 ? (
                                         filteredMA.map((item, idx) => (
                                             <li
                                                 key={idx}
-                                                onClick={() =>
-                                                    handleSelectMA(item)
-                                                }
+                                                onClick={() => handleSelectMA(item)}
                                                 className="px-3 py-2 hover:bg-indigo-100 cursor-pointer text-sm"
                                             >
-                                                {
-                                                    item[
-                                                    "TRIM NAMA"
-                                                    ]
-                                                }
+                                                {item["TRIM NAMA"]}
                                             </li>
                                         ))
                                     ) : (
@@ -316,6 +365,7 @@ export default function Maintance() {
                                 </ul>
                             )}
                         </div>
+
 
                         <div>
                             <label className="block text-sm font-medium mb-1">
