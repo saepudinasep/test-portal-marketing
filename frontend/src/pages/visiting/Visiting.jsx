@@ -25,6 +25,9 @@ export default function Visiting() {
         keterangan: "",
         noHp: "",
         detail: "",
+        product: "",
+        statusKonsumen: "",
+        ket: "",
     });
 
     const hasilList = ["Bertemu", "Tidak Bertemu"];
@@ -74,7 +77,7 @@ export default function Visiting() {
         }));
 
         const scriptURL =
-            "https://script.google.com/macros/s/AKfycbySnIjrMiKTShsigaAEusZ0GYm1CMPOpF_Gb1L16k_1dnV2ieOeNT2TsK8YQ39IwMRL/exec" +
+            "https://script.google.com/macros/s/AKfycbz6DBTAmjAB7nnrt5PkZZ_CzpwzVb8dMEHBtXvj0-yGkHFUJOB99iRJtXsh6YM1fKqd/exec" +
             `?region=${parsedUser.region}&cabang=${parsedUser.cabang}`;
 
         setLoading(true);
@@ -90,11 +93,23 @@ export default function Visiting() {
     }, [navigate]);
 
     // 🔍 Filter hasil pencarian No Kontrak
-    const filteredKontrak = dataKontrak.filter((item) =>
-        item["NO KONTRAK"]
+    const filteredKontrak = dataKontrak.filter((item) => {
+        const matchNoKontrak = item["NO KONTRAK"]
             ?.toLowerCase()
-            .includes(form.noKontrak.toLowerCase())
-    );
+            .includes(form.noKontrak.toLowerCase());
+
+        const matchSumberData = form.sumberData
+            ? item["SUMBER DATA"] === form.sumberData
+            : true;
+
+        const matchProduct = form.product
+            ? item["PRODUCT"] === form.product
+            : true;
+
+        return matchNoKontrak && matchSumberData && matchProduct;
+    });
+
+    const activeProduct = form.sumberData !== "" && form.product !== "";
 
     // 🔹 Saat memilih kontrak
     const handleSelectKontrak = (item) => {
@@ -103,6 +118,7 @@ export default function Visiting() {
             noKontrak: item["NO KONTRAK"],
             namaDebitur: item["NAMA KONSUMEN"] || "",
             sumberData: item["SUMBER DATA"] || "",
+            ket: item["KETERANGAN"] || "",
         }));
         setShowDropdown(false);
     };
@@ -276,15 +292,58 @@ export default function Visiting() {
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
             <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-3xl">
                 <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Sumber Data & Brand */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                Sumber Data
+                            </label>
+                            <select
+                                name="sumberData"
+                                value={form.sumberData}
+                                onChange={handleChange}
+                                className="w-full rounded-lg p-2 border border-gray-300"
+                            >
+                                <option value="">Pilih Sumber Data</option>
+                                <option value="Motor Priority 1">Motor Priority 1</option>
+                                <option value="Motor Priority 2">Motor Priority 2</option>
+                                <option value="Motor Priority 3">Motor Priority 3</option>
+                                <option value="Mobil Priority 1">Mobil Priority 1</option>
+                                <option value="Mobil Priority 2">Mobil Priority 2</option>
+                                <option value="Mobil Priority 3">Mobil Priority 3</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                Product
+                            </label>
+                            <select
+                                name="product"
+                                value={form.product}
+                                onChange={handleChange}
+                                className="w-full rounded-lg p-2 border border-gray-300"
+                            >
+                                <option value="">Pilih Product</option>
+                                <option value="MOTORKU">MOTORKU</option>
+                                <option value="MOBILKU">MOBILKU</option>
+                            </select>
+                        </div>
+                    </div>
                     {/* 🔹 No Kontrak & Nama Debitur */}
                     <div className="grid md:grid-cols-2 gap-4">
                         <div className="relative dropdown-kontrak">
                             <label className="block text-sm font-medium mb-1">
                                 No Kontrak
                             </label>
+
                             <input
                                 type="text"
-                                placeholder="Cari No Kontrak..."
+                                placeholder={
+                                    !activeProduct
+                                        ? "Pilih Sumber Data atau Product terlebih dahulu"
+                                        : "Cari No Kontrak..."
+                                }
                                 value={form.noKontrak}
                                 onChange={(e) =>
                                     setForm((prev) => ({
@@ -292,28 +351,32 @@ export default function Visiting() {
                                         noKontrak: e.target.value,
                                     }))
                                 }
-                                onFocus={() => setShowDropdown(true)}
-                                className="w-full border rounded-lg p-2"
+                                onFocus={() => {
+                                    if (activeProduct) setShowDropdown(true); // dropdown aktif jika sumber data sudah dipilih
+                                }}
+                                readOnly={!activeProduct} // ⛔ dikunci sebelum pilih sumber data
+                                className={`w-full border rounded-lg p-2 transition ${!activeProduct
+                                    ? "bg-gray-100 cursor-not-allowed text-gray-500"
+                                    : "bg-white"
+                                    }`}
                                 required
                             />
-                            {showDropdown && (
+
+                            {/* Dropdown muncul hanya jika sumber data sudah dipilih */}
+                            {form.sumberData && showDropdown && (
                                 <ul className="absolute z-10 bg-white border rounded-lg w-full max-h-48 overflow-y-auto shadow-md mt-1">
                                     {filteredKontrak.length > 0 ? (
                                         filteredKontrak.map((item, idx) => (
                                             <li
                                                 key={idx}
-                                                onClick={() =>
-                                                    handleSelectKontrak(item)
-                                                }
+                                                onClick={() => handleSelectKontrak(item)}
                                                 className="px-3 py-2 hover:bg-indigo-100 cursor-pointer text-sm"
                                             >
                                                 {item["NO KONTRAK"]}
                                             </li>
                                         ))
                                     ) : (
-                                        <li className="px-3 py-2 text-gray-500 text-sm">
-                                            Tidak ditemukan
-                                        </li>
+                                        <li className="px-3 py-2 text-gray-500 text-sm">Tidak ditemukan</li>
                                     )}
                                 </ul>
                             )}
@@ -327,19 +390,6 @@ export default function Visiting() {
                                 type="text"
                                 name="namaDebitur"
                                 value={form.namaDebitur}
-                                className="w-full border rounded-lg p-2 bg-gray-100"
-                                readOnly
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">
-                                Sumber Data
-                            </label>
-                            <input
-                                type="text"
-                                name="sumberData"
-                                value={form.sumberData}
                                 className="w-full border rounded-lg p-2 bg-gray-100"
                                 readOnly
                             />
@@ -371,6 +421,48 @@ export default function Visiting() {
                             />
                         </div>
                     </div>
+
+                    {/* Keterangan akan terisi berdasarkan no kontrak */}
+                    <div>
+                        <label className="block text-sm font-medium mb-1">
+                            Keterangan
+                        </label>
+                        <textarea
+                            name="ket"
+                            value={form.ket}
+                            onChange={handleChange}
+                            rows="4"
+                            className="w-full border rounded-lg p-2 bg-gray-100"
+                            readOnly
+                        />
+                    </div>
+
+
+                    {/* Status Konsumen hanya muncul jika Sumber Data adalah Mobil Priority 3 atau Motor Priority 3 */}
+                    {(form.sumberData === "Mobil Priority 3" || form.sumberData === "Motor Priority 3") && (
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                Status Konsumen
+                            </label>
+                            <select
+                                name="statusKonsumen"
+                                value={form.statusKonsumen}
+                                onChange={handleChange}
+                                className="w-full rounded-lg p-2 border border-gray-300"
+                            >
+                                <option value="">Pilih Status Konsumen</option>
+                                <option value="Pil1">
+                                    No HP Konsumen sama dengan data di WISe dan Bersedia Di Lakukan Penawaran
+                                </option>
+                                <option value="Pil2">
+                                    No HP Konsumen sama dengan data di WISe dan Tidak Bersedia Di Lakukan Penawaran
+                                </option>
+                                <option value="Pil3">
+                                    No HP Konsumen berganti dan CMO melakukan pengkinian data pada Form Perubahan Data Konsumen
+                                </option>
+                            </select>
+                        </div>
+                    )}
 
                     {/* 🔹 Hasil Visit */}
                     <div>
