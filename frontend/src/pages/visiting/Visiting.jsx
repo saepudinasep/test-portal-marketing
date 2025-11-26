@@ -9,6 +9,7 @@ export default function Visiting() {
     const [loading, setLoading] = useState(true);
     const [showDropdown, setShowDropdown] = useState(false);
     const [photo, setPhoto] = useState(null);
+    const [userData, setUserData] = useState(null);
 
     const [form, setForm] = useState({
         region: "",
@@ -66,6 +67,7 @@ export default function Visiting() {
         }
 
         const parsedUser = JSON.parse(user);
+        setUserData(parsedUser);
 
         setForm((prev) => ({
             ...prev,
@@ -109,7 +111,25 @@ export default function Visiting() {
         return matchNoKontrak && matchSumberData && matchProduct;
     });
 
-    const activeProduct = form.sumberData !== "" && form.product !== "";
+    const sumberDataOptions = {
+        MOTORKU: [
+            "Motor Priority 1",
+            "Motor Priority 2",
+            "Motor Priority 3",
+        ],
+        MOBILKU: [
+            "Mobil Priority 1",
+            "Mobil Priority 2",
+            "Mobil Priority 3",
+        ],
+    };
+
+    const selectedProduct =
+        userData?.product === "ALL BRAND"
+            ? form.product                // user pilih product
+            : userData?.product;          // product fixed sesuai user
+
+    const activeProduct = form.sumberData !== "" && selectedProduct !== "";
 
     // 🔹 Saat memilih kontrak
     const handleSelectKontrak = (item) => {
@@ -130,8 +150,14 @@ export default function Visiting() {
         setForm((prev) => {
             let updated = { ...prev, [name]: value };
 
-            // 🔄 Reset otomatis jika sumberData atau product berubah
-            if (name === "sumberData" || name === "product") {
+            if (name === "product") {
+                updated.sumberData = "";     // reset sumber data
+                updated.noKontrak = "";      // reset kontrak
+                updated.namaDebitur = "";
+                updated.ket = "";
+            }
+
+            if (name === "sumberData") {
                 updated.noKontrak = "";
                 updated.namaDebitur = "";
                 updated.ket = "";
@@ -229,7 +255,13 @@ export default function Visiting() {
             return;
         }
 
-        const payload = { ...form, photoBase64: photo };
+        const statusMap = {
+            Pil1: "No HP Konsumen sama dengan data di WISe dan Bersedia Di Lakukan Penawaran",
+            Pil2: "No HP Konsumen sama dengan data di WISe dan Tidak Bersedia Di Lakukan Penawaran",
+            Pil3: "No HP Konsumen berganti dan CMO melakukan pengkinian data pada Form Perubahan Data Konsumen",
+        };
+
+        const payload = { ...form, statusKonsumen: statusMap[form.statusKonsumen] || "", photoBase64: photo };
 
         try {
             Swal.fire({
@@ -240,7 +272,7 @@ export default function Visiting() {
             });
 
             const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbwpVb20Bf1pRIt_3KO_gXOoE-mHD1tOWtkqhbF-jyk9KMyCfy_Rh-2_cIzjkAfmgX8u/exec",
+                "https://script.google.com/macros/s/AKfycbztY6QMcnKM3nYpizAomcNWbKQaOE-DtUrPHblOCFKUTh8yt_BXBiROym6GTYqy7D7F/exec",
                 {
                     method: "POST",
                     body: JSON.stringify(payload),
@@ -311,39 +343,75 @@ export default function Visiting() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Sumber Data & Brand */}
                     <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium mb-1">
-                                Sumber Data
-                            </label>
-                            <select
-                                name="sumberData"
-                                value={form.sumberData}
-                                onChange={handleChange}
-                                className="w-full rounded-lg p-2 border border-gray-300"
-                            >
-                                <option value="">Pilih Sumber Data</option>
-                                <option value="Motor Priority 1">Motor Priority 1</option>
-                                <option value="Motor Priority 2">Motor Priority 2</option>
-                                <option value="Motor Priority 3">Motor Priority 3</option>
-                                <option value="Mobil Priority 1">Mobil Priority 1</option>
-                                <option value="Mobil Priority 2">Mobil Priority 2</option>
-                                <option value="Mobil Priority 3">Mobil Priority 3</option>
-                            </select>
-                        </div>
-
-                        <div>
+                        <div hidden={userData.product !== "ALL BRAND"}>
                             <label className="block text-sm font-medium mb-1">
                                 Product
                             </label>
                             <select
                                 name="product"
-                                value={form.product}
+                                value={
+                                    userData?.product === "ALL BRAND"
+                                        ? form.product
+                                        : userData?.product || ""
+                                }
                                 onChange={handleChange}
                                 className="w-full rounded-lg p-2 border border-gray-300"
+                                disabled={userData?.product !== "ALL BRAND"} // ⛔ Dikunci jika bukan ALL BRAND
                             >
-                                <option value="">Pilih Product</option>
-                                <option value="MOTORKU">MOTORKU</option>
-                                <option value="MOBILKU">MOBILKU</option>
+                                <option value="">
+                                    {userData?.product === "ALL BRAND"
+                                        ? "Pilih Product"
+                                        : `Product: ${userData?.product}`}
+                                </option>
+
+                                {userData?.product === "ALL BRAND" && (
+                                    <>
+                                        <option value="MOTORKU">MOTORKU</option>
+                                        <option value="MOBILKU">MOBILKU</option>
+                                    </>
+                                )}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                Sumber Data
+                            </label>
+
+                            <select
+                                name="sumberData"
+                                value={form.sumberData}
+                                onChange={handleChange}
+                                className="w-full rounded-lg p-2 border border-gray-300"
+                                disabled={
+                                    !(
+                                        userData?.product === "ALL BRAND"
+                                            ? form.product
+                                            : userData?.product
+                                    )
+                                } // ⛔ Disable kalau product belum terpilih
+                            >
+                                <option value="">
+                                    {userData?.product === "ALL BRAND"
+                                        ? form.product
+                                            ? "Pilih Sumber Data"
+                                            : "Pilih Sumber Data"
+                                        : `Pilih Sumber Data`}
+                                </option>
+
+                                {/* Jika user ALL BRAND → pakai form.product */}
+                                {userData?.product === "ALL BRAND" && form.product &&
+                                    sumberDataOptions[form.product].map((s, idx) => (
+                                        <option key={idx} value={s}>{s}</option>
+                                    ))
+                                }
+
+                                {/* Jika user bukan ALL BRAND → pakai userData.product */}
+                                {userData?.product !== "ALL BRAND" &&
+                                    sumberDataOptions[userData?.product]?.map((s, idx) => (
+                                        <option key={idx} value={s}>{s}</option>
+                                    ))
+                                }
                             </select>
                         </div>
                     </div>
@@ -633,7 +701,7 @@ export default function Visiting() {
                     {/* Detail Visit */}
                     <div>
                         <label className="block text-sm font-medium mb-1">
-                            Detail Visiting
+                            Notes Visit
                         </label>
                         <textarea
                             name="detail"
