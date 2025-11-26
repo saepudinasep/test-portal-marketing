@@ -126,7 +126,24 @@ export default function Visiting() {
     // 🔹 Input berubah
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setForm({ ...form, [name]: value });
+
+        setForm((prev) => {
+            let updated = { ...prev, [name]: value };
+
+            // 🔄 Reset otomatis jika sumberData atau product berubah
+            if (name === "sumberData" || name === "product") {
+                updated.noKontrak = "";
+                updated.namaDebitur = "";
+                updated.ket = "";
+            }
+
+            return updated;
+        });
+
+        // Tutup dropdown jika filter berubah
+        if (name === "sumberData" || name === "product") {
+            setShowDropdown(false);
+        }
     };
 
     // 🔹 Tutup dropdown saat klik di luar
@@ -223,7 +240,7 @@ export default function Visiting() {
             });
 
             const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbx4jvr5BpD6p8G5hE3tv8RC9WxUi5iMix1r35jkc3npryF_80A-aNWKfAW1hDtR0Fwj/exec",
+                "https://script.google.com/macros/s/AKfycbwpVb20Bf1pRIt_3KO_gXOoE-mHD1tOWtkqhbF-jyk9KMyCfy_Rh-2_cIzjkAfmgX8u/exec",
                 {
                     method: "POST",
                     body: JSON.stringify(payload),
