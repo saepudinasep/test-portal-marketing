@@ -284,7 +284,7 @@ export default function Visiting() {
             });
 
             const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbztY6QMcnKM3nYpizAomcNWbKQaOE-DtUrPHblOCFKUTh8yt_BXBiROym6GTYqy7D7F/exec",
+                "https://script.google.com/macros/s/AKfycbxfBAJJkSuMH-bWfap1Ld2p2NZtqn0-rzKzb6tbRg4wfBpqiPLqJkil9Yx8Q6zjIU53/exec",
                 {
                     method: "POST",
                     body: JSON.stringify(payload),
