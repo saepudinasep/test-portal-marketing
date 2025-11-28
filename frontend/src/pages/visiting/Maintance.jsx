@@ -9,6 +9,7 @@ export default function Maintance() {
     const [loading, setLoading] = useState(true);
     const [showDropdown, setShowDropdown] = useState(false);
     const [photo, setPhoto] = useState(null); // 📸 simpan foto
+    const [isMobile, setIsMobile] = useState(true);
 
     const [form, setForm] = useState({
         region: "",
@@ -175,6 +176,16 @@ export default function Maintance() {
             };
         });
     }
+
+    useEffect(() => {
+        const ua = navigator.userAgent.toLowerCase();
+
+        const mobileCheck =
+            /android|iphone|ipad|ipod|windows phone/i.test(ua) ||
+            navigator.maxTouchPoints > 1;
+
+        setIsMobile(mobileCheck);
+    }, []);
 
     // 🔹 Submit form
     const handleSubmit = async (e) => {
@@ -516,7 +527,14 @@ export default function Maintance() {
                             capture="environment" // 👉 langsung buka kamera belakang
                             onChange={handleTakePhoto}
                             className="w-full border rounded-lg p-2"
+                            disabled={!isMobile}    // ⛔ Tidak bisa di laptop
                         />
+
+                        {!isMobile && (
+                            <p className="text-red-600 text-sm mt-1">
+                                Fitur foto hanya bisa digunakan di perangkat mobile.
+                            </p>
+                        )}
 
                         {photo && (
                             <div className="mt-3">
