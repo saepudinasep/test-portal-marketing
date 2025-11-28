@@ -76,10 +76,11 @@ export default function Visiting() {
             picVisit: parsedUser.name || "",
             nik: parsedUser.nik || "",
             jabatan: parsedUser.position || "",
+            product: parsedUser.product !== "ALL BRAND" ? parsedUser.product : "" // ⬅ FIX PENTING
         }));
 
         const scriptURL =
-            "https://script.google.com/macros/s/AKfycbz6DBTAmjAB7nnrt5PkZZ_CzpwzVb8dMEHBtXvj0-yGkHFUJOB99iRJtXsh6YM1fKqd/exec" +
+            "https://script.google.com/macros/s/AKfycbxun2ZqUZFuqvJNzMXwckX3bqKmvNXo91enVdwRaW_eQstge33dZbM0iQSYU0aJ2gqM/exec" +
             `?region=${parsedUser.region}&cabang=${parsedUser.cabang}`;
 
         setLoading(true);
@@ -150,7 +151,7 @@ export default function Visiting() {
         setForm((prev) => {
             let updated = { ...prev, [name]: value };
 
-            if (name === "product") {
+            if (name === "product" && userData?.product === "ALL BRAND") {
                 updated.sumberData = "";     // reset sumber data
                 updated.noKontrak = "";      // reset kontrak
                 updated.namaDebitur = "";
