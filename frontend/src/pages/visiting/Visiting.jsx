@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
@@ -11,6 +11,7 @@ export default function Visiting() {
     const [photo, setPhoto] = useState(null);
     const [userData, setUserData] = useState(null);
     const [isMobile, setIsMobile] = useState(true);
+    const fileInputRef = useRef(null);
 
     const [form, setForm] = useState({
         region: "",
@@ -193,6 +194,11 @@ export default function Visiting() {
             reader.onloadend = async () => {
                 const compressed = await compressBase64(reader.result, 900, 0.7);
                 setPhoto(compressed);
+
+                // 👉 kosongkan input file setelah foto diambil
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                }
             };
             reader.readAsDataURL(file);
         }
@@ -245,7 +251,7 @@ export default function Visiting() {
             Swal.fire({
                 icon: "warning",
                 title: "Detail Terlalu Singkat",
-                text: "Detail Visiting minimal 5 kata!",
+                text: "Detail Visit minimal 5 kata!",
             });
             return;
         }
@@ -314,6 +320,10 @@ export default function Visiting() {
                     detail: "",
                 });
                 setPhoto(null);
+                // kosongkan kembali input file
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                }
             } else if (result.limitReached) {
                 Swal.fire({
                     icon: "warning",
@@ -730,16 +740,28 @@ export default function Visiting() {
                     {/* Foto */}
                     <div>
                         <label className="block text-sm font-medium mb-1">
-                            Ambil Foto Visiting
+                            Ambil Foto Visit
                         </label>
                         <input
+                            ref={fileInputRef}
                             type="file"
                             accept="image/*"
                             capture="environment"
                             onChange={handleTakePhoto}
-                            className="w-full border rounded-lg p-2"
+                            id="cameraInput"
+                            className="hidden"
                             disabled={!isMobile}    // ⛔ Tidak bisa di laptop
                         />
+
+                        {/* tombol custom */}
+                        <button
+                            type="button"
+                            onClick={() => isMobile && document.getElementById("cameraInput").click()}
+                            className={`w-full p-2 rounded-lg text-white ${isMobile ? "bg-blue-600" : "bg-gray-400 cursor-not-allowed"
+                                }`}
+                        >
+                            {photo ? "Ulangi Foto" : "Ambil Foto"}
+                        </button>
 
                         {!isMobile && (
                             <p className="text-red-600 text-sm mt-1">
