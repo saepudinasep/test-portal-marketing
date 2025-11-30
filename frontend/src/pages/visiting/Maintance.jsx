@@ -532,22 +532,37 @@ export default function Maintance() {
                         <label className="block text-sm font-medium mb-1">
                             Ambil Foto Maintenance
                         </label>
+
+                        {/* input file disembunyikan */}
                         <input
                             ref={fileInputRef}
                             type="file"
                             accept="image/*"
-                            capture="environment" // 👉 langsung buka kamera belakang
+                            capture="environment"
                             onChange={handleTakePhoto}
-                            className="w-full border rounded-lg p-2"
-                            disabled={!isMobile}    // ⛔ Tidak bisa di laptop
+                            id="cameraInput"
+                            className="hidden"
+                            disabled={!isMobile}
                         />
 
+                        {/* tombol custom */}
+                        <button
+                            type="button"
+                            onClick={() => isMobile && document.getElementById("cameraInput").click()}
+                            className={`w-full p-2 rounded-lg text-white ${isMobile ? "bg-blue-600" : "bg-gray-400 cursor-not-allowed"
+                                }`}
+                        >
+                            {photo ? "Ulangi Foto" : "Ambil Foto"}
+                        </button>
+
+                        {/* warning jika bukan mobile */}
                         {!isMobile && (
                             <p className="text-red-600 text-sm mt-1">
                                 Fitur foto hanya bisa digunakan di perangkat mobile.
                             </p>
                         )}
 
+                        {/* preview foto */}
                         {photo && (
                             <div className="mt-3">
                                 <p className="text-sm text-gray-600 mb-1">
