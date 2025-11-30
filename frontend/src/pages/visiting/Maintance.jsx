@@ -203,7 +203,7 @@ export default function Maintance() {
             Swal.fire({
                 icon: "warning",
                 title: "Detail Terlalu Singkat",
-                text: "Detail Maintenance minimal 5 kata!",
+                text: "Detail Maintain minimal 5 kata!",
                 confirmButtonColor: "#3085d6",
             });
             return;
@@ -321,7 +321,7 @@ export default function Maintance() {
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
             <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-3xl">
 
-                {/* 🧾 Form Maintenance */}
+                {/* 🧾 Form Maintain */}
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
                         {/* Product */}
@@ -472,7 +472,7 @@ export default function Maintance() {
                     <div className="grid md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium mb-1">
-                                Aktivitas Maintenance
+                                Aktivitas Maintain
                             </label>
                             <select
                                 name="aktivitas"
@@ -492,7 +492,7 @@ export default function Maintance() {
 
                         <div>
                             <label className="block text-sm font-medium mb-1">
-                                Hasil Maintenance
+                                Hasil Maintain
                             </label>
                             <select
                                 name="hasil"
@@ -511,17 +511,17 @@ export default function Maintance() {
                         </div>
                     </div>
 
-                    {/* Detail Maintenance */}
+                    {/* Detail Maintain */}
                     <div>
                         <label className="block text-sm font-medium mb-1">
-                            Detail Maintenance
+                            Detail Maintain
                         </label>
                         <textarea
                             name="detail"
                             value={form.detail}
                             onChange={handleChange}
                             rows="4"
-                            placeholder="Tuliskan detail maintenance minimal 5 kata..."
+                            placeholder="Tuliskan detail Maintain minimal 5 kata..."
                             className="w-full border rounded-lg p-2"
                             required
                         />
@@ -530,7 +530,7 @@ export default function Maintance() {
                     {/* 📸 Ambil Foto */}
                     <div>
                         <label className="block text-sm font-medium mb-1">
-                            Ambil Foto Maintenance
+                            Ambil Foto Maintain
                         </label>
 
                         {/* input file disembunyikan */}
