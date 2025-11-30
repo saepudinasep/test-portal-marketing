@@ -53,28 +53,28 @@ export default function Maintance() {
         return () => window.removeEventListener("beforeunload", handler);
     }, [isDirty]);
 
-    const safeNavigate = (path) => {
-        if (!isDirty) {
-            navigate(path);
-            return;
-        }
-
-        Swal.fire({
-            title: "Form belum selesai",
-            text: "Anda memiliki data yang belum disimpan. Yakin ingin meninggalkan halaman?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Ya, tinggalkan",
-            cancelButtonText: "Batal",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                navigate(path);
-            }
-        });
-    };
-
     // ✅ Proteksi route & ambil data dari Apps Script
     useEffect(() => {
+        const safeNavigate = (path) => {
+            if (!isDirty) {
+                navigate(path);
+                return;
+            }
+
+            Swal.fire({
+                title: "Form belum selesai",
+                text: "Anda memiliki data yang belum disimpan. Yakin ingin meninggalkan halaman?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Ya, tinggalkan",
+                cancelButtonText: "Batal",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigate(path);
+                }
+            });
+        };
+
         const user = sessionStorage.getItem("userData");
         const loggedIn = sessionStorage.getItem("loggedIn");
 
@@ -115,7 +115,7 @@ export default function Maintance() {
             })
             .catch((err) => console.error("Error fetching data:", err))
             .finally(() => setLoading(false));
-    }, [navigate]);
+    }, [isDirty, navigate]);
 
     const activeProduct =
         userData?.product === "ALL BRAND"
