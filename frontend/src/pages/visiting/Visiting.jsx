@@ -539,7 +539,7 @@ export default function Visiting() {
                             name="ket"
                             value={form.ket}
                             onChange={handleChange}
-                            rows="4"
+                            rows="2"
                             className="w-full border rounded-lg p-2 bg-gray-100"
                             readOnly
                         />
