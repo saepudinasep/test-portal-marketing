@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
@@ -10,6 +10,7 @@ export default function Maintance() {
     const [showDropdown, setShowDropdown] = useState(false);
     const [photo, setPhoto] = useState(null); // 📸 simpan foto
     const [isMobile, setIsMobile] = useState(true);
+    const fileInputRef = useRef(null);
 
     const [form, setForm] = useState({
         region: "",
@@ -144,6 +145,11 @@ export default function Maintance() {
             reader.onloadend = async () => {
                 const compressed = await compressBase64(reader.result, 900, 0.7);
                 setPhoto(compressed);
+
+                // 👉 kosongkan input file setelah foto diambil
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                }
             };
             reader.readAsDataURL(file);
         }
@@ -276,6 +282,11 @@ export default function Maintance() {
                     detail: "",
                 });
                 setPhoto(null);
+
+                // kosongkan kembali input file
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                }
             } else {
                 Swal.fire({
                     icon: "warning",
@@ -522,6 +533,7 @@ export default function Maintance() {
                             Ambil Foto Maintenance
                         </label>
                         <input
+                            ref={fileInputRef}
                             type="file"
                             accept="image/*"
                             capture="environment" // 👉 langsung buka kamera belakang
