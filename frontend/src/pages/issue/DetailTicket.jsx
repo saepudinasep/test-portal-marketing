@@ -501,7 +501,7 @@ export default function DetailTicket() {
                                 <textarea
                                     value={reasonReject}
                                     onChange={(e) => setReasonReject(e.target.value)}
-                                    className="border rounded w-full px-3 py-2"
+                                    className="border rounded w-full px-3 py-2 resize-none"
                                     rows="4"
                                 />
                             </div>
@@ -512,7 +512,7 @@ export default function DetailTicket() {
                             <textarea
                                 value={message}
                                 onChange={(e) => setMessage(e.target.value)}
-                                className="border rounded w-full px-3 py-2"
+                                className="border rounded w-full px-3 py-2 resize-none"
                                 rows="4"
                             />
                             <input
@@ -535,7 +535,7 @@ export default function DetailTicket() {
                         <textarea
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
-                            className="border rounded w-full px-3 py-2 mb-3"
+                            className="border rounded w-full px-3 py-2 mb-3 resize-none"
                             rows="4"
                             placeholder="Tulis pesan..."
                         />

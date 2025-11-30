@@ -11,6 +11,7 @@ export default function Maintance() {
     const [photo, setPhoto] = useState(null); // 📸 simpan foto
     const [isMobile, setIsMobile] = useState(true);
     const fileInputRef = useRef(null);
+    const [isDirty, setIsDirty] = useState(false);
 
     const [form, setForm] = useState({
         region: "",
@@ -36,13 +37,50 @@ export default function Maintance() {
 
     const hasilList = ["Dapat Prospect", "Tidak Dapat Prospect"];
 
+    useEffect(() => {
+        const check = Object.keys(form).some((key) => form[key] !== "");
+        setIsDirty(check);
+    }, [form]);
+
+    useEffect(() => {
+        const handler = (e) => {
+            if (!isDirty) return;
+            e.preventDefault();
+            e.returnValue = ""; // wajib ada
+        };
+
+        window.addEventListener("beforeunload", handler);
+        return () => window.removeEventListener("beforeunload", handler);
+    }, [isDirty]);
+
+    const safeNavigate = (path) => {
+        if (!isDirty) {
+            navigate(path);
+            return;
+        }
+
+        Swal.fire({
+            title: "Form belum selesai",
+            text: "Anda memiliki data yang belum disimpan. Yakin ingin meninggalkan halaman?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, tinggalkan",
+            cancelButtonText: "Batal",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                navigate(path);
+            }
+        });
+    };
+
     // ✅ Proteksi route & ambil data dari Apps Script
     useEffect(() => {
         const user = sessionStorage.getItem("userData");
         const loggedIn = sessionStorage.getItem("loggedIn");
 
         if (!loggedIn || !user) {
-            navigate("/");
+            // navigate("/");
+            safeNavigate("/dashboard");
             return;
         }
 
@@ -522,7 +560,7 @@ export default function Maintance() {
                             onChange={handleChange}
                             rows="4"
                             placeholder="Tuliskan detail Maintain minimal 5 kata..."
-                            className="w-full border rounded-lg p-2"
+                            className="w-full border rounded-lg p-2 resize-none"
                             required
                         />
                     </div>

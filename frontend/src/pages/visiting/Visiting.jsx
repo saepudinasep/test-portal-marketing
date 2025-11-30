@@ -540,7 +540,7 @@ export default function Visiting() {
                             value={form.ket}
                             onChange={handleChange}
                             rows="2"
-                            className="w-full border rounded-lg p-2 bg-gray-100"
+                            className="w-full border rounded-lg p-2 bg-gray-100 resize-none"
                             readOnly
                         />
                     </div>
@@ -732,7 +732,7 @@ export default function Visiting() {
                             onChange={handleChange}
                             rows="4"
                             placeholder="Tuliskan detail minimal 5 kata..."
-                            className="w-full border rounded-lg p-2"
+                            className="w-full border rounded-lg p-2 resize-none"
                             required
                         />
                     </div>
