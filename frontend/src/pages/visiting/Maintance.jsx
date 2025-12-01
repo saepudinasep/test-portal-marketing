@@ -310,6 +310,9 @@ export default function Maintance() {
 
 
                 setForm({
+                    region: userData?.region || "",
+                    cabang: userData?.cabang || "",
+                    product: userData?.product || "",
                     namaMA: "",
                     noRef: "",
                     occupation: "",
