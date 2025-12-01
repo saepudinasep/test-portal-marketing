@@ -94,6 +94,7 @@ export default function Maintance() {
             namaPIC: parsedUser.name || "",
             nik: parsedUser.nik || "",
             jabatan: parsedUser.position || "",
+            product: parsedUser.product !== "ALL BRAND" ? parsedUser.product : "" // ⬅ FIX PENTING
         }));
 
         const scriptURL =
