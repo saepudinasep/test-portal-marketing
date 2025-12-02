@@ -433,14 +433,14 @@ export default function Visiting() {
 
                                 {/* Jika user ALL BRAND → pakai form.product */}
                                 {userData?.product === "ALL BRAND" && form.product &&
-                                    sumberDataOptions[form.product].map((s, idx) => (
+                                    sumberDataOptions[form.product?.toUpperCase()].map((s, idx) => (
                                         <option key={idx} value={s}>{s}</option>
                                     ))
                                 }
 
                                 {/* Jika user bukan ALL BRAND → pakai userData.product */}
                                 {userData?.product !== "ALL BRAND" &&
-                                    sumberDataOptions[userData?.product]?.map((s, idx) => (
+                                    sumberDataOptions[userData?.product?.toUpperCase()]?.map((s, idx) => (
                                         <option key={idx} value={s}>{s}</option>
                                     ))
                                 }
