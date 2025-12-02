@@ -288,6 +288,20 @@ export default function Maintance() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // ❗ Validasi TRIM NAMA harus ada di database
+        const kontrakAda = dataMA.some(
+            (item) => item["TRIM NAMA"] === form.noKontrak
+        );
+
+        if (!kontrakAda) {
+            Swal.fire({
+                icon: "error",
+                title: "Nama MA Tidak Ditemukan",
+                text: "Pastikan Nama MA sesuai dengan data yang tersedia.",
+            });
+            return; // ❌ hentikan submit
+        }
+
         // 1) Validasi minimal 5 kata
         const wordCount = form.detail.trim().split(/\s+/).length;
         if (wordCount < 5) {
