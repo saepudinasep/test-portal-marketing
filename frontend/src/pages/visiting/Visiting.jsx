@@ -324,7 +324,7 @@ export default function Visiting() {
                     picVisit: userData?.name || "",
                     nik: userData?.nik || "",
                     jabatan: userData?.position || "",
-                    product: userData.product !== "ALL BRAND" ? userData.product : "",
+                    product: userData?.product !== "ALL BRAND" ? userData.product : "",
                     statusKonsumen: "",
                     ket: "",
                 });
