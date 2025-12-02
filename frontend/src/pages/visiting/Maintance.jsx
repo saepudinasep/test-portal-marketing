@@ -97,8 +97,35 @@ export default function Maintance() {
             product: parsedUser.product !== "ALL BRAND" ? parsedUser.product : "" // ⬅ FIX PENTING
         }));
 
+        const regionURL = {
+            "JABODEBEK 1": "https://script.google.com/macros/s/AKfycbyfh91UBBjnHJnRDVAVgR_mgGezTOpI8BW5Ou9st2ZDXHQ5Pqmo0doeqKrPPbTeiVUcEg/exec",
+            "JABODEBEK 2": "https://script.google.com/macros/s/AKfycbzrmcFw-r1Lc_NVN2SmsyYBRx8kfqPqRLFqOduYxBXxi9C2xH-dhEjijgS9jOck9NU-zw/exec",
+            "JABODEBEK 3": "https://script.google.com/macros/s/AKfycbxQH51vYxz1YcbtLhHdoCoMDW8Uf6GN8XoSFusd8shi7H7FFWMumR4Bb-c5Os6mzNoT/exec",
+            "BANTEN 1": "https://script.google.com/macros/s/AKfycbzOEgm_crgtR9H46uxQdZSvwYuMDLlkjNiXBiSHNSUztDYvTsxttAJJnxqSCo4OKXhD/exec",
+            "BANTEN 2": "https://script.google.com/macros/s/AKfycbzowgLuYMzTDiX8ZOsT9X3Uo_J6lBlt_CKKo2gu4FsmGdLCIaDfHvawSaHzzojgSoATAA/exec",
+            "JABAR 1": "https://script.google.com/macros/s/AKfycbwcbj322zZQYJbi_NnfNRf6Te0seOuaBAOS-XhBPEZdTrvGxd7wChwY3NiPGp_36E86/exec",
+            "JABAR 2": "https://script.google.com/macros/s/AKfycbwre9gtL4XfcDopS5pBPHPVL7frH6FWYAnvFpUbTMtT6ODZ-SALyX5XM9QmwjVbr6w/exec",
+            "JATENGUT 1": "https://script.google.com/macros/s/AKfycbxPUg17iNUAX1Joy6_b5a-l2JDgKMQ4HN0uU3Fei50omjxLUEoLV1-emE-8Z5Zm57U/exec",
+            "JATENGUT 2": "https://script.google.com/macros/s/AKfycbxxDm4Pj9ZIlXaIwwLorRCqHHBZOhGijD0cOoLqeJ1WfGF-ISlmydwEVQ1lVHiwtg7B/exec",
+            "JATENGSEL 1": "https://script.google.com/macros/s/AKfycbxHEgnbgVWrv2Gv_ETzk4mtSB1CxDjSWOnOil41qfjC_FyP9n_1WBOYTcwhGs8YLhmf/exec",
+            "JATENGSEL 2": "https://script.google.com/macros/s/AKfycbzoJR0oiInN0suz437KOKu2ta1TtrTjSpVWVp8fkDBOzrTtrPSu-DZbjlvxWgjRt3O56A/exec",
+            "JATIM 1": "https://script.google.com/macros/s/AKfycbyRfBIPhUhoDK7dzVQ7zK00zHxdHLIXBK7GdEdeS4rTQWZUi1ZigLTCgOOi-xEt35DEng/exec",
+            "JATIM 2": "https://script.google.com/macros/s/AKfycby9bYBrBRimN6zYgQPJx869aKT8IHYPfBF_DJaRKoqiOPfCswbg9GYfhmzlqPhiv3h9/exec",
+            "JATIM 3": "https://script.google.com/macros/s/AKfycbyNSW7F-_sYDbgQmXYLHIAogPXYPp5TuB2loxWIxJ2Z_QN6ev_mIF2gZ3F0c8znht6P/exec",
+            "JATIM 5": "https://script.google.com/macros/s/AKfycbz8XFlxW7x_xsHVQ4XRqITDz3f3uYjHusdIsPz3zFIIV0bBxZduBW3Y1_rhWg_NJQyLtw/exec",
+            "SUMBAGUT 1": "https://script.google.com/macros/s/AKfycbzccJVFZfT_GdnivihM0D4WX2qNzz6igs9VCpFS5YkMDJasrrh9HCTg6Q-CpkYBNlfAgw/exec",
+            "SUMBAGUT 2": "https://script.google.com/macros/s/AKfycbyZ83Qd4OMMfPZ1h-Prf6x0EOSlBK7th1Ha2TRS5z4603bRI0vE6xc3miUA1GMiH_i7dw/exec",
+            "SUMBAGSEL 1": "https://script.google.com/macros/s/AKfycbwOK57XHb-kMM5DJ6kBXM7o_Cx6exhzfGFAb6buh-xuodAghyAmbrLJugw7o-9SqRvh/exec",
+            "SUMBAGSEL 2": "https://script.google.com/macros/s/AKfycbyZNUjdtRKXhpY16K4CVSN0KPOAsWJ5W7-PUbutQVSvpGQ6-EB8Q6uV53bPq_18_NEWKA/exec",
+            "KALIMANTAN": "https://script.google.com/macros/s/AKfycbypmCP6OVH7rglvV2HD20gYFRgc7_18gdW6gWdqJNFCqolrYBzjbUJFDiLizzxGmJXKqA/exec",
+            "SULAWESI 1": "https://script.google.com/macros/s/AKfycbwyNPO9IDqfnR1G2d2ZSp-ZcGWfkRc6M3VNyF5AqUsJ36SmYEr49u68M8hk37ShxI8dbQ/exec",
+            "SULAWESI 2": "https://script.google.com/macros/s/AKfycbxzxQX-fQh0dz6Vo_f25XsHwQNYpSdzqRZJBlFS3eC4wDqbNoO7vGmpaFYa8s8jNyGBVw/exec"
+        };
+
+        const baseURL = regionURL[parsedUser.region] || "";
+
         const scriptURL =
-            "https://script.google.com/macros/s/AKfycbygLFZbJjdttYH3WKQ70hwINCunESyqyzZhtbvJG-T2qgxRjOlykvqtWjR4qzSwJ5fgzg/exec" +
+            baseURL +
             "?nik=" + parsedUser.nik +
             "&akses=" + encodeURIComponent(parsedUser.akses || "") +
             "&region=" + encodeURIComponent(parsedUser.region || "") +
@@ -135,6 +162,11 @@ export default function Maintance() {
 
         return productMatch && namaMatch;
     });
+
+    console.log("product aktif" + activeProduct);
+    console.log(dataMA);
+    console.log(filteredMA);
+
 
     // 🔹 Saat memilih MA
     const handleSelectMA = (item) => {
