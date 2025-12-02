@@ -246,6 +246,20 @@ export default function Visiting() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // ❗ Validasi No Kontrak harus ada di database
+        const kontrakAda = dataKontrak.some(
+            (item) => item["NO KONTRAK"] === form.noKontrak
+        );
+
+        if (!kontrakAda) {
+            Swal.fire({
+                icon: "error",
+                title: "No Kontrak Tidak Ditemukan",
+                text: "Pastikan No Kontrak sesuai dengan data yang tersedia.",
+            });
+            return; // ❌ hentikan submit
+        }
+
         const wordCount = form.detail.trim().split(/\s+/).length;
         if (wordCount < 5) {
             Swal.fire({
@@ -508,6 +522,7 @@ export default function Visiting() {
                                 name="namaDebitur"
                                 value={form.namaDebitur}
                                 className="w-full border rounded-lg p-2 bg-gray-100"
+                                required
                                 readOnly
                             />
                         </div>
@@ -534,6 +549,7 @@ export default function Visiting() {
                                 type="text"
                                 value={form.cabang}
                                 className="w-full border rounded-lg p-2 bg-gray-100"
+                                required
                                 readOnly
                             />
                         </div>
@@ -550,6 +566,7 @@ export default function Visiting() {
                             onChange={handleChange}
                             rows="2"
                             className="w-full border rounded-lg p-2 bg-gray-100 resize-none"
+                            required
                             readOnly
                         />
                     </div>

@@ -140,7 +140,6 @@ export default function Maintance() {
                 if (data && data.data) {
                     setDataMA(data.data);
                 }
-                console.log(data);
 
             })
             .catch((err) => console.error("Error fetching data:", err))
@@ -184,9 +183,9 @@ export default function Maintance() {
         return productMatch && namaMatch;
     });
 
-    console.log("product aktif" + activeProduct);
-    console.log(dataMA);
-    console.log(filteredMA);
+    // console.log("product aktif" + activeProduct);
+    // console.log(dataMA);
+    // console.log(filteredMA);
 
 
     // 🔹 Saat memilih MA
