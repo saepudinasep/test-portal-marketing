@@ -140,6 +140,8 @@ export default function Maintance() {
                 if (data && data.data) {
                     setDataMA(data.data);
                 }
+                console.log(data);
+
             })
             .catch((err) => console.error("Error fetching data:", err))
             .finally(() => setLoading(false));
@@ -150,7 +152,7 @@ export default function Maintance() {
             ? form.product
             : userData?.product || "";
 
-    // 🔍 Filter hasil pencarian Nama MA + PRODUCT
+    // 🔍 Filter hasil pencarian Nama MA + PRODUCT + ROLE
     const filteredMA = dataMA.filter((item) => {
         const productMatch =
             !activeProduct ||
@@ -160,6 +162,25 @@ export default function Maintance() {
             ?.toLowerCase()
             .includes(form.namaMA.toLowerCase());
 
+        // --- FILTER BERDASARKAN ROLE ---
+        if (userData?.akses === "MAO") {
+            // MAO → NIK + PRODUCT + Nama
+            const nikMatch =
+                item["NIK (PIC)"]?.toUpperCase() === userData.nik?.toUpperCase();
+
+            return productMatch && namaMatch && nikMatch;
+        } else if (userData?.akses === "SURVEYOR") {
+            // SURVEYOR → PRODUCT + REGION + CABANG + Nama
+            const regionMatch =
+                item["REGION"]?.toUpperCase() === userData.region?.toUpperCase();
+
+            const cabangMatch =
+                item["CABANG"]?.toUpperCase() === userData.cabang?.toUpperCase();
+
+            return productMatch && namaMatch && regionMatch && cabangMatch;
+        }
+
+        // Default: jika role tidak dikenal → hanya filter PRODUCT + Nama MA
         return productMatch && namaMatch;
     });
 
