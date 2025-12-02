@@ -290,7 +290,7 @@ export default function Maintance() {
 
         // ❗ Validasi TRIM NAMA harus ada di database
         const kontrakAda = dataMA.some(
-            (item) => item["TRIM NAMA"] === form.noKontrak
+            (item) => item["TRIM NAMA"] === form.namaMA
         );
 
         if (!kontrakAda) {
