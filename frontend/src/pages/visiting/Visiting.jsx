@@ -318,6 +318,15 @@ export default function Visiting() {
                     keterangan: "",
                     noHp: "",
                     detail: "",
+                    region: userData?.region || "",
+                    cabang: userData?.cabang || "",
+                    sumberData: "",
+                    picVisit: userData?.name || "",
+                    nik: userData?.nik || "",
+                    jabatan: userData?.position || "",
+                    product: userData.product !== "ALL BRAND" ? userData.product : "",
+                    statusKonsumen: "",
+                    ket: "",
                 });
                 setPhoto(null);
                 // kosongkan kembali input file
