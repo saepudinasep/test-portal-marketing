@@ -252,16 +252,27 @@ export default function Visiting() {
             sumberData: "Sumber Data",
             noKontrak: "No Kontrak",
             namaDebitur: "Nama Debitur",
-            hasil: "Hasil Visit",
-            aktivitas: "Aktivitas",
-            detail: "Detail Visit",
         };
 
-        // Jika HASIL = Bertemu → tambah field wajib
+        // 2. Aturan berdasarkan HASIL & bertemuDengan
+        if (form.hasil === "Tidak Bertemu") {
+            requiredFields.aktivitas = "Aktivitas";
+            requiredFields.detail = "Detail Visit";
+        }
+
         if (form.hasil === "Bertemu") {
-            requiredFields.bertemuDengan = "Bertemu Dengan";
-            requiredFields.keterangan = "Keterangan";
+            // Wajib isi No HP untuk semua yang bertemu
             requiredFields.noHp = "No HP Konsumen";
+            requiredFields.detail = "Detail Visit";
+
+            if (form.bertemuDengan === "Interest" || form.bertemuDengan === "Tidak Berminat") {
+                requiredFields.keterangan = "Keterangan";
+            }
+
+            // Prospect → keterangan tidak wajib
+            if (form.bertemuDengan === "Prospect") {
+                // tidak menambah keterangan
+            }
         }
 
         // Cek field kosong
