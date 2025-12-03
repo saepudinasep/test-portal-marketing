@@ -254,7 +254,6 @@ export default function Visiting() {
             namaDebitur: "Nama Debitur",
             hasil: "Hasil Visit",
             aktivitas: "Aktivitas",
-            bertemuDengan: "Bertemu Dengan",
             keterangan: "Keterangan",
             noHp: "No HP Konsumen",
             detail: "Detail Visit",
