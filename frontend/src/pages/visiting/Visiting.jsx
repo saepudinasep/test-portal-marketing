@@ -246,7 +246,7 @@ export default function Visiting() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // daftarkan field yang WAJIB diisi
+        // Daftar field wajib (umum)
         const requiredFields = {
             product: "Product",
             sumberData: "Sumber Data",
@@ -254,12 +254,17 @@ export default function Visiting() {
             namaDebitur: "Nama Debitur",
             hasil: "Hasil Visit",
             aktivitas: "Aktivitas",
-            keterangan: "Keterangan",
             noHp: "No HP Konsumen",
             detail: "Detail Visit",
         };
 
-        // cek field kosong
+        // Jika HASIL = Bertemu → tambah field wajib
+        if (form.hasil === "Bertemu") {
+            requiredFields.bertemuDengan = "Bertemu Dengan";
+            requiredFields.keterangan = "Keterangan";
+        }
+
+        // Cek field kosong
         for (const key in requiredFields) {
             if (!form[key] || form[key].toString().trim() === "") {
                 Swal.fire({
@@ -269,16 +274,6 @@ export default function Visiting() {
                 });
                 return;
             }
-        }
-
-        // Form Bertemu dengan
-        if (form.hasil === "Bertemu" && !form.bertemuDengan) {
-            Swal.fire({
-                icon: "warning",
-                title: "Form Belum Lengkap",
-                text: "Bertemu dengan harus di isi",
-            });
-            return;
         }
 
         // ❗ Validasi No Kontrak harus ada di database
