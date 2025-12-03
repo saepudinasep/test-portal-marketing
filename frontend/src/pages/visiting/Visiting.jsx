@@ -82,7 +82,7 @@ export default function Visiting() {
         }));
 
         const scriptURL =
-            "https://script.google.com/macros/s/AKfycbxun2ZqUZFuqvJNzMXwckX3bqKmvNXo91enVdwRaW_eQstge33dZbM0iQSYU0aJ2gqM/exec" +
+            "https://script.google.com/macros/s/AKfycbw8k0pA5XZX1SkdoWeaOCOrf9tBZu3fDPqGaM1H3fS-dyD1sdJAQjCloJP4_c7wRmvs/exec" +
             `?region=${parsedUser.region}&cabang=${parsedUser.cabang}`;
 
         setLoading(true);
