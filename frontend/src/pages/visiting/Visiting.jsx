@@ -275,6 +275,10 @@ export default function Visiting() {
             }
         }
 
+        if (form.sumberData === "Mobil Priority 3" || form.sumberData === "Motor Priority 3") {
+            requiredFields.statusKonsumen = "Status Konsumen";
+        }
+
         // Cek field kosong
         for (const key in requiredFields) {
             if (!form[key] || form[key].toString().trim() === "") {
