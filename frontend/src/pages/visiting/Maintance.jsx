@@ -105,7 +105,7 @@ export default function Maintance() {
             "BANTEN 2": "https://script.google.com/macros/s/AKfycbyBa4H-nTjWomVOJT-SiCdNQpXOXJjIWNOYeqjjREiANcyK9ybzkGi4NeWzK57xS37BJg/exec",
             "JABAR 1": "https://script.google.com/macros/s/AKfycbyWKzQbSyccX71Epy3K8B20ZSXxGcvulHHGS6Rr6NkE0JXThc00EoksdUT-lOQvqeXZ/exec",
             "JABAR 2": "https://script.google.com/macros/s/AKfycbzKoWJpMqaiwpBYirwtCVZbTHwnTBZ0WtZqnRWocrFn17NXAD-mO8lynqWJdBpJAAc/exec",
-            "JATENGUT 1": "https://script.google.com/macros/s/AKfycbzUBQDWnRNfsHdo_6MOywohlZGztk0bFlWELY4HYDGDx275Y9CQBgL-V5mCUtB3-HwP/exec",
+            "JATENGUT 1": "https://script.google.com/macros/s/AKfycbzXdANB18q9z-j5XuI6l68AzQC_-QZt931weOz-S6PAnSzGmbESKK5ZVbPZNgPn974R/exec",
             "JATENGUT 2": "https://script.google.com/macros/s/AKfycbxcLPFV-oa8xM_HgQVie63LIrXalu9Ds82uZF_md2mB2dErvQgs7IG_nwrOig-D0vWf/exec",
             "JATENGSEL 1": "https://script.google.com/macros/s/AKfycbwVYyJlhHccAI7p0zqIhivbsM1sQiM78jSR_lSLrKFknvpdMbR7xuFtVwgLrGsu6VoG/exec",
             "JATENGSEL 2": "https://script.google.com/macros/s/AKfycbwDo8ahB4ZoQATzO0ha7sWIBkgleS-P_TjeNRck6VHJzWg5viynZ6KBhSjCxDdauYT5Ww/exec",
