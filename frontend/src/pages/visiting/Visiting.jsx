@@ -246,6 +246,42 @@ export default function Visiting() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // daftarkan field yang WAJIB diisi
+        const requiredFields = {
+            product: "Product",
+            sumberData: "Sumber Data",
+            noKontrak: "No Kontrak",
+            namaDebitur: "Nama Debitur",
+            hasil: "Hasil Visit",
+            aktivitas: "Aktivitas",
+            bertemuDengan: "Bertemu Dengan",
+            keterangan: "Keterangan",
+            noHp: "No HP Konsumen",
+            detail: "Detail Visit",
+        };
+
+        // cek field kosong
+        for (const key in requiredFields) {
+            if (!form[key] || form[key].toString().trim() === "") {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Form Belum Lengkap",
+                    text: `${requiredFields[key]} tidak boleh kosong!`,
+                });
+                return;
+            }
+        }
+
+        // Form Bertemu dengan
+        if (form.hasil === "Bertemu" && !form.bertemuDengan) {
+            Swal.fire({
+                icon: "warning",
+                title: "Form Belum Lengkap",
+                text: "Bertemu dengan harus di isi",
+            });
+            return;
+        }
+
         // ❗ Validasi No Kontrak harus ada di database
         const kontrakAda = dataKontrak.some(
             (item) => item["NO KONTRAK"] === form.noKontrak

@@ -183,9 +183,9 @@ export default function Maintance() {
         return productMatch && namaMatch;
     });
 
-    console.log("product aktif" + activeProduct);
-    console.log(dataMA);
-    console.log(filteredMA);
+    // console.log("product aktif" + activeProduct);
+    // console.log(dataMA);
+    // console.log(filteredMA);
 
 
     // 🔹 Saat memilih MA
