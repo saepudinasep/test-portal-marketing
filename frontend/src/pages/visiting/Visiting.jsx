@@ -254,7 +254,6 @@ export default function Visiting() {
             namaDebitur: "Nama Debitur",
             hasil: "Hasil Visit",
             aktivitas: "Aktivitas",
-            noHp: "No HP Konsumen",
             detail: "Detail Visit",
         };
 
@@ -262,6 +261,7 @@ export default function Visiting() {
         if (form.hasil === "Bertemu") {
             requiredFields.bertemuDengan = "Bertemu Dengan";
             requiredFields.keterangan = "Keterangan";
+            requiredFields.noHp = "No HP Konsumen";
         }
 
         // Cek field kosong
