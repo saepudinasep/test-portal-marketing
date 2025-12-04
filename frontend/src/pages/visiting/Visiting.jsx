@@ -362,7 +362,7 @@ export default function Visiting() {
             Pil3: "No HP Konsumen berganti dan CMO melakukan pengkinian data pada Form Perubahan Data Konsumen",
         };
 
-        const payload = { ...form, statusKonsumen: statusMap[form.statusKonsumen] || "", photoBase64: photo };
+        const payload = { ...form, sumberData: form.sumberData.toUpperCase(), statusKonsumen: statusMap[form.statusKonsumen] || "", photoBase64: photo };
 
         try {
             Swal.fire({
