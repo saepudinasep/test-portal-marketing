@@ -313,12 +313,27 @@ export default function Visiting() {
             return; // ❌ hentikan submit
         }
 
+        // 1) Validasi minimal 5 kata
         const wordCount = form.detail.trim().split(/\s+/).length;
         if (wordCount < 5) {
             Swal.fire({
                 icon: "warning",
                 title: "Detail Terlalu Singkat",
-                text: "Detail Visit minimal 5 kata!",
+                text: "Detail Maintain minimal 5 kata!",
+                confirmButtonColor: "#3085d6",
+            });
+            return;
+        }
+
+        // 2) Validasi 5 karakter awal wajib huruf A-Z
+        const firstFive = form.detail.substring(0, 5);
+
+        if (!/^[A-Za-z]{5}$/.test(firstFive)) {
+            Swal.fire({
+                icon: "warning",
+                title: "Format Detail Salah",
+                text: "5 karakter awal harus huruf tanpa angka, simbol, atau spasi!",
+                confirmButtonColor: "#3085d6",
             });
             return;
         }
