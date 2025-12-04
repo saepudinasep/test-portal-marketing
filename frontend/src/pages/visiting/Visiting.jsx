@@ -82,7 +82,7 @@ export default function Visiting() {
         }));
 
         const scriptURL =
-            "https://script.google.com/macros/s/AKfycbxun2ZqUZFuqvJNzMXwckX3bqKmvNXo91enVdwRaW_eQstge33dZbM0iQSYU0aJ2gqM/exec" +
+            "https://script.google.com/macros/s/AKfycbw8k0pA5XZX1SkdoWeaOCOrf9tBZu3fDPqGaM1H3fS-dyD1sdJAQjCloJP4_c7wRmvs/exec" +
             `?region=${parsedUser.region}&cabang=${parsedUser.cabang}`;
 
         setLoading(true);
@@ -246,6 +246,65 @@ export default function Visiting() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Daftar field wajib (umum)
+        const requiredFields = {
+            product: "Product",
+            sumberData: "Sumber Data",
+            noKontrak: "No Kontrak",
+            namaDebitur: "Nama Debitur",
+        };
+
+        // 2. Aturan berdasarkan HASIL & bertemuDengan
+        if (form.hasil === "Tidak Bertemu") {
+            requiredFields.aktivitas = "Aktivitas";
+            requiredFields.detail = "Detail Visit";
+        }
+
+        if (form.hasil === "Bertemu") {
+            // Wajib isi No HP untuk semua yang bertemu
+            requiredFields.noHp = "No HP Konsumen";
+            requiredFields.detail = "Detail Visit";
+
+            if (form.bertemuDengan === "Interest" || form.bertemuDengan === "Tidak Berminat") {
+                requiredFields.keterangan = "Keterangan";
+            }
+
+            // Prospect → keterangan tidak wajib
+            if (form.bertemuDengan === "Prospect") {
+                // tidak menambah keterangan
+            }
+        }
+
+        if (form.sumberData === "Mobil Priority 3" || form.sumberData === "Motor Priority 3") {
+            requiredFields.statusKonsumen = "Status Konsumen";
+        }
+
+        // Cek field kosong
+        for (const key in requiredFields) {
+            if (!form[key] || form[key].toString().trim() === "") {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Form Belum Lengkap",
+                    text: `${requiredFields[key]} tidak boleh kosong!`,
+                });
+                return;
+            }
+        }
+
+        // ❗ Validasi No Kontrak harus ada di database
+        const kontrakAda = dataKontrak.some(
+            (item) => item["NO KONTRAK"] === form.noKontrak
+        );
+
+        if (!kontrakAda) {
+            Swal.fire({
+                icon: "error",
+                title: "No Kontrak Tidak Ditemukan",
+                text: "Pastikan No Kontrak sesuai dengan data yang tersedia.",
+            });
+            return; // ❌ hentikan submit
+        }
+
         const wordCount = form.detail.trim().split(/\s+/).length;
         if (wordCount < 5) {
             Swal.fire({
@@ -290,7 +349,7 @@ export default function Visiting() {
             });
 
             const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbwmUF4rVVHHjgDugqNnTS557axS4M6Q0dlN4HKgslecqm7elR6POftjALAFMInVPhUP/exec",
+                "https://script.google.com/macros/s/AKfycbz3Pu451L0sbcxM2pRa4v8sl33FIWB7Srt23HItOTm0cs1YYLMWmzMyPP23IbpKELBT/exec",
                 {
                     method: "POST",
                     body: JSON.stringify(payload),
@@ -508,6 +567,7 @@ export default function Visiting() {
                                 name="namaDebitur"
                                 value={form.namaDebitur}
                                 className="w-full border rounded-lg p-2 bg-gray-100"
+                                required
                                 readOnly
                             />
                         </div>
@@ -534,6 +594,7 @@ export default function Visiting() {
                                 type="text"
                                 value={form.cabang}
                                 className="w-full border rounded-lg p-2 bg-gray-100"
+                                required
                                 readOnly
                             />
                         </div>
@@ -550,6 +611,7 @@ export default function Visiting() {
                             onChange={handleChange}
                             rows="2"
                             className="w-full border rounded-lg p-2 bg-gray-100 resize-none"
+                            required
                             readOnly
                         />
                     </div>

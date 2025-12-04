@@ -97,8 +97,35 @@ export default function Maintance() {
             product: parsedUser.product !== "ALL BRAND" ? parsedUser.product : "" // ⬅ FIX PENTING
         }));
 
+        const regionURL = {
+            "JABODEBEK 1": "https://script.google.com/macros/s/AKfycbynrKPxbiqtQ4kRiTjrSEE2TXOhJDvLjSk2ycVSf6CHePG_Wg6WwOAV-NhAa-0KxKskjQ/exec",
+            "JABODEBEK 2": "https://script.google.com/macros/s/AKfycbw38CD6092epGsBp7uBzIXx9j_obDQbDzSQplxYSHBGf3FhM242B6_4V1qbPprOYKrWIg/exec",
+            "JABODEBEK 3": "https://script.google.com/macros/s/AKfycbyUhlF8-IvuH9oXr8GfNcQsLGrEcKQ76w8F-lp8GU7xujeurpN4cw1boCza-U2QaLw6/exec",
+            "BANTEN 1": "https://script.google.com/macros/s/AKfycbxz8Mqsknwlaq7QprxGuhfyqculk8mBMYLTMeBsyEqExawjFpNviIV0jHEygDXfVRae/exec",
+            "BANTEN 2": "https://script.google.com/macros/s/AKfycbyBa4H-nTjWomVOJT-SiCdNQpXOXJjIWNOYeqjjREiANcyK9ybzkGi4NeWzK57xS37BJg/exec",
+            "JABAR 1": "https://script.google.com/macros/s/AKfycbyWKzQbSyccX71Epy3K8B20ZSXxGcvulHHGS6Rr6NkE0JXThc00EoksdUT-lOQvqeXZ/exec",
+            "JABAR 2": "https://script.google.com/macros/s/AKfycbzKoWJpMqaiwpBYirwtCVZbTHwnTBZ0WtZqnRWocrFn17NXAD-mO8lynqWJdBpJAAc/exec",
+            "JATENGUT 1": "https://script.google.com/macros/s/AKfycbzXdANB18q9z-j5XuI6l68AzQC_-QZt931weOz-S6PAnSzGmbESKK5ZVbPZNgPn974R/exec",
+            "JATENGUT 2": "https://script.google.com/macros/s/AKfycbxcLPFV-oa8xM_HgQVie63LIrXalu9Ds82uZF_md2mB2dErvQgs7IG_nwrOig-D0vWf/exec",
+            "JATENGSEL 1": "https://script.google.com/macros/s/AKfycbwVYyJlhHccAI7p0zqIhivbsM1sQiM78jSR_lSLrKFknvpdMbR7xuFtVwgLrGsu6VoG/exec",
+            "JATENGSEL 2": "https://script.google.com/macros/s/AKfycbwDo8ahB4ZoQATzO0ha7sWIBkgleS-P_TjeNRck6VHJzWg5viynZ6KBhSjCxDdauYT5Ww/exec",
+            "JATIM 1": "https://script.google.com/macros/s/AKfycbyoZhEEyiH22ZX0kV8WBqv2KUnDBH9hr5e5pH42HdJ1SSpQZ3s2UWv4w1q1OFtsCyf1Qg/exec",
+            "JATIM 2": "https://script.google.com/macros/s/AKfycbyZPfObJcTMSSALrEzDG9DuWbg8kouBfAZtCypCeAXlAGWrxkCnc14sT324kyZm2D9Y/exec",
+            "JATIM 3": "https://script.google.com/macros/s/AKfycbyJYwx-dLlE_IY8iH-4JVZGeixOAEZ_2KZwBTmXP6OnALKUDv8GhX-lRFpEDes61aiP/exec",
+            "JATIM 5": "https://script.google.com/macros/s/AKfycbww4jVML5P7ar3GtSWb9dV0_hgQqmn0-iuxT4RbIn_C3lVmaaNeF4hcIOWoRJlY88CPJw/exec",
+            "SUMBAGUT 1": "https://script.google.com/macros/s/AKfycbyBAxppLl4bmJCU5u6u8lYVGKewTZqclykLJ9mHy0WqMuDIJMFr9X4fgd6ggu7yVLjQ_Q/exec",
+            "SUMBAGUT 2": "https://script.google.com/macros/s/AKfycbxpKGHc7PpxIUH-4ppYSGuq6ESYMRTqZ1ZaldTHGHAtXrw5vGlWY1AG5Zcp6FpgTzifmw/exec",
+            "SUMBAGSEL 1": "https://script.google.com/macros/s/AKfycbxdOr86PGyP5NbA7kvwimz4-JoorlNr5TdXyeWHv_0iTic68TBJoLtJH83KBVMRc_Um/exec",
+            "SUMBAGSEL 2": "https://script.google.com/macros/s/AKfycbzVqDSPobHghZ1-V-hVYFhkMM1hbKQz_4uvr9k6GfxLJbnSrFHmqxyueJrw6fV2RU8mIA/exec",
+            "KALIMANTAN": "https://script.google.com/macros/s/AKfycbzRKpaZmch4C7AT-Hs7hEdZ_X9-GEGnHXK7-m3J73PwElhIcQrh_PEZ4XgPixMhp97IOA/exec",
+            "SULAWESI 1": "https://script.google.com/macros/s/AKfycbzQMK6fKEE82Rg-ku18Qow5xzaMQwqJiPASpIMLbFKZIWTVegbuPkXDaTnwZ9lMlHakFQ/exec",
+            "SULAWESI 2": "https://script.google.com/macros/s/AKfycbyMHKohIU8ceKmLH9W6YccTGNdPT4_sYoots03_iJwp5rBlLtsyq25D-TS8Ba6xd7taig/exec"
+        };
+
+        const baseURL = regionURL[parsedUser.region] || "";
+
         const scriptURL =
-            "https://script.google.com/macros/s/AKfycbygLFZbJjdttYH3WKQ70hwINCunESyqyzZhtbvJG-T2qgxRjOlykvqtWjR4qzSwJ5fgzg/exec" +
+            baseURL +
             "?nik=" + parsedUser.nik +
             "&akses=" + encodeURIComponent(parsedUser.akses || "") +
             "&region=" + encodeURIComponent(parsedUser.region || "") +
@@ -113,6 +140,7 @@ export default function Maintance() {
                 if (data && data.data) {
                     setDataMA(data.data);
                 }
+
             })
             .catch((err) => console.error("Error fetching data:", err))
             .finally(() => setLoading(false));
@@ -123,7 +151,7 @@ export default function Maintance() {
             ? form.product
             : userData?.product || "";
 
-    // 🔍 Filter hasil pencarian Nama MA + PRODUCT
+    // 🔍 Filter hasil pencarian Nama MA + PRODUCT + ROLE
     const filteredMA = dataMA.filter((item) => {
         const productMatch =
             !activeProduct ||
@@ -133,8 +161,32 @@ export default function Maintance() {
             ?.toLowerCase()
             .includes(form.namaMA.toLowerCase());
 
+        // --- FILTER BERDASARKAN ROLE ---
+        if (userData?.akses === "MAO") {
+            // MAO → NIK + PRODUCT + Nama
+            const nikMatch =
+                item["NIK (PIC)"]?.toUpperCase() === userData.nik?.toUpperCase();
+
+            return productMatch && namaMatch && nikMatch;
+        } else if (userData?.akses === "SURVEYOR") {
+            // SURVEYOR → PRODUCT + REGION + CABANG + Nama
+            const regionMatch =
+                item["REGION"]?.toUpperCase() === userData.region?.toUpperCase();
+
+            const cabangMatch =
+                item["CABANG"]?.toUpperCase() === userData.cabang?.toUpperCase();
+
+            return productMatch && namaMatch && regionMatch && cabangMatch;
+        }
+
+        // Default: jika role tidak dikenal → hanya filter PRODUCT + Nama MA
         return productMatch && namaMatch;
     });
+
+    // console.log("product aktif" + activeProduct);
+    // console.log(dataMA);
+    // console.log(filteredMA);
+
 
     // 🔹 Saat memilih MA
     const handleSelectMA = (item) => {
@@ -235,6 +287,20 @@ export default function Maintance() {
     // 🔹 Submit form
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // ❗ Validasi TRIM NAMA harus ada di database
+        const kontrakAda = dataMA.some(
+            (item) => item["TRIM NAMA"] === form.namaMA
+        );
+
+        if (!kontrakAda) {
+            Swal.fire({
+                icon: "error",
+                title: "Nama MA Tidak Ditemukan",
+                text: "Pastikan Nama MA sesuai dengan data yang tersedia.",
+            });
+            return; // ❌ hentikan submit
+        }
 
         // 1) Validasi minimal 5 kata
         const wordCount = form.detail.trim().split(/\s+/).length;
