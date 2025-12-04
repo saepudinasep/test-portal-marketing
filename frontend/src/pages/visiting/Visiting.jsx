@@ -272,13 +272,14 @@ export default function Visiting() {
             // Wajib isi No HP untuk semua yang bertemu
             requiredFields.noHp = "No HP Konsumen";
             requiredFields.detail = "Detail Visit";
+            requiredFields.bertemuDengan = "Bertemu Dengan";
 
-            if (form.bertemuDengan === "Interest" || form.bertemuDengan === "Tidak Berminat") {
+            if (form.aktivitas === "Interest" || form.aktivitas === "Tidak Berminat") {
                 requiredFields.keterangan = "Keterangan";
             }
 
             // Prospek → keterangan tidak wajib
-            if (form.bertemuDengan === "Prospek") {
+            if (form.aktivitas === "Prospek") {
                 // tidak menambah keterangan
             }
         }
