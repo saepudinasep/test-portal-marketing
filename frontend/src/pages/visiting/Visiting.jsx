@@ -78,7 +78,7 @@ export default function Visiting() {
             picVisit: parsedUser.name || "",
             nik: parsedUser.nik || "",
             jabatan: parsedUser.position || "",
-            product: parsedUser.product !== "ALL BRAND" ? parsedUser.product : "" // ⬅ FIX PENTING
+            product: parsedUser.product !== "ALL BRAND" ? parsedUser.product.toUppercase() : "" // ⬅ FIX PENTING
         }));
 
         const scriptURL =
@@ -90,7 +90,12 @@ export default function Visiting() {
             .then((res) => res.json())
             .then((data) => {
                 if (data && data.data) {
-                    setDataKontrak(data.data);
+                    const fixed = data.data.map((item) => ({
+                        ...item,
+                        PRODUCT: item["PRODUCT"]?.toUpperCase() || "",
+                        SUMBER_DATA: item["SUMBER DATA"]?.toUpperCase() || "",
+                    }));
+                    setDataKontrak(fixed);
                 }
             })
             .catch((err) => console.error("Error fetching kontrak:", err))
@@ -100,15 +105,15 @@ export default function Visiting() {
     // 🔍 Filter hasil pencarian No Kontrak
     const filteredKontrak = dataKontrak.filter((item) => {
         const matchNoKontrak = item["NO KONTRAK"]
-            ?.toLowerCase()
-            .includes(form.noKontrak.toLowerCase());
+            ?.toUpperCase()
+            .includes(form.noKontrak.toUpperCase());
 
         const matchSumberData = form.sumberData
-            ? item["SUMBER DATA"] === form.sumberData
+            ? item["SUMBER_DATA"] === form.sumberData.toUpperCase()
             : true;
 
         const matchProduct = form.product
-            ? item["PRODUCT"] === form.product
+            ? item["PRODUCT"] === form.product.toUpperCase()
             : true;
 
         return matchNoKontrak && matchSumberData && matchProduct;
@@ -140,7 +145,8 @@ export default function Visiting() {
             ...prev,
             noKontrak: item["NO KONTRAK"],
             namaDebitur: item["NAMA KONSUMEN"] || "",
-            sumberData: item["SUMBER DATA"] || "",
+            sumberData: (item["SUMBER_DATA"] || "").toUpperCase(),
+            product: (item["PRODUCT"] || "").toUpperCase(),
             ket: item["KETERANGAN"] || "",
         }));
         setShowDropdown(false);
@@ -154,6 +160,7 @@ export default function Visiting() {
             let updated = { ...prev, [name]: value };
 
             if (name === "product" && userData?.product === "ALL BRAND") {
+                updated.product = value.toUpperCase();
                 updated.sumberData = "";     // reset sumber data
                 updated.noKontrak = "";      // reset kontrak
                 updated.namaDebitur = "";
@@ -161,6 +168,7 @@ export default function Visiting() {
             }
 
             if (name === "sumberData") {
+                updated.product = value.toUpperCase();
                 updated.noKontrak = "";
                 updated.namaDebitur = "";
                 updated.ket = "";
