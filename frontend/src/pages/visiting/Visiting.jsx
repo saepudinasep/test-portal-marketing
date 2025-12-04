@@ -277,8 +277,8 @@ export default function Visiting() {
                 requiredFields.keterangan = "Keterangan";
             }
 
-            // Prospect → keterangan tidak wajib
-            if (form.bertemuDengan === "Prospect") {
+            // Prospek → keterangan tidak wajib
+            if (form.bertemuDengan === "Prospek") {
                 // tidak menambah keterangan
             }
         }
