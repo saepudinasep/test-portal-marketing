@@ -283,7 +283,7 @@ export default function Visiting() {
             }
         }
 
-        if (form.sumberData === "Mobil Priority 3" || form.sumberData === "Motor Priority 3") {
+        if (form.sumberData === "MOBIL PRIORITY 3" || form.sumberData === "MOTOR PRIORITY 3") {
             requiredFields.statusKonsumen = "Status Konsumen";
         }
 
