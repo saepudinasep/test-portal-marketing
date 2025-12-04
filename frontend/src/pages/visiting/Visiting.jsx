@@ -78,7 +78,7 @@ export default function Visiting() {
             picVisit: parsedUser.name || "",
             nik: parsedUser.nik || "",
             jabatan: parsedUser.position || "",
-            product: parsedUser.product !== "ALL BRAND" ? parsedUser.product.toUppercase() : "" // ⬅ FIX PENTING
+            product: parsedUser.product !== "ALL BRAND" ? parsedUser.product.toUpperCase() : "" // ⬅ FIX PENTING
         }));
 
         const scriptURL =
@@ -92,8 +92,8 @@ export default function Visiting() {
                 if (data && data.data) {
                     const fixed = data.data.map((item) => ({
                         ...item,
-                        PRODUCT: item["PRODUCT"]?.toUpperCase() || "",
-                        SUMBER_DATA: item["SUMBER DATA"]?.toUpperCase() || "",
+                        product: item["PRODUCT"]?.toUpperCase() || "",
+                        sumberData: item["SUMBER DATA"]?.toUpperCase() || "",
                     }));
                     setDataKontrak(fixed);
                 }
@@ -109,11 +109,11 @@ export default function Visiting() {
             .includes(form.noKontrak.toUpperCase());
 
         const matchSumberData = form.sumberData
-            ? item["SUMBER_DATA"] === form.sumberData.toUpperCase()
+            ? item.sumberData === form.sumberData.toUpperCase()
             : true;
 
         const matchProduct = form.product
-            ? item["PRODUCT"] === form.product.toUpperCase()
+            ? item.product === form.product.toUpperCase()
             : true;
 
         return matchNoKontrak && matchSumberData && matchProduct;
@@ -121,14 +121,14 @@ export default function Visiting() {
 
     const sumberDataOptions = {
         MOTORKU: [
-            "Motor Priority 1",
-            "Motor Priority 2",
-            "Motor Priority 3",
+            "MOTOR PRIORITY 1",
+            "MOTOR PRIORITY 2",
+            "MOTOR PRIORITY 3",
         ],
         MOBILKU: [
-            "Mobil Priority 1",
-            "Mobil Priority 2",
-            "Mobil Priority 3",
+            "MOBIL PRIORITY 1",
+            "MOBIL PRIORITY 2",
+            "MOBIL PRIORITY 3",
         ],
     };
 
@@ -145,7 +145,7 @@ export default function Visiting() {
             ...prev,
             noKontrak: item["NO KONTRAK"],
             namaDebitur: item["NAMA KONSUMEN"] || "",
-            sumberData: (item["SUMBER_DATA"] || "").toUpperCase(),
+            sumberData: (item["SUMBER DATA"] || "").toUpperCase(),
             product: (item["PRODUCT"] || "").toUpperCase(),
             ket: item["KETERANGAN"] || "",
         }));
@@ -160,7 +160,7 @@ export default function Visiting() {
             let updated = { ...prev, [name]: value };
 
             if (name === "product" && userData?.product === "ALL BRAND") {
-                updated.product = value.toUpperCase();
+                // updated.product = value.toUpperCase();
                 updated.sumberData = "";     // reset sumber data
                 updated.noKontrak = "";      // reset kontrak
                 updated.namaDebitur = "";
@@ -168,7 +168,7 @@ export default function Visiting() {
             }
 
             if (name === "sumberData") {
-                updated.product = value.toUpperCase();
+                // updated.product = value.toUpperCase();
                 updated.noKontrak = "";
                 updated.namaDebitur = "";
                 updated.ket = "";
@@ -515,7 +515,7 @@ export default function Visiting() {
 
                                 {/* Jika user ALL BRAND → pakai form.product */}
                                 {userData?.product === "ALL BRAND" && form.product &&
-                                    sumberDataOptions[form.product?.toUpperCase()].map((s, idx) => (
+                                    sumberDataOptions[form.product?.toUpperCase()]?.map((s, idx) => (
                                         <option key={idx} value={s}>{s}</option>
                                     ))
                                 }
@@ -641,7 +641,7 @@ export default function Visiting() {
 
 
                     {/* Status Konsumen hanya muncul jika Sumber Data adalah Mobil Priority 3 atau Motor Priority 3 */}
-                    {(form.sumberData === "Mobil Priority 3" || form.sumberData === "Motor Priority 3") && (
+                    {(form.sumberData === "MOBIL PRIORITY 3" || form.sumberData === "MOTOR PRIORITY 3") && (
                         <div>
                             <label className="block text-sm font-medium mb-1">
                                 Status Konsumen
