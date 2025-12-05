@@ -373,7 +373,7 @@ export default function Visiting() {
             });
 
             const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbw8XaeprUMGs4WBkFm1_aX5ZUITbl-jgJ9-EsiFu8R0c6wWWcK2SUUmLGJ8Y29gUXKW/exec",
+                "https://script.google.com/macros/s/AKfycbzUoaECyewKIA3MhDZ1-ckkBNdN1h-2GxeyqUOZemFKUSqeCg85IsgbG0lFXiICla0p/exec",
                 {
                     method: "POST",
                     body: JSON.stringify(payload),
