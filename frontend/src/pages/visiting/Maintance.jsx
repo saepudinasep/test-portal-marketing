@@ -98,28 +98,28 @@ export default function Maintance() {
         }));
 
         const regionURL = {
-            "JABODEBEK 1": "https://script.google.com/macros/s/AKfycbynrKPxbiqtQ4kRiTjrSEE2TXOhJDvLjSk2ycVSf6CHePG_Wg6WwOAV-NhAa-0KxKskjQ/exec",
+            "JABODEBEK 1": "https://script.google.com/macros/s/AKfycbx2HzaNUQWL5HWPFgnjWNI0FXXouiBywnva_ETScQO86P1x_jBucwlkzGp5CCOlZa1S0w/exec",
             "JABODEBEK 2": "https://script.google.com/macros/s/AKfycbw38CD6092epGsBp7uBzIXx9j_obDQbDzSQplxYSHBGf3FhM242B6_4V1qbPprOYKrWIg/exec",
-            "JABODEBEK 3": "https://script.google.com/macros/s/AKfycbyUhlF8-IvuH9oXr8GfNcQsLGrEcKQ76w8F-lp8GU7xujeurpN4cw1boCza-U2QaLw6/exec",
+            "JABODEBEK 3": "https://script.google.com/macros/s/AKfycby5LZjwtsU8IvllSo0nCWSfTFvkb2tSVK8oXKpXHtohbywFDiepJ42-HniuV_RDm9HR/exec",
             "BANTEN 1": "https://script.google.com/macros/s/AKfycbxz8Mqsknwlaq7QprxGuhfyqculk8mBMYLTMeBsyEqExawjFpNviIV0jHEygDXfVRae/exec",
             "BANTEN 2": "https://script.google.com/macros/s/AKfycbzVX0usKydMHVTOIf6zov1xpm1uYqFefI7LxAM4IGKhloptc5Dzg3PWoFeQa9HskKVS_w/exec",
             "JABAR 1": "https://script.google.com/macros/s/AKfycbyWKzQbSyccX71Epy3K8B20ZSXxGcvulHHGS6Rr6NkE0JXThc00EoksdUT-lOQvqeXZ/exec",
-            "JABAR 2": "https://script.google.com/macros/s/AKfycbzKoWJpMqaiwpBYirwtCVZbTHwnTBZ0WtZqnRWocrFn17NXAD-mO8lynqWJdBpJAAc/exec",
+            "JABAR 2": "https://script.google.com/macros/s/AKfycbzOFSD0NrDqDGNeUMVaOuHt4G2cuHnT7PVLua8EQY5pvsZdbCeqQI5QkTTdOZPFXGE/exec",
             "JATENGUT 1": "https://script.google.com/macros/s/AKfycbzXdANB18q9z-j5XuI6l68AzQC_-QZt931weOz-S6PAnSzGmbESKK5ZVbPZNgPn974R/exec",
             "JATENGUT 2": "https://script.google.com/macros/s/AKfycbxcLPFV-oa8xM_HgQVie63LIrXalu9Ds82uZF_md2mB2dErvQgs7IG_nwrOig-D0vWf/exec",
-            "JATENGSEL 1": "https://script.google.com/macros/s/AKfycbwVYyJlhHccAI7p0zqIhivbsM1sQiM78jSR_lSLrKFknvpdMbR7xuFtVwgLrGsu6VoG/exec",
+            "JATENGSEL 1": "https://script.google.com/macros/s/AKfycbx5p911jEBe1_1XjV_c91auKgTWm1UcsdyzgIx_reiCEai9tz02lm9TEoInooOtdYiF/exec",
             "JATENGSEL 2": "https://script.google.com/macros/s/AKfycbwDo8ahB4ZoQATzO0ha7sWIBkgleS-P_TjeNRck6VHJzWg5viynZ6KBhSjCxDdauYT5Ww/exec",
-            "JATIM 1": "https://script.google.com/macros/s/AKfycbyoZhEEyiH22ZX0kV8WBqv2KUnDBH9hr5e5pH42HdJ1SSpQZ3s2UWv4w1q1OFtsCyf1Qg/exec",
-            "JATIM 2": "https://script.google.com/macros/s/AKfycbyZPfObJcTMSSALrEzDG9DuWbg8kouBfAZtCypCeAXlAGWrxkCnc14sT324kyZm2D9Y/exec",
-            "JATIM 3": "https://script.google.com/macros/s/AKfycbyJYwx-dLlE_IY8iH-4JVZGeixOAEZ_2KZwBTmXP6OnALKUDv8GhX-lRFpEDes61aiP/exec",
-            "JATIM 5": "https://script.google.com/macros/s/AKfycbww4jVML5P7ar3GtSWb9dV0_hgQqmn0-iuxT4RbIn_C3lVmaaNeF4hcIOWoRJlY88CPJw/exec",
+            "JATIM 1": "https://script.google.com/macros/s/AKfycbw9wwlNqz4naeu7W9ZFrvjKmw18i6UK_zuB1E8yrjucoFnsA7sF0NwCuZxSB4lm8fIhFA/exec",
+            "JATIM 2": "https://script.google.com/macros/s/AKfycbxuMhyYtoMk0bZeHNyJEpROQXQTjYXbUt60DY0RJTU9dR5wJwYbYrF-_vb5Vd6s2Nde/exec",
+            "JATIM 3": "https://script.google.com/macros/s/AKfycbwAYer7eAcwygWZYS64Y75sVgQsIglBgpUoGmzGg5VRLypcF-ALL5oc-daVegKbWJuX/exec",
+            "JATIM 5": "https://script.google.com/macros/s/AKfycbw2VlwMWV6HENkhYY7vCucEgty1urBmPUBuUCymOhivNEjGAbCl7bxTANqAJMmMZRrA0Q/exec",
             "SUMBAGUT 1": "https://script.google.com/macros/s/AKfycbyBAxppLl4bmJCU5u6u8lYVGKewTZqclykLJ9mHy0WqMuDIJMFr9X4fgd6ggu7yVLjQ_Q/exec",
-            "SUMBAGUT 2": "https://script.google.com/macros/s/AKfycbxpKGHc7PpxIUH-4ppYSGuq6ESYMRTqZ1ZaldTHGHAtXrw5vGlWY1AG5Zcp6FpgTzifmw/exec",
-            "SUMBAGSEL 1": "https://script.google.com/macros/s/AKfycbxdOr86PGyP5NbA7kvwimz4-JoorlNr5TdXyeWHv_0iTic68TBJoLtJH83KBVMRc_Um/exec",
+            "SUMBAGUT 2": "https://script.google.com/macros/s/AKfycbwrWzoM64tUmw_7l8iBMcO2Tz5h20mWsf7WnziXYOoxAMwquJLYcQmbWWrTt5FL9wBAbQ/exec",
+            "SUMBAGSEL 1": "https://script.google.com/macros/s/AKfycby1Zr-SeUv48k6Jw5twT6oKMKZyGcRdc3dhZ4R4Y_KmEqt126Ct0BOC7qq91zg1GSCJ/exec",
             "SUMBAGSEL 2": "https://script.google.com/macros/s/AKfycbzVqDSPobHghZ1-V-hVYFhkMM1hbKQz_4uvr9k6GfxLJbnSrFHmqxyueJrw6fV2RU8mIA/exec",
             "KALIMANTAN": "https://script.google.com/macros/s/AKfycbzRKpaZmch4C7AT-Hs7hEdZ_X9-GEGnHXK7-m3J73PwElhIcQrh_PEZ4XgPixMhp97IOA/exec",
             "SULAWESI 1": "https://script.google.com/macros/s/AKfycbzQMK6fKEE82Rg-ku18Qow5xzaMQwqJiPASpIMLbFKZIWTVegbuPkXDaTnwZ9lMlHakFQ/exec",
-            "SULAWESI 2": "https://script.google.com/macros/s/AKfycbyMHKohIU8ceKmLH9W6YccTGNdPT4_sYoots03_iJwp5rBlLtsyq25D-TS8Ba6xd7taig/exec"
+            "SULAWESI 2": "https://script.google.com/macros/s/AKfycbzsZDPeAqwv_iOKhmiN_LYaqFBrtcTR_AVNvPTiP0H5fx_asK4LKvFAta2VRd03cSM0WA/exec"
         };
 
         const baseURL = regionURL[parsedUser.region] || "";
