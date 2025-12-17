@@ -356,7 +356,7 @@ export default function Maintance() {
             });
 
             const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbzY3uviXoa84cE3hKXadrXgyEpJZN2o1OnFId_vYHhornZpXqIk5ALu9m2AqcO7KSYa/exec",
+                "https://script.google.com/macros/s/AKfycbxbCyNE4T1d5kwbOL6_33t-LSFqrhUACwgUjXvgOJC8c0I7zpNcNnceHI7sRrGeD1Ud/exec",
                 {
                     method: "POST",
                     body: JSON.stringify(payload),

@@ -25,7 +25,7 @@ export default function MainLayout({ userData, setIsLoggedIn }) {
             <Navbar userData={userData} />
 
             {/* Konten utama */}
-            <main className="flex-1 p-6 bg-gray-100 overflow-auto">
+            <main className="flex-1 p-1 bg-gray-100 overflow-auto">
                 <Outlet />
             </main>
 

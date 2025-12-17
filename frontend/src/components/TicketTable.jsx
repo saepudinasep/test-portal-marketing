@@ -1,280 +1,347 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Select from "react-select";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { useTicketFilterPagination } from "./useTicketFilterPagination";
 
 export default function TicketTable({ tickets, userData }) {
     const navigate = useNavigate();
-    const [filteredTickets, setFilteredTickets] = useState([]);
+
     const [searchInput, setSearchInput] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
     const [regionFilter, setRegionFilter] = useState([]);
     const [brandFilter, setBrandFilter] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
 
     const isHeadOffice = userData?.cabang === "Kantor Pusat";
 
-    const allRegions = [
-        "BANTEN 1",
-        "BANTEN 2",
-        "JABAR 1",
-        "JABAR 2",
-        "JABODEBEK 1",
-        "JABODEBEK 2",
-        "JABODEBEK 3",
-        "JATENGSEL 1",
-        "JATENGSEL 2",
-        "JATENGUT 1",
-        "JATENGUT 2",
-        "JATIM 1",
-        "JATIM 2",
-        "JATIM 3",
-        "JATIM 5",
-        "KALIMANTAN",
-        "SULAWESI 1",
-        "SULAWESI 2",
-        "SUMBAGSEL 1",
-        "SUMBAGSEL 2",
-        "SUMBAGUT 1",
-        "SUMBAGUT 2"
-    ];
+    const {
+        pageTickets,
+        currentPage,
+        setCurrentPage,
+        totalPages,
+    } = useTicketFilterPagination({
+        tickets,
+        searchInput,
+        statusFilter,
+        regionFilter,
+        brandFilter,
+        itemsPerPage: 10,
+    });
 
-    const allBrands = ["HAJIKU", "MASKU", "MOBILKU", "MOTORKU", "REGULER"];
-
-    useEffect(() => {
-        let filtered = tickets;
-
-        if (searchInput.trim() !== "") {
-            if (!/^\d+$/.test(searchInput)) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "Input Tidak Valid",
-                    text: "Harap masukkan angka Ticket ID (contoh: 25090001).",
-                });
-            } else {
-                filtered = filtered.filter(
-                    (t) =>
-                        (t.ticketId || "").replace(/\D/g, "") ===
-                        searchInput.trim()
-                );
-            }
-        }
-
-        if (statusFilter !== "All") {
-            filtered = filtered.filter(
-                (t) =>
-                    (t.status || "").toLowerCase() ===
-                    statusFilter.toLowerCase()
+    // =========================
+    // HANDLERS
+    // =========================
+    const handleSearchBlur = () => {
+        if (searchInput && !/^\d+$/.test(searchInput)) {
+            Swal.fire(
+                "Input Tidak Valid",
+                "Ticket ID harus berupa angka",
+                "warning"
             );
+            setSearchInput("");
         }
+    };
 
-        if (regionFilter.length > 0) {
-            const regions = regionFilter.map((r) => r.value);
-            filtered = filtered.filter((t) => regions.includes(t.region));
-        }
-
-        if (brandFilter.length > 0) {
-            const brands = brandFilter.map((b) => b.value);
-            filtered = filtered.filter((t) => brands.includes(t.brand));
-        }
-
-        filtered.sort((a, b) => {
-            const [dayA, monthA, yearA] = a.createDate.split("/");
-            const [dayB, monthB, yearB] = b.createDate.split("/");
-            const dateA = Date.UTC(yearA, monthA - 1, dayA);
-            const dateB = Date.UTC(yearB, monthB - 1, dayB);
-            return dateB - dateA;
-        });
-
-        setFilteredTickets(filtered);
+    const resetFilters = () => {
+        setSearchInput("");
+        setStatusFilter("All");
+        setRegionFilter([]);
+        setBrandFilter([]);
         setCurrentPage(1);
-    }, [tickets, searchInput, statusFilter, regionFilter, brandFilter]);
-
-    const totalPages = Math.ceil(filteredTickets.length / itemsPerPage);
-    const pageTickets = filteredTickets.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
+    };
 
     const getBadgeClass = (status) => {
         switch ((status || "").toLowerCase()) {
             case "open":
-                return "bg-green-500 text-white";
+                return "bg-green-100 text-green-700";
             case "closed":
-                return "bg-gray-500 text-white";
+                return "bg-gray-200 text-gray-700";
             case "reject":
-                return "bg-red-500 text-white";
+                return "bg-red-100 text-red-700";
             default:
-                return "bg-gray-300 text-gray-800";
+                return "bg-gray-100 text-gray-600";
         }
     };
 
-    const handleRowClick = (ticketId) => {
-        navigate(`/dashboard/ticket/${ticketId}`);
-    };
+    // =========================
+    // PAGINATION UI
+    // =========================
+    const paginationPages = useMemo(() => {
+        const pages = [];
 
-    const resetFilters = () => {
-        setRegionFilter([]);
-        setBrandFilter([]);
-        setStatusFilter("All");
-        setSearchInput("");
-        Swal.fire("Reset!", "Semua filter telah dihapus.", "info");
-    };
+        const add = (p) => {
+            if (p >= 1 && p <= totalPages && !pages.includes(p)) {
+                pages.push(p);
+            }
+        };
 
+        add(1);
+        add(currentPage - 1);
+        add(currentPage);
+        add(currentPage + 1);
+        add(totalPages);
+
+        pages.sort((a, b) => a - b);
+
+        const result = [];
+        for (let i = 0; i < pages.length; i++) {
+            if (i > 0 && pages[i] - pages[i - 1] > 1) {
+                result.push("...");
+            }
+            result.push(pages[i]);
+        }
+
+        return result;
+    }, [currentPage, totalPages]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchInput, statusFilter, regionFilter, brandFilter]);
+
+    // =========================
+    // MASTER OPTIONS
+    // =========================
+    const regionOptions = [
+        { value: "BANTEN 1", label: "BANTEN 1" },
+        { value: "BANTEN 2", label: "BANTEN 2" },
+        { value: "JABAR 1", label: "JABAR 1" },
+        { value: "JABAR 2", label: "JABAR 2" },
+        { value: "JABODEBEK 1", label: "JABODEBEK 1" },
+        { value: "JABODEBEK 2", label: "JABODEBEK 2" },
+        { value: "JABODEBEK 3", label: "JABODEBEK 3" },
+        { value: "JATENGSEL 1", label: "JATENGSEL 1" },
+        { value: "JATENGSEL 2", label: "JATENGSEL 2" },
+        { value: "JATENGUT 1", label: "JATENGUT 1" },
+        { value: "JATENGUT 2", label: "JATENGUT 2" },
+        { value: "JATIM 1", label: "JATIM 1" },
+        { value: "JATIM 2", label: "JATIM 2" },
+        { value: "JATIM 3", label: "JATIM 3" },
+        { value: "JATIM 5", label: "JATIM 5" },
+        { value: "KALIMANTAN", label: "KALIMANTAN" },
+        { value: "SULAWESI 1", label: "SULAWESI 1" },
+        { value: "SULAWESI 2", label: "SULAWESI 2" },
+        { value: "SUMBAGSEL 1", label: "SUMBAGSEL 1" },
+        { value: "SUMBAGSEL 2", label: "SUMBAGSEL 2" },
+        { value: "SUMBAGUT 1", label: "SUMBAGUT 1" },
+        { value: "SUMBAGUT 2", label: "SUMBAGUT 2" },
+    ];
+
+    const brandOptions = [
+        { value: "REGULER", label: "REGULER" },
+        { value: "MOTORKU", label: "MOTORKU" },
+        { value: "MOBILKU", label: "MOBILKU" },
+        { value: "MASKU", label: "MASKU" },
+        { value: "HAJIKU", label: "HAJIKU" },
+    ];
+
+    const statusOptions = [
+        { value: "All", label: "All Status" },
+        { value: "open", label: "Open" },
+        { value: "closed", label: "Closed" },
+        { value: "reject", label: "Reject" },
+    ];
+
+    // =========================
+    // RENDER
+    // =========================
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             <h3 className="text-xl font-semibold">📂 Daftar Tiket</h3>
 
-            {/* Filter Section */}
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <input
-                    type="text"
-                    placeholder="Cari Ticket ID"
-                    className="border rounded px-3 py-2 w-full md:w-1/3 text-sm sm:text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
-                />
+            {/* FILTER CARD */}
+            <div className="bg-white border rounded-xl shadow-sm">
+                <div className="p-4 space-y-4">
 
-                <div className="flex flex-wrap gap-2 items-center">
-                    {["Open", "Closed", "Reject", "All"].map((status) => (
+                    {/* HEADER */}
+                    <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-semibold text-gray-700">
+                            🔍 Filter & Pencarian
+                        </h4>
+
                         <button
-                            key={status}
-                            className={`px-4 py-1 rounded-full text-sm sm:text-xs font-medium border transition-colors duration-200 ${statusFilter === status
-                                ? "bg-blue-500 text-white border-blue-500"
-                                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-                                }`}
-                            onClick={() => setStatusFilter(status)}
+                            onClick={resetFilters}
+                            className="text-xs font-medium text-red-600 hover:underline"
                         >
-                            {status}
+                            Reset Semua
                         </button>
-                    ))}
+                    </div>
 
-                    <button
-                        onClick={resetFilters}
-                        className="px-4 py-1 rounded-full text-sm sm:text-xs font-medium bg-gray-200 hover:bg-gray-300 transition"
-                    >
-                        Reset
-                    </button>
+                    {/* FILTER GRID */}
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+
+                        {/* SEARCH */}
+                        <div className="md:col-span-4">
+                            <label className="block text-xs font-medium text-gray-600 mb-1">
+                                Ticket ID
+                            </label>
+                            <input
+                                value={searchInput}
+                                onChange={(e) => setSearchInput(e.target.value)}
+                                onBlur={handleSearchBlur}
+                                placeholder="Contoh: 251214010001"
+                                className="
+                        w-full rounded-lg border px-3 py-2 text-sm
+                        focus:outline-none focus:ring-2 focus:ring-blue-500
+                        focus:border-blue-500
+                    "
+                            />
+                        </div>
+
+                        {/* STATUS */}
+                        <div className="md:col-span-2">
+                            <label className="block text-xs font-medium text-gray-600 mb-1">
+                                Status
+                            </label>
+                            <Select
+                                options={statusOptions}
+                                value={statusOptions.find(
+                                    (o) =>
+                                        o.value.toLowerCase() ===
+                                        statusFilter.toLowerCase()
+                                )}
+                                onChange={(opt) => setStatusFilter(opt.value)}
+                                placeholder="All"
+                                className="text-sm"
+                                classNamePrefix="select"
+                            />
+                        </div>
+
+                        {/* BRAND */}
+                        {isHeadOffice && (
+                            <div className="md:col-span-3">
+                                <label className="block text-xs font-medium text-gray-600 mb-1">
+                                    Brand
+                                </label>
+                                <Select
+                                    isMulti
+                                    options={brandOptions}
+                                    value={brandFilter}
+                                    onChange={setBrandFilter}
+                                    placeholder="Pilih Brand"
+                                    className="text-sm"
+                                    classNamePrefix="select"
+                                />
+                            </div>
+                        )}
+
+                        {/* REGION */}
+                        {isHeadOffice && (
+                            <div className="md:col-span-3">
+                                <label className="block text-xs font-medium text-gray-600 mb-1">
+                                    Region
+                                </label>
+                                <Select
+                                    isMulti
+                                    options={regionOptions}
+                                    value={regionFilter}
+                                    onChange={setRegionFilter}
+                                    placeholder="Pilih Region"
+                                    className="text-sm"
+                                    classNamePrefix="select"
+                                />
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
-            {/* Multi-select modern */}
-            {isHeadOffice && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                        <label className="block text-sm font-medium mb-1">
-                            Region
-                        </label>
-                        <Select
-                            isMulti
-                            options={allRegions.map((r) => ({
-                                value: r,
-                                label: r,
-                            }))}
-                            value={regionFilter}
-                            onChange={setRegionFilter}
-                            className="text-sm"
-                            placeholder="Pilih region..."
-                            styles={{
-                                control: (base) => ({
-                                    ...base,
-                                    borderRadius: "0.5rem",
-                                    borderColor: "#cbd5e1",
-                                    minHeight: "40px",
-                                }),
-                            }}
-                        />
-                    </div>
 
-                    <div>
-                        <label className="block text-sm font-medium mb-1">
-                            Brand
-                        </label>
-                        <Select
-                            isMulti
-                            options={allBrands.map((b) => ({
-                                value: b,
-                                label: b,
-                            }))}
-                            value={brandFilter}
-                            onChange={setBrandFilter}
-                            className="text-sm"
-                            placeholder="Pilih brand..."
-                            styles={{
-                                control: (base) => ({
-                                    ...base,
-                                    borderRadius: "0.5rem",
-                                    borderColor: "#cbd5e1",
-                                    minHeight: "40px",
-                                }),
-                            }}
-                        />
-                    </div>
-                </div>
-            )}
-
-            {/* Table */}
-            <div className="overflow-x-auto rounded shadow-sm mt-4">
-                <table className="min-w-full divide-y divide-gray-200 text-sm sm:text-xs">
-                    <thead className="bg-gray-200">
+            {/* TABLE */}
+            <div className="relative overflow-x-auto border rounded-xl shadow-sm bg-white">
+                <table className="min-w-full text-sm">
+                    {/* TABLE HEAD */}
+                    <thead className="bg-gray-50 text-gray-600 uppercase text-xs sticky top-0 z-10">
                         <tr>
-                            <th className="px-4 py-3 text-left">Create Date</th>
-                            <th className="px-4 py-3 text-left">Ticket</th>
-                            <th className="px-4 py-3 text-left">Error System</th>
+                            <th className="px-4 py-3 text-left font-semibold">
+                                Create Date
+                            </th>
+                            <th className="px-4 py-3 text-left font-semibold">
+                                Ticket
+                            </th>
+                            <th className="px-4 py-3 text-left font-semibold">
+                                Error
+                            </th>
                             {isHeadOffice && (
-                                <th className="px-4 py-3 text-left">Brand</th>
+                                <th className="px-4 py-3 text-left font-semibold">
+                                    Brand
+                                </th>
                             )}
                             {isHeadOffice && (
-                                <th className="px-4 py-3 text-left">Region</th>
+                                <th className="px-4 py-3 text-left font-semibold">
+                                    Region
+                                </th>
                             )}
-                            <th className="px-4 py-3 text-left">Status</th>
+                            <th className="px-4 py-3 text-left font-semibold">
+                                Status
+                            </th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+
+                    {/* TABLE BODY */}
+                    <tbody className="divide-y">
                         {pageTickets.length === 0 ? (
                             <tr>
                                 <td
-                                    colSpan={isHeadOffice ? 5 : 4}
-                                    className="text-center py-4 text-gray-500"
+                                    colSpan={isHeadOffice ? 6 : 4}
+                                    className="text-center py-12"
                                 >
-                                    Belum ada tiket.
+                                    <div className="flex flex-col items-center gap-2 text-gray-500">
+                                        <span className="text-2xl">📭</span>
+                                        <span className="text-sm">
+                                            Tidak ada data ditemukan
+                                        </span>
+                                        <span className="text-xs text-gray-400">
+                                            Coba ubah filter atau pencarian
+                                        </span>
+                                    </div>
                                 </td>
                             </tr>
                         ) : (
-                            pageTickets.map((ticket) => (
+                            pageTickets.map((t) => (
                                 <tr
-                                    key={ticket.ticketId}
-                                    className="hover:bg-gray-50 cursor-pointer"
+                                    key={t.ticketId}
                                     onClick={() =>
-                                        handleRowClick(ticket.ticketId)
+                                        navigate(`/dashboard/ticket/${t.ticketId}?region=${encodeURIComponent(t.region)}`)
                                     }
+                                    className="
+                            cursor-pointer
+                            hover:bg-blue-50
+                            transition-colors
+                        "
                                 >
-                                    <td className="px-4 py-2">
-                                        {ticket.createDate || "-"}
+                                    <td className="px-4 py-3 whitespace-nowrap text-gray-700">
+                                        {t.createDate}
                                     </td>
-                                    <td className="px-4 py-2 text-blue-600 font-medium">
-                                        {ticket.ticketId}
+
+                                    <td className="px-4 py-3 font-semibold text-blue-600">
+                                        {t.ticketId}
                                     </td>
-                                    <td className="px-4 py-2">
-                                        {ticket.errorSystem || "-"}
+
+                                    <td className="px-4 py-3 text-gray-700 max-w-xs truncate">
+                                        {t.errorSystem}
                                     </td>
+
                                     {isHeadOffice && (
-                                        <td className="px-4 py-2">
-                                            {ticket.brand || "-"}
+                                        <td className="px-4 py-3 text-gray-700">
+                                            {t.brand}
                                         </td>
                                     )}
+
                                     {isHeadOffice && (
-                                        <td className="px-4 py-2">
-                                            {ticket.region || "-"}
+                                        <td className="px-4 py-3 text-gray-700">
+                                            {t.region}
                                         </td>
                                     )}
-                                    <td className="px-4 py-2">
+
+                                    <td className="px-4 py-3">
                                         <span
-                                            className={`px-2 py-1 rounded-full text-xs sm:text-[10px] font-semibold ${getBadgeClass(
-                                                ticket.status
-                                            )}`}
+                                            className={`
+                                    inline-flex items-center
+                                    px-2.5 py-1 rounded-full
+                                    text-xs font-semibold
+                                    ${getBadgeClass(t.status)}
+                                `}
                                         >
-                                            {ticket.status || "-"}
+                                            {t.status}
                                         </span>
                                     </td>
                                 </tr>
@@ -284,23 +351,43 @@ export default function TicketTable({ tickets, userData }) {
                 </table>
             </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-                <div className="flex justify-center gap-2 mt-4 flex-wrap">
-                    {Array.from({ length: totalPages }, (_, i) => (
+            {/* PAGINATION */}
+            <div className="flex items-center justify-center gap-1">
+                <button
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((p) => p - 1)}
+                    className="px-3 py-1 border rounded disabled:opacity-40"
+                >
+                    Prev
+                </button>
+
+                {paginationPages.map((p, i) =>
+                    p === "..." ? (
+                        <span key={`e-${i}`} className="px-2">
+                            ...
+                        </span>
+                    ) : (
                         <button
-                            key={i + 1}
-                            className={`px-3 py-1 rounded-full text-sm border ${currentPage === i + 1
-                                ? "bg-blue-500 text-white border-blue-500"
-                                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                            key={p}
+                            onClick={() => setCurrentPage(p)}
+                            className={`px-3 py-1 border rounded ${p === currentPage
+                                ? "bg-blue-600 text-white"
+                                : "hover:bg-gray-100"
                                 }`}
-                            onClick={() => setCurrentPage(i + 1)}
                         >
-                            {i + 1}
+                            {p}
                         </button>
-                    ))}
-                </div>
-            )}
+                    )
+                )}
+
+                <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage((p) => p + 1)}
+                    className="px-3 py-1 border rounded disabled:opacity-40"
+                >
+                    Next
+                </button>
+            </div>
         </div>
     );
 }

@@ -95,7 +95,7 @@ export default function NewTicket() {
     };
 
     // required fields depending on kendalaSystem
-    const baseRequired = ["issueSummary", "detailError", "kendalaSystem", "subKendala"];
+    const baseRequired = ["issueSummary", "detailError", "kendalaSystem", "subKendala", "file"];
     const dynamicRequired = () => {
         if (isKI(form.kendalaSystem)) {
             return ["namaCustomer"]; // only namaCustomer required
@@ -153,6 +153,7 @@ export default function NewTicket() {
             noApp: "No APP",
             issueSummary: "Issue Summary",
             detailError: "Summary Error",
+            file: "Foto",
         };
         return map[name] || name;
     };
@@ -206,6 +207,14 @@ export default function NewTicket() {
         return trimmed === prefix ? "" : trimmed;
     };
 
+    const isValidWithPrefix = (value, prefix) => {
+        if (!value) return false;
+        const v = String(value).trim();
+        if (!v.startsWith(prefix)) return false;
+        const numberPart = v.replace(prefix, "");
+        return numberPart.length > 0; // WAJIB ada angka
+    };
+
     // 📌 Fungsi compress image menggunakan Canvas
     const compressImage = (file, quality = 0.6, maxWidth = 1500) => {
         return new Promise((resolve) => {
@@ -251,18 +260,56 @@ export default function NewTicket() {
         let hasError = false;
 
         required.forEach((field) => {
+            let ok = true;
             const value = form[field];
-            const ok = value !== null && String(value || "").trim() !== "";
-            setErrors((prev) => ({ ...prev, [field]: !ok }));
-            if (!ok) {
-                hasError = true;
+
+            // 🔴 VALIDASI KHUSUS PREFIX
+            if (field === "noKawanInternal") {
+                ok = isValidWithPrefix(value, "KWN");
             }
+            else if (field === "taskIdPolo") {
+                ok = isValidWithPrefix(value, "POL");
+            }
+            else if (field === "noOdr") {
+                ok = isValidWithPrefix(value, "ODRNO");
+            }
+            else {
+                ok = value !== null && String(value || "").trim() !== "";
+            }
+
+            setErrors((prev) => ({ ...prev, [field]: !ok }));
+            if (!ok) hasError = true;
         });
 
+        if (!form.file) {
+            setErrors((prev) => ({ ...prev, file: true }));
+            toast.error("Foto/Video wajib diupload");
+            return;
+        }
+
         if (hasError) {
-            // highlight first missing
-            const firstMissing = required.find((f) => !form[f] || String(form[f]).trim() === "");
-            toast.error(`Field wajib belum lengkap: ${labelFor(firstMissing)}`);
+            const firstInvalid = required.find((field) => {
+                const value = form[field];
+
+                // 🔴 Validasi field dengan prefix
+                if (field === "noKawanInternal") {
+                    return !isValidWithPrefix(value, "KWN");
+                }
+                if (field === "taskIdPolo") {
+                    return !isValidWithPrefix(value, "POL");
+                }
+                if (field === "noOdr") {
+                    return !isValidWithPrefix(value, "ODRNO");
+                }
+
+                // 🔵 Validasi default (kosong / spasi)
+                return value === null || String(value || "").trim() === "";
+            });
+
+            toast.error(
+                `Field wajib belum lengkap: ${labelFor(firstInvalid)}`,
+                { duration: 3000 }
+            );
             return;
         }
 
@@ -281,12 +328,46 @@ export default function NewTicket() {
                 fileBase64 = await compressImage(form.file, 0.7, 900);
             }
 
-            const res = await fetch(
-                "https://script.google.com/macros/s/AKfycbySMMzPBhCHslPtjRz2zE2rLg60NGi1T9JobZChFbgP7_-R42nOWgfDrkxe5Qhc85IrAA/exec",
+            const regionURL = {
+                "JABODEBEK": "https://script.google.com/macros/s/AKfycbwuAzYY_l3A6py5GBQ37oWFYf2p5meQUeJEwwkD_vrfZAdWYiM1dkIhOiiF6LHER3nXvA/exec",
+                "JABODEBEK 1": "https://script.google.com/macros/s/AKfycbwuAzYY_l3A6py5GBQ37oWFYf2p5meQUeJEwwkD_vrfZAdWYiM1dkIhOiiF6LHER3nXvA/exec",
+                "JABODEBEK 2": "https://script.google.com/macros/s/AKfycbwuAzYY_l3A6py5GBQ37oWFYf2p5meQUeJEwwkD_vrfZAdWYiM1dkIhOiiF6LHER3nXvA/exec",
+                "JABODEBEK 3": "https://script.google.com/macros/s/AKfycbwuAzYY_l3A6py5GBQ37oWFYf2p5meQUeJEwwkD_vrfZAdWYiM1dkIhOiiF6LHER3nXvA/exec",
+                "BANTEN": "https://script.google.com/macros/s/AKfycbxjCJw_WnqDBvw1EDU0DJtpOo8SKXVdFXXlSmKXwfRHz0ejvLplKd2IqQu6TssYn-qn/exec",
+                "BANTEN 1": "https://script.google.com/macros/s/AKfycbxjCJw_WnqDBvw1EDU0DJtpOo8SKXVdFXXlSmKXwfRHz0ejvLplKd2IqQu6TssYn-qn/exec",
+                "BANTEN 2": "https://script.google.com/macros/s/AKfycbxjCJw_WnqDBvw1EDU0DJtpOo8SKXVdFXXlSmKXwfRHz0ejvLplKd2IqQu6TssYn-qn/exec",
+                "JABAR": "https://script.google.com/macros/s/AKfycbzpuBwUM9BrbWUJaJpAIfa6idk23QlA5HXACj6fnkMnynX5eHiwrqufXyVrMr-ctA9F/exec",
+                "JABAR 1": "https://script.google.com/macros/s/AKfycbzpuBwUM9BrbWUJaJpAIfa6idk23QlA5HXACj6fnkMnynX5eHiwrqufXyVrMr-ctA9F/exec",
+                "JABAR 2": "https://script.google.com/macros/s/AKfycbzpuBwUM9BrbWUJaJpAIfa6idk23QlA5HXACj6fnkMnynX5eHiwrqufXyVrMr-ctA9F/exec",
+                "JATENGUT": "https://script.google.com/macros/s/AKfycbzB-P-QOZvstvzo4i0THRmKkD0umq63EdFwsHJYzwnWW14rMsVz5u9Gc6llnxdPxoTa/exec",
+                "JATENGUT 1": "https://script.google.com/macros/s/AKfycbzB-P-QOZvstvzo4i0THRmKkD0umq63EdFwsHJYzwnWW14rMsVz5u9Gc6llnxdPxoTa/exec",
+                "JATENGUT 2": "https://script.google.com/macros/s/AKfycbzB-P-QOZvstvzo4i0THRmKkD0umq63EdFwsHJYzwnWW14rMsVz5u9Gc6llnxdPxoTa/exec",
+                "JATENGSEL": "https://script.google.com/macros/s/AKfycbzHCcJ5skJpcmfIzKZtrNh6gHb1UFBsQWQMA8Tpv5lsb5EitsZbFhFUjncEpXreWiHu/exec",
+                "JATENGSEL 1": "https://script.google.com/macros/s/AKfycbzHCcJ5skJpcmfIzKZtrNh6gHb1UFBsQWQMA8Tpv5lsb5EitsZbFhFUjncEpXreWiHu/exec",
+                "JATENGSEL 2": "https://script.google.com/macros/s/AKfycbzHCcJ5skJpcmfIzKZtrNh6gHb1UFBsQWQMA8Tpv5lsb5EitsZbFhFUjncEpXreWiHu/exec",
+                "JATIM": "https://script.google.com/macros/s/AKfycbwNkmlnY28Y2uMDRzDq0BgoUL2Dr40Y7-88fXcSmKWC7YBVTq9kBhKoA2mUA9-MReK0YA/exec",
+                "JATIM 1": "https://script.google.com/macros/s/AKfycbwNkmlnY28Y2uMDRzDq0BgoUL2Dr40Y7-88fXcSmKWC7YBVTq9kBhKoA2mUA9-MReK0YA/exec",
+                "JATIM 2": "https://script.google.com/macros/s/AKfycbwNkmlnY28Y2uMDRzDq0BgoUL2Dr40Y7-88fXcSmKWC7YBVTq9kBhKoA2mUA9-MReK0YA/exec",
+                "JATIM 3": "https://script.google.com/macros/s/AKfycbwNkmlnY28Y2uMDRzDq0BgoUL2Dr40Y7-88fXcSmKWC7YBVTq9kBhKoA2mUA9-MReK0YA/exec",
+                "JATIM 5": "https://script.google.com/macros/s/AKfycbwNkmlnY28Y2uMDRzDq0BgoUL2Dr40Y7-88fXcSmKWC7YBVTq9kBhKoA2mUA9-MReK0YA/exec",
+                "SUMBAGUT": "https://script.google.com/macros/s/AKfycby3ymWyp3igyUqgrkpFIxRzI_rNHQb5kl40FrBc1wYBqm6heVHadJoldR5fdX1Gchx3LQ/exec",
+                "SUMBAGUT 1": "https://script.google.com/macros/s/AKfycby3ymWyp3igyUqgrkpFIxRzI_rNHQb5kl40FrBc1wYBqm6heVHadJoldR5fdX1Gchx3LQ/exec",
+                "SUMBAGUT 2": "https://script.google.com/macros/s/AKfycby3ymWyp3igyUqgrkpFIxRzI_rNHQb5kl40FrBc1wYBqm6heVHadJoldR5fdX1Gchx3LQ/exec",
+                "SUMBAGSEL": "https://script.google.com/macros/s/AKfycbytOMXXHgf2cgFxRW9BrT_SL9eDJVGyrwFiC7hImZzMLObcDieSPDLRDEq_srjtHq4/exec",
+                "SUMBAGSEL 1": "https://script.google.com/macros/s/AKfycbytOMXXHgf2cgFxRW9BrT_SL9eDJVGyrwFiC7hImZzMLObcDieSPDLRDEq_srjtHq4/exec",
+                "SUMBAGSEL 2": "https://script.google.com/macros/s/AKfycbytOMXXHgf2cgFxRW9BrT_SL9eDJVGyrwFiC7hImZzMLObcDieSPDLRDEq_srjtHq4/exec",
+                "KALIMANTAN": "https://script.google.com/macros/s/AKfycbzKI-DEyu6SjUBa_IvmCC9W8WugwaIRAWi0pyyz11eiNx-A3NcmccFO1MDVcZAYeTPX/exec",
+                "SULAWESI": "https://script.google.com/macros/s/AKfycbxUq7om3tkEg-Ho5oQUuNKQnVBWGEA1a61UIBIfGc9tMALuJ7-Rc6C83YEfhOvCcZRy2Q/exec",
+                "SULAWESI 1": "https://script.google.com/macros/s/AKfycbxUq7om3tkEg-Ho5oQUuNKQnVBWGEA1a61UIBIfGc9tMALuJ7-Rc6C83YEfhOvCcZRy2Q/exec",
+                "SULAWESI 2": "https://script.google.com/macros/s/AKfycbxUq7om3tkEg-Ho5oQUuNKQnVBWGEA1a61UIBIfGc9tMALuJ7-Rc6C83YEfhOvCcZRy2Q/exec"
+            };
+
+            const baseURL = regionURL[user.region] || "";
+
+            const res = await fetch(baseURL,
                 {
                     method: "POST",
                     body: JSON.stringify({
-                        action: "createTicket",
                         region: user.region || "-",
                         branch: user.cabang || "-",
                         product: form.product || user.product,
@@ -333,9 +414,6 @@ export default function NewTicket() {
             console.error(err);
             Swal.fire("Error", "Gagal mengirim ticket.", "error");
         }
-        //  finally {
-        //     setLoading(false);
-        // }
     };
 
     const inputStyle = (field) => {

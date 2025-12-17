@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 // import { useNavigate } from "react-router-dom";
 
 export default function DetailTicket() {
     // const navigate = useNavigate();
     const { id } = useParams();
+    const [searchParams] = useSearchParams();
+    const region = searchParams.get("region");
     const [ticket, setTicket] = useState(null);
     const [loading, setLoading] = useState(true);
     const [chat, setChat] = useState([]);
@@ -96,38 +98,6 @@ export default function DetailTicket() {
             };
         });
     };
-
-    // === Upload file base64 ke Apps Script ===
-    // const uploadFileBase = async (file, folderUrl) => {
-    //     const reader = new FileReader();
-    //     return new Promise((resolve, reject) => {
-    //         reader.onload = async () => {
-    //             const base64 = reader.result.split(",")[1];
-    //             try {
-    //                 const res = await fetch(
-    //                     "https://script.google.com/macros/s/AKfycbwATI3cgS_1BITlLplk50GQPYU_ESmERZjW7Oj1MaJeDSB49Yyzx0cG1LcjpQJ4Iuse/exec",
-    //                     {
-    //                         method: "POST",
-    //                         // headers: { "Content-Type": "application/json" },
-    //                         body: JSON.stringify({
-    //                             action: "uploadFileBase",
-    //                             folderUrl,
-    //                             filename: file.name,
-    //                             filedata: base64,
-    //                         }),
-    //                     }
-    //                 );
-    //                 const json = await res.json();
-    //                 if (json.success) resolve(json.fileUrl);
-    //                 else reject(json.message);
-    //             } catch (err) {
-    //                 reject(err);
-    //             }
-    //         };
-    //         reader.onerror = reject;
-    //         reader.readAsDataURL(file);
-    //     });
-    // };
 
     // === Upload file base64 ke Apps Script + Compress ===
     const uploadFileBase = async (file, folderUrl) => {
