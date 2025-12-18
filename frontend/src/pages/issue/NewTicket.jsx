@@ -104,7 +104,7 @@ export default function NewTicket() {
             // all editable except custId and noApp are NOT required
             return [
                 "namaCustomer",
-                "noKawanInternal",
+                // "noKawanInternal",
                 "taskIdPolo",
                 "dukcapil",
                 "negativeStatus",
@@ -264,10 +264,11 @@ export default function NewTicket() {
             const value = form[field];
 
             // 🔴 VALIDASI KHUSUS PREFIX
-            if (field === "noKawanInternal") {
-                ok = isValidWithPrefix(value, "KWN");
-            }
-            else if (field === "taskIdPolo") {
+            // if (field === "noKawanInternal") {
+            //     ok = isValidWithPrefix(value, "KWN");
+            // }
+            // else 
+            if (field === "taskIdPolo") {
                 ok = isValidWithPrefix(value, "POL");
             }
             else if (field === "noOdr") {
@@ -292,9 +293,9 @@ export default function NewTicket() {
                 const value = form[field];
 
                 // 🔴 Validasi field dengan prefix
-                if (field === "noKawanInternal") {
-                    return !isValidWithPrefix(value, "KWN");
-                }
+                // if (field === "noKawanInternal") {
+                //     return !isValidWithPrefix(value, "KWN");
+                // }
                 if (field === "taskIdPolo") {
                     return !isValidWithPrefix(value, "POL");
                 }
@@ -541,7 +542,7 @@ export default function NewTicket() {
                         {/* No Kawan Internal */}
                         <div>
                             <label className="block text-sm font-medium mb-1">
-                                No Kawan Internal {dynamicRequired().includes("noKawanInternal") && <span className="text-red-500">*</span>}
+                                No Kawan Internal {isAllEditableGroup(form.kendalaSystem) ? <span className="text-gray-400 text-xs">(opsional)</span> : null}
                             </label>
                             <input
                                 type="text"
