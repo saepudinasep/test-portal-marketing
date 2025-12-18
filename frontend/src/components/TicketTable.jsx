@@ -203,6 +203,14 @@ export default function TicketTable({ tickets, userData }) {
                                 placeholder="All"
                                 className="text-sm"
                                 classNamePrefix="select"
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                                styles={{
+                                    menuPortal: (base) => ({
+                                        ...base,
+                                        zIndex: 9999,
+                                    }),
+                                }}
                             />
                         </div>
 
@@ -220,6 +228,14 @@ export default function TicketTable({ tickets, userData }) {
                                     placeholder="Pilih Brand"
                                     className="text-sm"
                                     classNamePrefix="select"
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
+                                    styles={{
+                                        menuPortal: (base) => ({
+                                            ...base,
+                                            zIndex: 9999,
+                                        }),
+                                    }}
                                 />
                             </div>
                         )}
@@ -238,6 +254,14 @@ export default function TicketTable({ tickets, userData }) {
                                     placeholder="Pilih Region"
                                     className="text-sm"
                                     classNamePrefix="select"
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
+                                    styles={{
+                                        menuPortal: (base) => ({
+                                            ...base,
+                                            zIndex: 9999,
+                                        }),
+                                    }}
                                 />
                             </div>
                         )}
@@ -356,23 +380,30 @@ export default function TicketTable({ tickets, userData }) {
                 <button
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage((p) => p - 1)}
-                    className="px-3 py-1 border rounded disabled:opacity-40"
+                    className="px-3 py-1 border rounded
+                                cursor-pointer
+                                hover:bg-gray-100
+                                disabled:opacity-40
+                                disabled:cursor-not-allowed
+                                disabled:hover:bg-transparent"
                 >
                     Prev
                 </button>
 
                 {paginationPages.map((p, i) =>
                     p === "..." ? (
-                        <span key={`e-${i}`} className="px-2">
+                        <span key={`e-${i}`} className="px-2 text-gray-500 select-none">
                             ...
                         </span>
                     ) : (
                         <button
                             key={p}
                             onClick={() => setCurrentPage(p)}
-                            className={`px-3 py-1 border rounded ${p === currentPage
-                                ? "bg-blue-600 text-white"
-                                : "hover:bg-gray-100"
+                            className={`px-3 py-1 border rounded
+                    cursor-pointer
+                    transition ${p === currentPage
+                                    ? "bg-blue-600 text-white border-blue-600 cursor-default"
+                                    : "hover:bg-gray-100"
                                 }`}
                         >
                             {p}
@@ -383,7 +414,12 @@ export default function TicketTable({ tickets, userData }) {
                 <button
                     disabled={currentPage === totalPages}
                     onClick={() => setCurrentPage((p) => p + 1)}
-                    className="px-3 py-1 border rounded disabled:opacity-40"
+                    className="px-3 py-1 border rounded
+            cursor-pointer
+            hover:bg-gray-100
+            disabled:opacity-40
+            disabled:cursor-not-allowed
+            disabled:hover:bg-transparent"
                 >
                     Next
                 </button>
