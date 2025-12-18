@@ -7,7 +7,7 @@ export default function DetailTicket() {
     // const navigate = useNavigate();
     const { id } = useParams();
     const [searchParams] = useSearchParams();
-    const region = searchParams.get("region");
+    const regionReq = searchParams.get("region");
     const [ticket, setTicket] = useState(null);
     const [loading, setLoading] = useState(true);
     const [chat, setChat] = useState([]);
@@ -22,12 +22,64 @@ export default function DetailTicket() {
         user?.region?.toLowerCase() === "kantor pusat" &&
         user?.cabang?.toLowerCase() === "kantor pusat";
 
+    const API_MAP = {
+        "JABODEBEK": "https://script.google.com/macros/s/AKfycbyDv1ZWDPIPfbYD6EsT694KD5xLZKJ0jmuYHEVeNTh0wWZvUP7oMIYb6Ez5VhF9YcJK/exec",
+        "JABODEBEK 1": "https://script.google.com/macros/s/AKfycbyDv1ZWDPIPfbYD6EsT694KD5xLZKJ0jmuYHEVeNTh0wWZvUP7oMIYb6Ez5VhF9YcJK/exec",
+        "JABODEBEK 2": "https://script.google.com/macros/s/AKfycbyDv1ZWDPIPfbYD6EsT694KD5xLZKJ0jmuYHEVeNTh0wWZvUP7oMIYb6Ez5VhF9YcJK/exec",
+        "JABODEBEK 3": "https://script.google.com/macros/s/AKfycbyDv1ZWDPIPfbYD6EsT694KD5xLZKJ0jmuYHEVeNTh0wWZvUP7oMIYb6Ez5VhF9YcJK/exec",
+
+        "BANTEN": "https://script.google.com/macros/s/AKfycbxJ4DWVijcfioINRqIn-6tzsmlftIZngTha68HEfZmaTaOP8KZt8WfTpI6I9hP1-I-rZw/exec",
+        "BANTEN 1": "https://script.google.com/macros/s/AKfycbxJ4DWVijcfioINRqIn-6tzsmlftIZngTha68HEfZmaTaOP8KZt8WfTpI6I9hP1-I-rZw/exec",
+        "BANTEN 2": "https://script.google.com/macros/s/AKfycbxJ4DWVijcfioINRqIn-6tzsmlftIZngTha68HEfZmaTaOP8KZt8WfTpI6I9hP1-I-rZw/exec",
+
+        "JABAR": "https://script.google.com/macros/s/AKfycbxh6qvhLimiVppSWrF1Wqwi6j9iavBO5Ixcr9vO2ZBGe3JB69nl3vJfc_cKxvBR5QMJyg/exec",
+        "JABAR 1": "https://script.google.com/macros/s/AKfycbxh6qvhLimiVppSWrF1Wqwi6j9iavBO5Ixcr9vO2ZBGe3JB69nl3vJfc_cKxvBR5QMJyg/exec",
+        "JABAR 2": "https://script.google.com/macros/s/AKfycbxh6qvhLimiVppSWrF1Wqwi6j9iavBO5Ixcr9vO2ZBGe3JB69nl3vJfc_cKxvBR5QMJyg/exec",
+
+        "JATIM": "https://script.google.com/macros/s/AKfycbz_tY4vZSHltt_6Pd8NFyLFVRIyXmApZ8RgjRcmQpo8hWQQiVdBfuzZGd9F-H0Sjtvz/exec",
+        "JATIM 1": "https://script.google.com/macros/s/AKfycbz_tY4vZSHltt_6Pd8NFyLFVRIyXmApZ8RgjRcmQpo8hWQQiVdBfuzZGd9F-H0Sjtvz/exec",
+        "JATIM 2": "https://script.google.com/macros/s/AKfycbz_tY4vZSHltt_6Pd8NFyLFVRIyXmApZ8RgjRcmQpo8hWQQiVdBfuzZGd9F-H0Sjtvz/exec",
+        "JATIM 3": "https://script.google.com/macros/s/AKfycbz_tY4vZSHltt_6Pd8NFyLFVRIyXmApZ8RgjRcmQpo8hWQQiVdBfuzZGd9F-H0Sjtvz/exec",
+        "JATIM 5": "https://script.google.com/macros/s/AKfycbz_tY4vZSHltt_6Pd8NFyLFVRIyXmApZ8RgjRcmQpo8hWQQiVdBfuzZGd9F-H0Sjtvz/exec",
+
+        "SULAWESI": "https://script.google.com/macros/s/AKfycbxWb7I04aRMq2v9rQtGBJp3BrPPcURVCVm5K4u9v2Eb-WtxwG2GXEmQTyeRAzyAtPdQSw/exec",
+        "SULAWESI 1": "https://script.google.com/macros/s/AKfycbxWb7I04aRMq2v9rQtGBJp3BrPPcURVCVm5K4u9v2Eb-WtxwG2GXEmQTyeRAzyAtPdQSw/exec",
+        "SULAWESI 2": "https://script.google.com/macros/s/AKfycbxWb7I04aRMq2v9rQtGBJp3BrPPcURVCVm5K4u9v2Eb-WtxwG2GXEmQTyeRAzyAtPdQSw/exec",
+
+        "JATENGUT ": "https://script.google.com/macros/s/AKfycbyqckQOqXnqHSoxE6tWyHyqQoXzU73KJCjgfeXgjECYM7WZrKXowFOkhja42OV-P1E0QQ/exec",
+        "JATENGUT 1": "https://script.google.com/macros/s/AKfycbyqckQOqXnqHSoxE6tWyHyqQoXzU73KJCjgfeXgjECYM7WZrKXowFOkhja42OV-P1E0QQ/exec",
+        "JATENGUT 2": "https://script.google.com/macros/s/AKfycbyqckQOqXnqHSoxE6tWyHyqQoXzU73KJCjgfeXgjECYM7WZrKXowFOkhja42OV-P1E0QQ/exec",
+
+        "JATENGSEL ": "https://script.google.com/macros/s/AKfycbxiA1I2mjUqHDWhWigJWwOqAjHq0tAWAuwCzbHEHLlUjgzJW32El0mVSYAkn1Bqpd8G/exec",
+        "JATENGSEL 1": "https://script.google.com/macros/s/AKfycbxiA1I2mjUqHDWhWigJWwOqAjHq0tAWAuwCzbHEHLlUjgzJW32El0mVSYAkn1Bqpd8G/exec",
+        "JATENGSEL 2": "https://script.google.com/macros/s/AKfycbxiA1I2mjUqHDWhWigJWwOqAjHq0tAWAuwCzbHEHLlUjgzJW32El0mVSYAkn1Bqpd8G/exec",
+
+        "SUMBAGUT ": "https://script.google.com/macros/s/AKfycbwlpAiEAtfft54UcWehxvOmRDdPdw-YreGWRavf52DnE6qTxsjH5QaN2OMFuPICEBaLNA/exec",
+        "SUMBAGUT 1": "https://script.google.com/macros/s/AKfycbwlpAiEAtfft54UcWehxvOmRDdPdw-YreGWRavf52DnE6qTxsjH5QaN2OMFuPICEBaLNA/exec",
+        "SUMBAGUT 2": "https://script.google.com/macros/s/AKfycbwlpAiEAtfft54UcWehxvOmRDdPdw-YreGWRavf52DnE6qTxsjH5QaN2OMFuPICEBaLNA/exec",
+
+        "SUMBAGSEL ": "https://script.google.com/macros/s/AKfycbzSPwsSyJu0U1-v3NQgkvFK1e10cooqtgq1yeDPKhwFeKydRYifI1rozvP0AxRYACOI/exec",
+        "SUMBAGSEL 1": "https://script.google.com/macros/s/AKfycbzSPwsSyJu0U1-v3NQgkvFK1e10cooqtgq1yeDPKhwFeKydRYifI1rozvP0AxRYACOI/exec",
+        "SUMBAGSEL 2": "https://script.google.com/macros/s/AKfycbzSPwsSyJu0U1-v3NQgkvFK1e10cooqtgq1yeDPKhwFeKydRYifI1rozvP0AxRYACOI/exec",
+
+        "KALIMANTAN": "https://script.google.com/macros/s/AKfycby1L59wF47lcn_zShs49We_Vs8Ufci58i8MSifQnqgeyYlAZ-WEClG8j8SGcFXsRGv_/exec",
+    };
+
+    const getApiUrl = (region) => {
+        return API_MAP[region?.toUpperCase()] || null;
+    };
+
     // === Fetch Detail Ticket ===
     useEffect(() => {
         async function fetchTicket() {
             try {
+                const apiUrl = getApiUrl(regionReq);
+                if (!apiUrl) {
+                    console.error("API URL tidak ditemukan untuk region:", regionReq);
+                    return;
+                }
                 const res = await fetch(
-                    `https://script.google.com/macros/s/AKfycbwATI3cgS_1BITlLplk50GQPYU_ESmERZjW7Oj1MaJeDSB49Yyzx0cG1LcjpQJ4Iuse/exec?action=getTicket&id=${id}`
+                    `${apiUrl}?action=getTicket&id=${id}`
                 );
                 const json = await res.json();
                 const dataTicket = json.data;
@@ -107,10 +159,15 @@ export default function DetailTicket() {
 
             // 👉 2. Ambil base64 saja tanpa prefix
             const pureBase64 = compressedBase64.split(",")[1];
+            const apiUrl = getApiUrl(regionReq);
+            if (!apiUrl) {
+                console.error("API URL tidak ditemukan untuk region:", regionReq);
+                return;
+            }
 
             // 👉 3. Upload ke Apps Script
             const res = await fetch(
-                "https://script.google.com/macros/s/AKfycbwATI3cgS_1BITlLplk50GQPYU_ESmERZjW7Oj1MaJeDSB49Yyzx0cG1LcjpQJ4Iuse/exec",
+                apiUrl,
                 {
                     method: "POST",
                     body: JSON.stringify({
@@ -151,8 +208,14 @@ export default function DetailTicket() {
                 uploadedFileUrl = await uploadFileBase(file, ticket["LinkFolderTicket"]);
             }
 
+            const apiUrl = getApiUrl(regionReq);
+            if (!apiUrl) {
+                console.error("API URL tidak ditemukan untuk region:", regionReq);
+                return;
+            }
+
             const resChat = await fetch(
-                "https://script.google.com/macros/s/AKfycbwATI3cgS_1BITlLplk50GQPYU_ESmERZjW7Oj1MaJeDSB49Yyzx0cG1LcjpQJ4Iuse/exec",
+                apiUrl,
                 {
                     method: "POST",
                     // headers: { "Content-Type": "application/json" },
@@ -178,7 +241,7 @@ export default function DetailTicket() {
                     confirmButtonText: "OK",
                 }).then(() => {
                     // navigate(`/dashboard/ticket/${id}`);
-                    window.location.href = `/dashboard/ticket/${id}`;
+                    window.location.href = `/dashboard/ticket/${id}?region=${encodeURIComponent(regionReq)}`;
                 });
 
                 setMessage("");
@@ -212,8 +275,13 @@ export default function DetailTicket() {
 
 
         try {
+            const apiUrl = getApiUrl(regionReq);
+            if (!apiUrl) {
+                console.error("API URL tidak ditemukan untuk region:", regionReq);
+                return;
+            }
             const resUpdate = await fetch(
-                "https://script.google.com/macros/s/AKfycbwATI3cgS_1BITlLplk50GQPYU_ESmERZjW7Oj1MaJeDSB49Yyzx0cG1LcjpQJ4Iuse/exec",
+                apiUrl,
                 {
                     method: "POST",
                     // mode: "no-cors",
@@ -244,7 +312,7 @@ export default function DetailTicket() {
                     confirmButtonText: "OK",
                 }).then(() => {
                     // navigate(`/dashboard/ticket/${id}`);
-                    window.location.href = `/dashboard/ticket/${id}`;
+                    window.location.href = `/dashboard/ticket/${id}?region=${encodeURIComponent(regionReq)}`;
                     // navigate(`/dashboard/ticket/${id}`);
                     // console.log("Router aktif:", navigate);
                 });
