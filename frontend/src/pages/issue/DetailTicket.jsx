@@ -46,19 +46,19 @@ export default function DetailTicket() {
         "SULAWESI 1": "https://script.google.com/macros/s/AKfycbxWb7I04aRMq2v9rQtGBJp3BrPPcURVCVm5K4u9v2Eb-WtxwG2GXEmQTyeRAzyAtPdQSw/exec",
         "SULAWESI 2": "https://script.google.com/macros/s/AKfycbxWb7I04aRMq2v9rQtGBJp3BrPPcURVCVm5K4u9v2Eb-WtxwG2GXEmQTyeRAzyAtPdQSw/exec",
 
-        "JATENGUT ": "https://script.google.com/macros/s/AKfycbyqckQOqXnqHSoxE6tWyHyqQoXzU73KJCjgfeXgjECYM7WZrKXowFOkhja42OV-P1E0QQ/exec",
+        "JATENGUT": "https://script.google.com/macros/s/AKfycbyqckQOqXnqHSoxE6tWyHyqQoXzU73KJCjgfeXgjECYM7WZrKXowFOkhja42OV-P1E0QQ/exec",
         "JATENGUT 1": "https://script.google.com/macros/s/AKfycbyqckQOqXnqHSoxE6tWyHyqQoXzU73KJCjgfeXgjECYM7WZrKXowFOkhja42OV-P1E0QQ/exec",
         "JATENGUT 2": "https://script.google.com/macros/s/AKfycbyqckQOqXnqHSoxE6tWyHyqQoXzU73KJCjgfeXgjECYM7WZrKXowFOkhja42OV-P1E0QQ/exec",
 
-        "JATENGSEL ": "https://script.google.com/macros/s/AKfycbxiA1I2mjUqHDWhWigJWwOqAjHq0tAWAuwCzbHEHLlUjgzJW32El0mVSYAkn1Bqpd8G/exec",
+        "JATENGSEL": "https://script.google.com/macros/s/AKfycbxiA1I2mjUqHDWhWigJWwOqAjHq0tAWAuwCzbHEHLlUjgzJW32El0mVSYAkn1Bqpd8G/exec",
         "JATENGSEL 1": "https://script.google.com/macros/s/AKfycbxiA1I2mjUqHDWhWigJWwOqAjHq0tAWAuwCzbHEHLlUjgzJW32El0mVSYAkn1Bqpd8G/exec",
         "JATENGSEL 2": "https://script.google.com/macros/s/AKfycbxiA1I2mjUqHDWhWigJWwOqAjHq0tAWAuwCzbHEHLlUjgzJW32El0mVSYAkn1Bqpd8G/exec",
 
-        "SUMBAGUT ": "https://script.google.com/macros/s/AKfycbwlpAiEAtfft54UcWehxvOmRDdPdw-YreGWRavf52DnE6qTxsjH5QaN2OMFuPICEBaLNA/exec",
+        "SUMBAGUT": "https://script.google.com/macros/s/AKfycbwlpAiEAtfft54UcWehxvOmRDdPdw-YreGWRavf52DnE6qTxsjH5QaN2OMFuPICEBaLNA/exec",
         "SUMBAGUT 1": "https://script.google.com/macros/s/AKfycbwlpAiEAtfft54UcWehxvOmRDdPdw-YreGWRavf52DnE6qTxsjH5QaN2OMFuPICEBaLNA/exec",
         "SUMBAGUT 2": "https://script.google.com/macros/s/AKfycbwlpAiEAtfft54UcWehxvOmRDdPdw-YreGWRavf52DnE6qTxsjH5QaN2OMFuPICEBaLNA/exec",
 
-        "SUMBAGSEL ": "https://script.google.com/macros/s/AKfycbzSPwsSyJu0U1-v3NQgkvFK1e10cooqtgq1yeDPKhwFeKydRYifI1rozvP0AxRYACOI/exec",
+        "SUMBAGSEL": "https://script.google.com/macros/s/AKfycbzSPwsSyJu0U1-v3NQgkvFK1e10cooqtgq1yeDPKhwFeKydRYifI1rozvP0AxRYACOI/exec",
         "SUMBAGSEL 1": "https://script.google.com/macros/s/AKfycbzSPwsSyJu0U1-v3NQgkvFK1e10cooqtgq1yeDPKhwFeKydRYifI1rozvP0AxRYACOI/exec",
         "SUMBAGSEL 2": "https://script.google.com/macros/s/AKfycbzSPwsSyJu0U1-v3NQgkvFK1e10cooqtgq1yeDPKhwFeKydRYifI1rozvP0AxRYACOI/exec",
 
@@ -280,6 +280,14 @@ export default function DetailTicket() {
                 console.error("API URL tidak ditemukan untuk region:", regionReq);
                 return;
             }
+
+            // ✅ LOGIKA UTAMA
+            const statusTicketFinal =
+                user.cabang?.toLowerCase() !== "kantor pusat"
+                    ? "Open"
+                    : (statusTicket || ticket["StatusTicket"]);
+
+
             const resUpdate = await fetch(
                 apiUrl,
                 {
@@ -295,7 +303,7 @@ export default function DetailTicket() {
                         message,
                         cabang: user.cabang,
                         file: uploadedFileUrl,
-                        statusTicket: statusTicket || ticket["StatusTicket"],
+                        statusTicket: statusTicketFinal,
                         statusSolved: statusSolved || ticket["StatusSolved"],
                         reasonReject: reasonReject || ticket["ReasonReject"],
                     }),

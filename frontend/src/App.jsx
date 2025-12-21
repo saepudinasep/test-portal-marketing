@@ -24,6 +24,7 @@ import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import RekrutMA from "./pages/visiting/RekrutMA";
 import InputDatabase from "./pages/visiting/InputDatabase";
+import CekCredit from "./pages/kbij/CekCredit";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -90,6 +91,7 @@ export default function App() {
         <Route path="ticket" element={<Ticket user={userData} />} />
         <Route path="ticket/new" element={<NewTicket user={userData} />} />
         <Route path="ticket/:id" element={<DetailTicket user={userData} />} />
+        <Route path="cekBiro" element={<CekCredit user={userData} />} />
         <Route path="report" element={<Report user={userData} />} />
         <Route path="panduan" element={<Panduan user={userData} />} />
         <Route
