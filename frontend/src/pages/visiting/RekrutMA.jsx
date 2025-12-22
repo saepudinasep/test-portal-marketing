@@ -9,6 +9,9 @@ export default function RekrutMA() {
     const [loading, setLoading] = useState(false);
     const [showDropdownSektor, setShowDropdownSektor] = useState(false);
     const [showDropdownJabatan, setShowDropdownJabatan] = useState(false);
+    const [customPerusahaan, setCustomPerusahaan] = useState("");
+    const [customSektor, setCustomSektor] = useState("");
+
 
 
     const [form, setForm] = useState({
@@ -17,6 +20,8 @@ export default function RekrutMA() {
         noHP: "",
         sektor: "",
         jabatan: "",
+        jenis: "",
+        namaPerusahaan: "",
     });
 
     const sektorList = [
@@ -68,6 +73,15 @@ export default function RekrutMA() {
         "YAKULT LADY",
     ];
 
+    const sektorKerjaSyariah = [
+        "KBIH",
+        "Pegawai Bank",
+        "Lembaga Syariah",
+        "Marketing Leasing/Fincoy",
+        "Pegawai Swasta",
+        "Others"
+    ];
+
     const jabatanMAList = [
         "AREA MANAGER",
         "BENDAHARA ORGANISASI",
@@ -104,6 +118,10 @@ export default function RekrutMA() {
     }, [navigate]);
 
     const filteredSektor = sektorList.filter((s) =>
+        s.toLowerCase().includes(form.sektor.toLowerCase())
+    );
+
+    const filteredSektorSyariah = sektorKerjaSyariah.filter((s) =>
         s.toLowerCase().includes(form.sektor.toLowerCase())
     );
 
@@ -161,44 +179,109 @@ export default function RekrutMA() {
         });
     }
 
+    const isMaskuHajiku = ["MASKU", "HAJIKU"].includes(form.tipe);
+    const isMobilMotor = ["MOBILKU", "MOTORKU", "MOTOR BARU"].includes(form.tipe);
+
     // 🔹 Input berubah
     const handleChange = (e) => {
         const { name, value } = e.target;
 
-        // Nama MA: huruf besar semua
-        if (name === "namaMA") {
-            setForm({ ...form, [name]: value });
+        if (name === "namaMA" || name === "sektor" || name === "jabatan") {
+            setForm({ ...form, [name]: value.toUpperCase() });
+            return;
         }
-        // No HP: hanya angka, max 13 digit
-        else if (name === "noHP") {
-            const numericValue = value.replace(/\D/g, "").slice(0, 13); // hapus huruf, max 13 digit
+
+        if (name === "noHP") {
+            const numericValue = value.replace(/\D/g, "").slice(0, 13);
             setForm({ ...form, [name]: numericValue });
-        } else {
-            setForm({ ...form, [name]: value });
+            return;
         }
+
+        if (name === "customPerusahaan" || name === "customSektor") {
+            setForm((prev) => ({
+                ...prev,
+                [name]: value.toUpperCase(),
+            }));
+            return;
+        }
+
+        setForm({ ...form, [name]: value });
     };
 
     // 🔹 Submit form ke Apps Script
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!form.tipe || !form.namaMA || !form.noHP || !form.sektor || !form.jabatan) {
-            Swal.fire("Peringatan", "Harap lengkapi semua field!", "warning");
-            return;
-        }
-        if (form.noHP && (form.noHP.length < 11 || form.noHP.length > 13)) {
-            Swal.fire("Peringatan", "No HP harus antara 11-13 digit!", "warning");
+        if (loading) return;
+
+        // 1️⃣ Validasi tipe
+        if (!form.tipe) {
+            Swal.fire("Peringatan", "Pilih tipe Marketing Agent terlebih dahulu", "warning");
             return;
         }
 
+        // 2️⃣ Validasi nama MA
+        if (!form.namaMA || form.namaMA.trim().length < 3) {
+            Swal.fire("Peringatan", "Nama Marketing Agent minimal 3 karakter", "warning");
+            return;
+        }
+
+        // 3️⃣ Validasi khusus MOBIL / MOTOR
+        if (isMobilMotor) {
+            if (!form.noHP) {
+                Swal.fire("Peringatan", "No HP wajib diisi", "warning");
+                return;
+            }
+
+            if (form.noHP.length < 11 || form.noHP.length > 13) {
+                Swal.fire("Peringatan", "No HP harus 11–13 digit", "warning");
+                return;
+            }
+
+            if (!form.jabatan) {
+                Swal.fire("Peringatan", "Jabatan Marketing Agent wajib diisi", "warning");
+                return;
+            }
+        }
+
+        // 4️⃣ Validasi sektor
+        if (!form.sektor) {
+            Swal.fire("Peringatan", "Sektor pekerjaan wajib diisi", "warning");
+            return;
+        }
+
+        // 5️⃣ Validasi khusus MASKU / HAJIKU
+        if (isMaskuHajiku) {
+            if (!form.jenis) {
+                Swal.fire("Peringatan", "Jenis Marketing Agent wajib dipilih", "warning");
+                return;
+            }
+
+            if (!form.namaPerusahaan) {
+                Swal.fire("Peringatan", "Nama perusahaan wajib dipilih", "warning");
+                return;
+            }
+        }
+
+        // 6️⃣ Validasi foto
         if (!photo) {
-            Swal.fire("Peringatan", "Harap ambil foto rekrut terlebih dahulu!", "warning");
+            Swal.fire("Peringatan", "Harap upload foto rekrut terlebih dahulu", "warning");
             return;
         }
 
+        // 🟢 Payload
         const payload = {
             ...form,
             namaMA: form.namaMA.toUpperCase(),
+            sektor:
+                form.sektor === "Others"
+                    ? customSektor
+                    : form.sektor.toUpperCase(),
+            namaPerusahaan:
+                form.namaPerusahaan === "Others"
+                    ? customPerusahaan
+                    : form.namaPerusahaan,
+            jabatan: form.jabatan.toUpperCase(),
             photoBase64: photo,
             createdBy: userData?.name || "",
             nik: userData?.nik || "",
@@ -208,33 +291,50 @@ export default function RekrutMA() {
         };
 
         setLoading(true);
+
         try {
-            const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbxWnypU6wzN8_bqk7l0UlzNyfdCShmOstNwpndS32DzzV4IwAIqt1f99VV48ig_tblB/exec",
-                {
-                    method: "POST",
-                    // headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload),
-                }
-            );
+            const APPSCRIPT_URL = {
+                "MASKU": "https://script.google.com/macros/s/AKfycbzhJE2xkZHehj4UyBsEDf85V0VZPf31n0SX1LyBjcHInRpWAGnXkmSnevluYp29r_sp/exec",
+                "HAJIKU": "https://script.google.com/macros/s/AKfycbzhJE2xkZHehj4UyBsEDf85V0VZPf31n0SX1LyBjcHInRpWAGnXkmSnevluYp29r_sp/exec",
+                "MOBILKU": "https://script.google.com/macros/s/AKfycbxWnypU6wzN8_bqk7l0UlzNyfdCShmOstNwpndS32DzzV4IwAIqt1f99VV48ig_tblB/exec",
+                "MOTORKU": "https://script.google.com/macros/s/AKfycbxWnypU6wzN8_bqk7l0UlzNyfdCShmOstNwpndS32DzzV4IwAIqt1f99VV48ig_tblB/exec",
+                "MOTOR BARU": "https://script.google.com/macros/s/URL_MOTORKU/exec",
+            };
+
+            const url = APPSCRIPT_URL[form.tipe];
+            if (!url) {
+                Swal.fire("Error", "URL AppScript tidak ditemukan", "error");
+                setLoading(false);
+                return;
+            }
+
+            const response = await fetch(url, {
+                method: "POST",
+                body: JSON.stringify(payload),
+            });
 
             const result = await response.json();
-            if (result.success) {
-                Swal.fire("Berhasil!", "Agent Berhasil di Rekrut.", "success");
+
+            if (result.status === "success" || result.success === true) {
+                Swal.fire("Berhasil!", "Agent berhasil direkrut", "success");
+
                 setForm({
                     tipe: "",
                     namaMA: "",
                     noHP: "",
                     sektor: "",
                     jabatan: "",
+                    jenis: "",
+                    namaPerusahaan: "",
                 });
+
                 setPhoto(null);
             } else {
-                Swal.fire("Gagal!", result.message || "Gagal menyimpan data.", "error");
+                Swal.fire("Gagal", result.message || "Gagal menyimpan data", "error");
             }
-        } catch (err) {
-            Swal.fire("Error", "Terjadi kesalahan koneksi.", "error");
-            console.error(err);
+        } catch (error) {
+            console.error(error);
+            Swal.fire("Error", "Terjadi kesalahan koneksi", "error");
         } finally {
             setLoading(false);
         }
@@ -305,20 +405,19 @@ export default function RekrutMA() {
                         <label className="block text-sm font-medium mb-1">
                             Tipe Marketing Agent
                         </label>
-                        <div className="flex flex-wrap gap-4">
-                            {["Motorku", "Mobilku", "Reguler", "All Brand"].map((tipe) => (
-                                <label key={tipe} className="flex items-center gap-2">
-                                    <input
-                                        type="radio"
-                                        name="tipe"
-                                        value={tipe}
-                                        checked={form.tipe === tipe}
-                                        onChange={handleChange}
-                                    />
-                                    {tipe}
-                                </label>
-                            ))}
-                        </div>
+                        <select
+                            name="tipe"
+                            value={form.tipe}
+                            onChange={handleChange}
+                            className={`w-full rounded-lg p-2 border border-gray-300`}
+                        >
+                            <option value="">Pilih Product</option>
+                            <option value="MOTOR BARU">MOTOR BARU</option>
+                            <option value="MOTORKU">MOTORKU</option>
+                            <option value="MOBILKU">MOBILKU</option>
+                            <option value="MASKU">MASKU</option>
+                            <option value="HAJIKU">HAJIKU</option>
+                        </select>
                     </div>
 
                     {/* 🧑‍💼 Nama MA */}
@@ -337,21 +436,80 @@ export default function RekrutMA() {
                         />
                     </div>
 
-                    {/* ☎️ No HP */}
-                    <div>
-                        <label className="block text-sm font-medium mb-1">No HP</label>
-                        <input
-                            type="text"
-                            name="noHP"
-                            value={form.noHP}
-                            onChange={handleChange}
-                            inputMode="numeric"
-                            pattern="[0-9]*"
-                            className="w-full border rounded-lg p-2"
-                            placeholder="Masukkan No HP"
-                            required
-                        />
-                    </div>
+                    {isMaskuHajiku && (
+                        <>
+                            {/* 🔘 Jenis MA */}
+                            <div>
+                                <label className="block text-sm font-medium mb-1">
+                                    Jenis Marketing Agent
+                                </label>
+                                <select
+                                    name="jenis"
+                                    value={form.jenis}
+                                    onChange={handleChange}
+                                    className={`w-full rounded-lg p-2 border border-gray-300`}
+                                >
+                                    <option value="">Pilih Jenis Marketing Agent</option>
+                                    <option value="Retail">Retail</option>
+                                    <option value="Corporate">Corporate</option>
+                                </select>
+                            </div>
+
+                            {/* 🔘 Nama Perusahaan MA */}
+                            <div>
+                                <label className="block text-sm font-medium mb-1">
+                                    Nama Perusahaan Marketing Agent
+                                </label>
+
+                                <select
+                                    name="namaPerusahaan"
+                                    value={form.namaPerusahaan}
+                                    onChange={handleChange}
+                                    className="w-full rounded-lg p-2 border border-gray-300"
+                                >
+                                    <option value="">Pilih Nama Perusahaan</option>
+                                    <option value="Maybank Indonesia">Maybank Indonesia</option>
+                                    <option value="Bank Mega Syariah">Bank Mega Syariah</option>
+                                    <option value="Bank Panin Dubai Syariah">Bank Panin Dubai Syariah</option>
+                                    <option value="KB Bank Syariah">KB Bank Syariah</option>
+                                    <option value="Bank Jakarta">Bank Jakarta</option>
+                                    <option value="Others">Others</option>
+                                </select>
+
+                                {/* ⬇️ INPUT JIKA OTHERS */}
+                                {form.namaPerusahaan === "Others" && (
+                                    <input
+                                        type="text"
+                                        placeholder="Masukkan nama perusahaan"
+                                        value={customPerusahaan}
+                                        onChange={(e) => setCustomPerusahaan(e.target.value.toUpperCase())}
+                                        className="mt-2 w-full border rounded-lg p-2 uppercase"
+                                        required
+                                    />
+                                )}
+                            </div>
+                        </>
+                    )}
+
+                    {isMobilMotor && (
+                        <>
+                            {/* ☎️ No HP */}
+                            <div>
+                                <label className="block text-sm font-medium mb-1">No HP</label>
+                                <input
+                                    type="text"
+                                    name="noHP"
+                                    value={form.noHP}
+                                    onChange={handleChange}
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
+                                    className="w-full border rounded-lg p-2"
+                                    placeholder="Masukkan No HP"
+                                    required
+                                />
+                            </div>
+                        </>
+                    )}
 
                     {/* 🏢 Sektor & Jabatan */}
                     <div className="grid md:grid-cols-2 gap-4">
@@ -366,26 +524,22 @@ export default function RekrutMA() {
                                 name="sektor"
                                 value={form.sektor}
                                 placeholder="Cari sektor..."
-                                onChange={(e) =>
-                                    setForm((prev) => ({
-                                        ...prev,
-                                        sektor: e.target.value,
-                                    }))
-                                }
+                                onChange={handleChange}
                                 onFocus={() => setShowDropdownSektor(true)}
                                 className="w-full border rounded-lg p-2 uppercase"
-                                required
+                                required={!!form.tipe}
                             />
 
-                            {showDropdownSektor && (
+                            {showDropdownSektor && isMobilMotor && (
                                 <ul className="absolute z-10 bg-white border rounded-lg w-full max-h-48 overflow-y-auto shadow-md mt-1">
                                     {filteredSektor.length > 0 ? (
                                         filteredSektor.map((s, idx) => (
                                             <li
                                                 key={idx}
-                                                onClick={() => {
+                                                onClick={(e) => {
                                                     setForm((prev) => ({ ...prev, sektor: s }));
                                                     setShowDropdownSektor(false);
+                                                    e.stopPropagation();
                                                 }}
                                                 className="px-3 py-2 hover:bg-indigo-100 cursor-pointer text-sm"
                                             >
@@ -399,43 +553,21 @@ export default function RekrutMA() {
                                     )}
                                 </ul>
                             )}
-                        </div>
 
-                        {/* ⭐ Jabatan Marketing Agent */}
-                        <div className="relative dropdown-jabatan">
-                            <label className="block text-sm font-medium mb-1">
-                                Jabatan Marketing Agent
-                            </label>
-
-                            <input
-                                type="text"
-                                name="jabatan"
-                                value={form.jabatan}
-                                placeholder="Cari jabatan..."
-                                onChange={(e) =>
-                                    setForm((prev) => ({
-                                        ...prev,
-                                        jabatan: e.target.value,
-                                    }))
-                                }
-                                onFocus={() => setShowDropdownJabatan(true)}
-                                className="w-full border rounded-lg p-2 uppercase"
-                                required
-                            />
-
-                            {showDropdownJabatan && (
+                            {showDropdownSektor && isMaskuHajiku && (
                                 <ul className="absolute z-10 bg-white border rounded-lg w-full max-h-48 overflow-y-auto shadow-md mt-1">
-                                    {filteredJabatan.length > 0 ? (
-                                        filteredJabatan.map((j, idx) => (
+                                    {filteredSektorSyariah.length > 0 ? (
+                                        filteredSektorSyariah.map((s, idx) => (
                                             <li
                                                 key={idx}
-                                                onClick={() => {
-                                                    setForm((prev) => ({ ...prev, jabatan: j }));
-                                                    setShowDropdownJabatan(false);
+                                                onClick={(e) => {
+                                                    setForm((prev) => ({ ...prev, sektor: s }));
+                                                    setShowDropdownSektor(false);
+                                                    e.stopPropagation();
                                                 }}
                                                 className="px-3 py-2 hover:bg-indigo-100 cursor-pointer text-sm"
                                             >
-                                                {j}
+                                                {s}
                                             </li>
                                         ))
                                     ) : (
@@ -445,8 +577,66 @@ export default function RekrutMA() {
                                     )}
                                 </ul>
                             )}
+                            {form.sektor === "Others" && (
+                                <input
+                                    type="text"
+                                    placeholder="Masukkan sektor pekerjaan"
+                                    value={customSektor}
+                                    onChange={(e) => setCustomSektor(e.target.value.toUpperCase())}
+                                    className="mt-2 w-full border rounded-lg p-2 uppercase"
+                                    required
+                                />
+                            )}
                         </div>
+
+
+                        {isMobilMotor && (
+                            <>
+                                {/* ⭐ Jabatan Marketing Agent */}
+                                <div className="relative dropdown-jabatan">
+                                    <label className="block text-sm font-medium mb-1">
+                                        Jabatan Marketing Agent
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="jabatan"
+                                        value={form.jabatan}
+                                        placeholder="Cari jabatan..."
+                                        onChange={handleChange}
+                                        onFocus={() => setShowDropdownJabatan(true)}
+                                        className="w-full border rounded-lg p-2 uppercase"
+                                        required={isMobilMotor}
+                                    />
+
+                                    {showDropdownJabatan && (
+                                        <ul className="absolute z-10 bg-white border rounded-lg w-full max-h-48 overflow-y-auto shadow-md mt-1">
+                                            {filteredJabatan.length > 0 ? (
+                                                filteredJabatan.map((j, idx) => (
+                                                    <li
+                                                        key={idx}
+                                                        onClick={(e) => {
+                                                            setForm((prev) => ({ ...prev, jabatan: j }));
+                                                            setShowDropdownJabatan(false);
+                                                            e.stopPropagation();
+                                                        }}
+                                                        className="px-3 py-2 hover:bg-indigo-100 cursor-pointer text-sm"
+                                                    >
+                                                        {j}
+                                                    </li>
+                                                ))
+                                            ) : (
+                                                <li className="px-3 py-2 text-gray-500 text-sm">
+                                                    Tidak ditemukan
+                                                </li>
+                                            )}
+                                        </ul>
+                                    )}
+                                </div>
+                            </>
+                        )}
                     </div>
+
 
                     {/* 📸 Upload Foto */}
                     <div>

@@ -126,7 +126,14 @@ export default function InputDatabase() {
                 "MOTOR BARU": "https://script.google.com/macros/s/URL_MOTORKU/exec",
             };
 
-            const response = await fetch(APPSCRIPT_URL[activeProduct], {
+            const url = APPSCRIPT_URL[activeProduct];
+            if (!url) {
+                Swal.fire("Error", "URL AppScript tidak ditemukan", "error");
+                setLoading(false);
+                return;
+            }
+
+            const response = await fetch(url, {
                 method: "POST",
                 body: JSON.stringify({
                     action: "inputDatabase",
