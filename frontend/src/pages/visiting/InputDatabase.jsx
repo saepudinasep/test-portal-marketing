@@ -6,7 +6,6 @@ export default function InputDatabase() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [userData, setUserData] = useState(null);
-    const [isMobile, setIsMobile] = useState(true);
     const fileInputRef = useRef(null);
     const [photo, setPhoto] = useState(null);
 
@@ -49,15 +48,6 @@ export default function InputDatabase() {
         setTimeout(() => setLoading(false), 800);
     }, [navigate]);
 
-    useEffect(() => {
-        const ua = navigator.userAgent.toLowerCase();
-
-        const mobileCheck =
-            /android|iphone|ipad|ipod|windows phone/i.test(ua) ||
-            navigator.maxTouchPoints > 1;
-
-        setIsMobile(mobileCheck);
-    }, []);
 
     // 🔹 Format Rupiah
     const formatRupiah = (value) => {
@@ -105,6 +95,7 @@ export default function InputDatabase() {
             namaPIC: form.nama,
             nik: form.nik,
             jabatan: form.position,
+            keterangan: form.keterangan,
             product: activeProduct,
             namaKonsumen: form.namaKonsumen.toUpperCase(),
             noHpKonsumen: form.noHpKonsumen,
@@ -128,8 +119,8 @@ export default function InputDatabase() {
         setLoading(true);
         try {
             const APPSCRIPT_URL = {
-                "MASKU": "https://script.google.com/macros/s/AKfycbwZCjSDgJHHroa1gxDtBanVJUIdxzRkWPKYyF1AhNXlLnYT_POeLtPLLxZc_TUfMp3L/exec",
-                "HAJIKU": "https://script.google.com/macros/s/AKfycbwZCjSDgJHHroa1gxDtBanVJUIdxzRkWPKYyF1AhNXlLnYT_POeLtPLLxZc_TUfMp3L/exec",
+                "MASKU": "https://script.google.com/macros/s/AKfycbwumQZ25mdrpl0VV-LFZizJVd-40g4rb0Pht7JuaRkTxaVfppk9UaBwyPLdobIPADhI/exec",
+                "HAJIKU": "https://script.google.com/macros/s/AKfycbwumQZ25mdrpl0VV-LFZizJVd-40g4rb0Pht7JuaRkTxaVfppk9UaBwyPLdobIPADhI/exec",
                 "MOBILKU": "https://script.google.com/macros/s/AKfycbyKq9ek8KxSx-1mZimL7oXQ7vi5Hu_Cfx6ERQb-9Qb-pe9Rxrcso9gYjwQBXBnUb5hmGA/exec",
                 "MOTORKU": "https://script.google.com/macros/s/AKfycbyKq9ek8KxSx-1mZimL7oXQ7vi5Hu_Cfx6ERQb-9Qb-pe9Rxrcso9gYjwQBXBnUb5hmGA/exec",
                 "MOTOR BARU": "https://script.google.com/macros/s/URL_MOTORKU/exec",
@@ -433,26 +424,8 @@ export default function InputDatabase() {
                                 accept="image/*"
                                 capture="environment"
                                 onChange={handleTakePhoto}
-                                id="cameraInput"
-                                className="hidden"
-                                disabled={!isMobile}    // ⛔ Tidak bisa di laptop
+                                className="w-full border rounded-lg p-2"
                             />
-
-                            {/* tombol custom */}
-                            <button
-                                type="button"
-                                onClick={() => isMobile && document.getElementById("cameraInput").click()}
-                                className={`w-full p-2 rounded-lg text-white ${isMobile ? "bg-blue-600" : "bg-gray-400 cursor-not-allowed"
-                                    }`}
-                            >
-                                {photo ? "Ulangi Foto" : "Ambil Foto"}
-                            </button>
-
-                            {!isMobile && (
-                                <p className="text-red-600 text-sm mt-1">
-                                    Fitur foto hanya bisa digunakan di perangkat mobile.
-                                </p>
-                            )}
 
                             {photo && (
                                 <div className="mt-3">
