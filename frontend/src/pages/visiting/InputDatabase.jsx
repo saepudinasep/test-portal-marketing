@@ -21,6 +21,7 @@ export default function InputDatabase() {
         product: "",
         sumberDatabase: "",
         namaEvent: "",
+        keterangan: "",
         alamat: "",
         brand: "",
         tipe: "",
@@ -72,46 +73,97 @@ export default function InputDatabase() {
     // 🔹 Submit Form
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         if (!form.setuju) {
             Swal.fire("Peringatan", "Anda harus menyetujui syarat & ketentuan!", "warning");
             return;
         }
-        if (form.noHpKonsumen && (form.noHpKonsumen.length < 11 || form.noHpKonsumen.length > 13)) {
-            Swal.fire("Peringatan", "No HP Konsumen harus antara 11-13 digit!", "warning");
+
+        if (form.noHpKonsumen.length < 11 || form.noHpKonsumen.length > 13) {
+            Swal.fire("Peringatan", "No HP Konsumen harus 11–13 digit!", "warning");
             return;
         }
 
+        // 🔹 Validasi khusus product
+        if (isMaskuHajiku && (!form.sumberDatabase || !form.namaEvent)) {
+            Swal.fire("Peringatan", "Sumber Database & Nama Event wajib diisi!", "warning");
+            return;
+        }
+
+        if (
+            isMobilMotor &&
+            (!form.alamat || !form.brand || !form.tipe || !form.estimasi)
+        ) {
+            Swal.fire("Peringatan", "Data kendaraan belum lengkap!", "warning");
+            return;
+        }
+
+        // 🔹 Payload dinamis
         const payload = {
-            ...form,
+            region: form.region,
+            cabang: form.cabang,
+            namaPIC: form.nama,
+            nik: form.nik,
+            jabatan: form.position,
+            product: activeProduct,
             namaKonsumen: form.namaKonsumen.toUpperCase(),
-            tipe: form.tipe.toUpperCase(),
+            noHpKonsumen: form.noHpKonsumen,
+            photoBase64: photo || "",
+            createdAt: new Date().toISOString(),
         };
+
+        // Tambahan field berdasarkan product
+        if (isMaskuHajiku) {
+            payload.sumberDatabase = form.sumberDatabase;
+            payload.namaEvent = form.namaEvent.toUpperCase();
+        }
+
+        if (isMobilMotor) {
+            payload.alamat = form.alamat;
+            payload.brand = form.brand;
+            payload.tipe = form.tipe.toUpperCase();
+            payload.estimasi = form.estimasi;
+        }
 
         setLoading(true);
         try {
-            const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbyKq9ek8KxSx-1mZimL7oXQ7vi5Hu_Cfx6ERQb-9Qb-pe9Rxrcso9gYjwQBXBnUb5hmGA/exec", // Ganti dengan URL Apps Script kamu
-                {
-                    method: "POST",
-                    body: JSON.stringify({ action: "inputDatabase", data: payload }),
-                }
-            );
+            const APPSCRIPT_URL = {
+                "MASKU": "https://script.google.com/macros/s/AKfycbwZCjSDgJHHroa1gxDtBanVJUIdxzRkWPKYyF1AhNXlLnYT_POeLtPLLxZc_TUfMp3L/exec",
+                "HAJIKU": "https://script.google.com/macros/s/AKfycbwZCjSDgJHHroa1gxDtBanVJUIdxzRkWPKYyF1AhNXlLnYT_POeLtPLLxZc_TUfMp3L/exec",
+                "MOBILKU": "https://script.google.com/macros/s/AKfycbyKq9ek8KxSx-1mZimL7oXQ7vi5Hu_Cfx6ERQb-9Qb-pe9Rxrcso9gYjwQBXBnUb5hmGA/exec",
+                "MOTORKU": "https://script.google.com/macros/s/AKfycbyKq9ek8KxSx-1mZimL7oXQ7vi5Hu_Cfx6ERQb-9Qb-pe9Rxrcso9gYjwQBXBnUb5hmGA/exec",
+                "MOTOR BARU": "https://script.google.com/macros/s/URL_MOTORKU/exec",
+            };
+
+            const response = await fetch(APPSCRIPT_URL[activeProduct], {
+                method: "POST",
+                body: JSON.stringify({
+                    action: "inputDatabase",
+                    product: activeProduct,
+                    data: payload,
+                }),
+            });
+
             const result = await response.json();
 
             if (result.status === "success") {
                 Swal.fire("Sukses", "Data berhasil dikirim!", "success");
-                setForm({
-                    ...form,
+
+                // Reset sesuai product
+                setForm((prev) => ({
+                    ...prev,
                     namaKonsumen: "",
                     noHpKonsumen: "",
-                    alamat: "",
-                    brand: "",
-                    tipe: "",
-                    estimasi: "",
+                    sumberDatabase: isMaskuHajiku ? "" : prev.sumberDatabase,
+                    namaEvent: isMaskuHajiku ? "" : prev.namaEvent,
+                    alamat: isMobilMotor ? "" : prev.alamat,
+                    brand: isMobilMotor ? "" : prev.brand,
+                    tipe: isMobilMotor ? "" : prev.tipe,
+                    estimasi: isMobilMotor ? "" : prev.estimasi,
                     setuju: false,
-                });
+                }));
             } else {
-                Swal.fire("Gagal", "Terjadi kesalahan saat mengirim data", "error");
+                Swal.fire("Gagal", result.message || "Gagal mengirim data", "error");
             }
         } catch (error) {
             Swal.fire("Error", error.message, "error");
@@ -353,6 +405,20 @@ export default function InputDatabase() {
                                 required
                                 className="w-full border rounded-lg p-2 uppercase"
                                 placeholder="Masukan Nama Event / Instansi / Marketing Agent"
+                            />
+                        </div>
+
+                        {/* Keterangan */}
+                        <div>
+                            <label className="text-sm font-semibold">Keterangan</label>
+                            <textarea
+                                name="keterangan"
+                                value={form.keterangan}
+                                onChange={handleChange}
+                                required
+                                className="w-full border rounded-lg p-2"
+                                rows={3}
+                                placeholder="Masukan Keterangan"
                             />
                         </div>
 
