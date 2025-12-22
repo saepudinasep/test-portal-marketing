@@ -126,7 +126,7 @@ export default function InputDatabase() {
             : form.product;
 
     const isMaskuHajiku = ["MASKU", "HAJIKU"].includes(activeProduct);
-    const isMobilMotor = ["MOBILKU", "MOTORKU"].includes(activeProduct);
+    const isMobilMotor = ["MOBILKU", "MOTORKU", "MOTOR BARU"].includes(activeProduct);
 
 
     // 🔹 Handle input text
@@ -148,10 +148,10 @@ export default function InputDatabase() {
                 estimasi: ["MASKU", "HAJIKU"].includes(upper) ? "" : prev.estimasi,
 
                 // reset khusus MOBILKU / MOTORKU
-                sumberDatabase: ["MOBILKU", "MOTORKU"].includes(upper)
+                sumberDatabase: ["MOBILKU", "MOTORKU", "MOTOR BARU"].includes(upper)
                     ? ""
                     : prev.sumberDatabase,
-                namaEvent: ["MOBILKU", "MOTORKU"].includes(upper)
+                namaEvent: ["MOBILKU", "MOTORKU", "MOTOR BARU"].includes(upper)
                     ? ""
                     : prev.namaEvent,
             }));
@@ -280,6 +280,7 @@ export default function InputDatabase() {
                             }`}
                     >
                         <option value="">Pilih Product</option>
+                        <option value="MOTOR BARU">MOTOR BARU</option>
                         <option value="MOTORKU">MOTORKU</option>
                         <option value="MOBILKU">MOBILKU</option>
                         <option value="MASKU">MASKU</option>
