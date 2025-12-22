@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
@@ -6,6 +6,9 @@ export default function InputDatabase() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [userData, setUserData] = useState(null);
+    const [isMobile, setIsMobile] = useState(true);
+    const fileInputRef = useRef(null);
+    const [photo, setPhoto] = useState(null);
 
     const [form, setForm] = useState({
         region: "",
@@ -15,6 +18,9 @@ export default function InputDatabase() {
         position: "",
         namaKonsumen: "",
         noHpKonsumen: "",
+        product: "",
+        sumberDatabase: "",
+        namaEvent: "",
         alamat: "",
         brand: "",
         tipe: "",
@@ -41,6 +47,16 @@ export default function InputDatabase() {
         }));
         setTimeout(() => setLoading(false), 800);
     }, [navigate]);
+
+    useEffect(() => {
+        const ua = navigator.userAgent.toLowerCase();
+
+        const mobileCheck =
+            /android|iphone|ipad|ipod|windows phone/i.test(ua) ||
+            navigator.maxTouchPoints > 1;
+
+        setIsMobile(mobileCheck);
+    }, []);
 
     // 🔹 Format Rupiah
     const formatRupiah = (value) => {
@@ -104,13 +120,45 @@ export default function InputDatabase() {
         }
     };
 
+    const activeProduct =
+        userData?.product !== "ALL BRAND"
+            ? userData?.product
+            : form.product;
+
+    const isMaskuHajiku = ["MASKU", "HAJIKU"].includes(activeProduct);
+    const isMobilMotor = ["MOBILKU", "MOTORKU"].includes(activeProduct);
+
+
     // 🔹 Handle input text
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
 
-        if (name === "namaKonsumen" || name === "tipe") {
-            setForm({ ...form, [name]: value });
-        } else if (name === "noHpKonsumen") {
+        // 🔹 Jika product berubah
+        if (name === "product") {
+            const upper = value.toUpperCase();
+
+            setForm((prev) => ({
+                ...prev,
+                product: upper,
+
+                // reset khusus MASKU / HAJIKU
+                alamat: ["MASKU", "HAJIKU"].includes(upper) ? "" : prev.alamat,
+                brand: ["MASKU", "HAJIKU"].includes(upper) ? "" : prev.brand,
+                tipe: ["MASKU", "HAJIKU"].includes(upper) ? "" : prev.tipe,
+                estimasi: ["MASKU", "HAJIKU"].includes(upper) ? "" : prev.estimasi,
+
+                // reset khusus MOBILKU / MOTORKU
+                sumberDatabase: ["MOBILKU", "MOTORKU"].includes(upper)
+                    ? ""
+                    : prev.sumberDatabase,
+                namaEvent: ["MOBILKU", "MOTORKU"].includes(upper)
+                    ? ""
+                    : prev.namaEvent,
+            }));
+            return;
+        }
+
+        if (name === "noHpKonsumen") {
             const angka = value.replace(/\D/g, "").slice(0, 13);
             setForm({ ...form, [name]: angka });
         } else if (name === "estimasi") {
@@ -122,6 +170,52 @@ export default function InputDatabase() {
         }
     };
 
+    // 📸 Ambil foto dari kamera
+    const handleTakePhoto = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+                const compressed = await compressBase64(reader.result, 900, 0.7);
+                setPhoto(compressed);
+
+                // 👉 kosongkan input file setelah foto diambil
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    function compressBase64(base64Str, maxWidth = 900, quality = 0.7) {
+        return new Promise((resolve) => {
+            let img = new Image();
+            img.src = base64Str;
+
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                let width = img.width;
+                let height = img.height;
+
+                // resize jika terlalu besar
+                if (width > maxWidth) {
+                    height *= maxWidth / width;
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const compressed = canvas.toDataURL("image/jpeg", quality);
+                resolve(compressed);
+            };
+        });
+    }
+
     if (loading) {
         return (
             <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-[9999]">
@@ -131,13 +225,13 @@ export default function InputDatabase() {
     }
 
     return (
-        <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-xl">
+        <div className="max-w-3xl mx-auto mt-5 p-6 bg-white shadow-lg rounded-xl">
             <h1 className="text-2xl font-bold text-indigo-700 mb-6 text-center">
                 Input Database Konsumen
             </h1>
 
             {/* Info PIC */}
-            <div className="grid md:grid-cols-3 gap-4 mb-6">
+            <div className="grid md:grid-cols-2 gap-4 mb-6">
                 <div>
                     <label className="block text-sm font-medium mb-1">Nama PIC</label>
                     <input
@@ -164,6 +258,33 @@ export default function InputDatabase() {
                         readOnly
                         className="w-full border rounded-lg p-2 bg-gray-100"
                     />
+                </div>
+                <div>
+                    {/* Product */}
+                    <label className="block text-sm font-medium mb-1">
+                        Product
+                    </label>
+                    <select
+                        name="product"
+                        value={
+                            userData.product !== "ALL BRAND"
+                                ? userData.product
+                                : form.product
+                        }
+                        onChange={handleChange}
+                        disabled={userData.product !== "ALL BRAND"}
+                        className={`w-full rounded-lg p-2 border border-gray-300
+            ${userData.product !== "ALL BRAND"
+                                ? "bg-gray-100 cursor-not-allowed"
+                                : ""
+                            }`}
+                    >
+                        <option value="">Pilih Product</option>
+                        <option value="MOTORKU">MOTORKU</option>
+                        <option value="MOBILKU">MOBILKU</option>
+                        <option value="MASKU">MASKU</option>
+                        <option value="HAJIKU">HAJIKU</option>
+                    </select>
                 </div>
             </div>
 
@@ -197,69 +318,158 @@ export default function InputDatabase() {
                     />
                 </div>
 
-                {/* ALAMAT */}
-                <div>
-                    <label className="text-sm font-semibold">Alamat Domisili</label>
-                    <textarea
-                        name="alamat"
-                        value={form.alamat}
-                        onChange={handleChange}
-                        required
-                        className="w-full border rounded-lg p-2"
-                        rows={3}
-                        placeholder="Masukan Alamat Domisili Konsumen"
-                    />
-                </div>
+                {isMaskuHajiku && (
+                    <>
+                        {/* Sumber Database */}
+                        <div>
+                            <label className="text-sm font-semibold">Sumber Database</label>
+                            <select
+                                name="sumberDatabase"
+                                value={form.sumberDatabase}
+                                onChange={handleChange}
+                                required
+                                className="w-full rounded-lg p-2 border"
+                            >
+                                <option value="">Pilih Sumber Database</option>
+                                <option value="Event">Event</option>
+                                <option value="Marketing Agent">Marketing Agent</option>
+                                <option value="Canvasing">Canvasing</option>
+                                <option value="KBIH">KBIH</option>
+                                <option value="Instansi">Instansi</option>
+                            </select>
+                        </div>
 
-                {/* BRAND */}
-                <div>
-                    <label className="text-sm font-semibold">Brand Kendaraan</label>
-                    <select
-                        name="brand"
-                        value={form.brand}
-                        onChange={handleChange}
-                        required
-                        className="w-full border rounded-lg p-2"
-                    >
-                        <option value="">Pilih Brand</option>
-                        <option value="HONDA">Honda</option>
-                        <option value="SUZUKI">Suzuki</option>
-                        <option value="YAMAHA">Yamaha</option>
-                        <option value="KAWASAKI">Kawasaki</option>
-                        <option value="KTM">KTM</option>
-                        <option value="MINERVA">Minerva</option>
-                        <option value="VESPA">Vespa</option>
-                        <option value="BAJAJ">Bajaj</option>
-                    </select>
-                </div>
+                        {/* Nama Event */}
+                        <div>
+                            <label className="text-sm font-semibold">
+                                Nama Event / Instansi / Marketing Agent
+                            </label>
+                            <input
+                                type="text"
+                                name="namaEvent"
+                                value={form.namaEvent}
+                                onChange={handleChange}
+                                required
+                                className="w-full border rounded-lg p-2 uppercase"
+                                placeholder="Masukan Nama Event / Instansi / Marketing Agent"
+                            />
+                        </div>
 
-                {/* TIPE */}
-                <div>
-                    <label className="text-sm font-semibold">Tipe Unit Kendaraan</label>
-                    <input
-                        type="text"
-                        name="tipe"
-                        value={form.tipe}
-                        onChange={handleChange}
-                        required
-                        className="w-full border rounded-lg p-2 uppercase"
-                        placeholder="Masukan Tipe Unit"
-                    />
-                </div>
+                        {/* Foto */}
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                Ambil Foto Selfie
+                            </label>
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                capture="environment"
+                                onChange={handleTakePhoto}
+                                id="cameraInput"
+                                className="hidden"
+                                disabled={!isMobile}    // ⛔ Tidak bisa di laptop
+                            />
 
-                {/* ESTIMASI */}
-                <div>
-                    <label className="text-sm font-semibold">Estimasi Pencairan</label>
-                    <input
-                        type="text"
-                        name="estimasi"
-                        value={form.estimasi}
-                        onChange={handleChange}
-                        required
-                        className="w-full border rounded-lg p-2"
-                        placeholder="Rp 0"
-                    />
-                </div>
+                            {/* tombol custom */}
+                            <button
+                                type="button"
+                                onClick={() => isMobile && document.getElementById("cameraInput").click()}
+                                className={`w-full p-2 rounded-lg text-white ${isMobile ? "bg-blue-600" : "bg-gray-400 cursor-not-allowed"
+                                    }`}
+                            >
+                                {photo ? "Ulangi Foto" : "Ambil Foto"}
+                            </button>
+
+                            {!isMobile && (
+                                <p className="text-red-600 text-sm mt-1">
+                                    Fitur foto hanya bisa digunakan di perangkat mobile.
+                                </p>
+                            )}
+
+                            {photo && (
+                                <div className="mt-3">
+                                    <p className="text-sm text-gray-600 mb-1">
+                                        Preview Foto:
+                                    </p>
+                                    <img
+                                        src={photo}
+                                        alt="Preview"
+                                        className="rounded-lg border w-full max-h-64 object-contain"
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    </>
+                )}
+
+                {isMobilMotor && (
+                    <>
+                        {/* ALAMAT */}
+                        <div>
+                            <label className="text-sm font-semibold">Alamat Domisili</label>
+                            <textarea
+                                name="alamat"
+                                value={form.alamat}
+                                onChange={handleChange}
+                                required
+                                className="w-full border rounded-lg p-2"
+                                rows={3}
+                                placeholder="Masukan Alamat Domisili Konsumen"
+                            />
+                        </div>
+
+                        {/* BRAND */}
+                        <div>
+                            <label className="text-sm font-semibold">Brand Kendaraan</label>
+                            <select
+                                name="brand"
+                                value={form.brand}
+                                onChange={handleChange}
+                                required
+                                className="w-full border rounded-lg p-2"
+                            >
+                                <option value="">Pilih Brand</option>
+                                <option value="HONDA">Honda</option>
+                                <option value="SUZUKI">Suzuki</option>
+                                <option value="YAMAHA">Yamaha</option>
+                                <option value="KAWASAKI">Kawasaki</option>
+                                <option value="KTM">KTM</option>
+                                <option value="MINERVA">Minerva</option>
+                                <option value="VESPA">Vespa</option>
+                                <option value="BAJAJ">Bajaj</option>
+                            </select>
+                        </div>
+
+                        {/* TIPE */}
+                        <div>
+                            <label className="text-sm font-semibold">Tipe Unit Kendaraan</label>
+                            <input
+                                type="text"
+                                name="tipe"
+                                value={form.tipe}
+                                onChange={handleChange}
+                                required
+                                className="w-full border rounded-lg p-2 uppercase"
+                                placeholder="Masukan Tipe Unit"
+                            />
+                        </div>
+
+                        {/* ESTIMASI */}
+                        <div>
+                            <label className="text-sm font-semibold">Estimasi Pencairan</label>
+                            <input
+                                type="text"
+                                name="estimasi"
+                                value={form.estimasi}
+                                onChange={handleChange}
+                                required
+                                className="w-full border rounded-lg p-2"
+                                placeholder="Rp 0"
+                            />
+                        </div>
+                    </>
+                )}
 
                 {/* TERMS */}
                 <div className="flex items-start space-x-2">
