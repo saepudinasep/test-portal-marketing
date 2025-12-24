@@ -253,8 +253,10 @@ export default function Visiting() {
     const getCharsPerRow = () => {
         const w = window.innerWidth;
 
+        if (w < 360) return 20;      // Extra small (HP lama / mini)
+        if (w < 480) return 24;      // Small mobile
         if (w < 640) return 28;      // Mobile
-        if (w < 1024) return 38;    // Tablet
+        if (w < 1024) return 38;     // Tablet
         return 50;                  // Desktop
     };
 
