@@ -250,6 +250,29 @@ export default function Visiting() {
         setIsMobile(mobileCheck);
     }, []);
 
+    const getCharsPerRow = () => {
+        const w = window.innerWidth;
+
+        if (w < 640) return 28;      // Mobile
+        if (w < 1024) return 38;    // Tablet
+        return 50;                  // Desktop
+    };
+
+    const MAX_ROWS = 80;
+
+    const [charsPerRow, setCharsPerRow] = useState(getCharsPerRow());
+
+    useEffect(() => {
+        const handleResize = () => {
+            setCharsPerRow(getCharsPerRow());
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    const estimatedRows = Math.ceil(form.ket.length / charsPerRow);
+
     // 🔹 Submit form
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -630,12 +653,9 @@ export default function Visiting() {
                             Keterangan
                         </label>
                         <textarea
-                            name="ket"
                             value={form.ket}
-                            onChange={handleChange}
-                            rows="2"
+                            rows={Math.min(estimatedRows, MAX_ROWS)}
                             className="w-full border rounded-lg p-2 bg-gray-100 resize-none"
-                            required
                             readOnly
                         />
                     </div>
