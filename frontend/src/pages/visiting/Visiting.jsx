@@ -658,7 +658,7 @@ export default function Visiting() {
                         <textarea
                             value={form.ket}
                             rows={Math.min(estimatedRows, MAX_ROWS)}
-                            className="w-full border rounded-lg p-2 bg-gray-100 resize-none"
+                            className="w-full border rounded-lg p-2 bg-gray-100 resize-none text-sm"
                             readOnly
                         />
                     </div>
