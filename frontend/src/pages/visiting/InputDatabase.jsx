@@ -92,9 +92,9 @@ export default function InputDatabase() {
         const payload = {
             region: userData.region,
             cabang: userData.cabang,
-            namaPIC: userData.name,
+            nama: userData.name,
             nik: userData.nik,
-            jabatan: userData.position,
+            position: userData.position,
             keterangan: form.keterangan,
             product: activeProduct,
             namaKonsumen: form.namaKonsumen.toUpperCase(),
