@@ -90,11 +90,11 @@ export default function InputDatabase() {
 
         // 🔹 Payload dinamis
         const payload = {
-            region: form.region,
-            cabang: form.cabang,
-            namaPIC: form.nama,
-            nik: form.nik,
-            jabatan: form.position,
+            region: userData.region,
+            cabang: userData.cabang,
+            namaPIC: userData.name,
+            nik: userData.nik,
+            jabatan: userData.position,
             keterangan: form.keterangan,
             product: activeProduct,
             namaKonsumen: form.namaKonsumen.toUpperCase(),
