@@ -101,6 +101,7 @@ export default function InputDatabase() {
             noHpKonsumen: form.noHpKonsumen,
             photoBase64: photo || "",
             createdAt: new Date().toISOString(),
+            setuju: form.setuju,
         };
 
         // Tambahan field berdasarkan product
