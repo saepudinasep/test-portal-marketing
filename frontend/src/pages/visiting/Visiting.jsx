@@ -499,9 +499,47 @@ export default function Visiting() {
         }
 
         /* =============================
-           5️⃣ VALIDASI NO KONTRAK
-        ============================== */
-        if (form.sumberData !== "INJECT MANUAL") {
+        5️⃣ VALIDASI NO KONTRAK
+        ============================= */
+        if (form.sumberData === "INJECT MANUAL") {
+            // 🔹 Inject Manual → validasi format & wajib isi
+            if (!form.noKontrak || form.noKontrak.trim() === "") {
+                Swal.fire({
+                    icon: "warning",
+                    title: "No Kontrak Wajib Diisi",
+                    text: "Untuk Inject Manual, No Kontrak tidak boleh kosong.",
+                });
+                return;
+            }
+
+            if (!/^\d+$/.test(form.noKontrak)) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "No Kontrak Tidak Valid",
+                    text: "No Kontrak harus berupa angka saja.",
+                });
+                return;
+            }
+
+            if (form.noKontrak.length < 16) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "No Kontrak Terlalu Pendek",
+                    text: "No Kontrak minimal 16 digit.",
+                });
+                return;
+            }
+
+            if (!form.namaDebitur || form.namaDebitur.trim() === "") {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Nama Debitur Wajib Diisi",
+                    text: "Nama Debitur tidak boleh kosong untuk Inject Manual.",
+                });
+                return;
+            }
+        } else {
+            // 🔹 NON Inject Manual → harus ada di data kontrak
             const kontrakAda = dataKontrak.some(
                 (item) => item["NO KONTRAK"] === form.noKontrak
             );
