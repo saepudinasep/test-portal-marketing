@@ -460,9 +460,10 @@ export default function Visiting() {
         }
 
         if (form.hasil === "Bertemu") {
-            requiredFields.noHp = "No HP Konsumen";
 
+            // ❗ NO HP WAJIB HANYA NON-SYARIAH
             if (!isSyariah) {
+                requiredFields.noHp = "No HP Konsumen";
                 requiredFields.bertemuDengan = "Bertemu Dengan";
             }
 
@@ -540,13 +541,15 @@ export default function Visiting() {
         /* =============================
            7️⃣ VALIDASI NO HP
         ============================== */
-        if (form.noHp && (form.noHp.length < 11 || form.noHp.length > 13)) {
-            Swal.fire({
-                icon: "warning",
-                title: "No HP Tidak Valid",
-                text: "No HP harus 11–13 digit!",
-            });
-            return;
+        if (!isSyariah && form.noHp) {
+            if (form.noHp.length < 11 || form.noHp.length > 13) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "No HP Tidak Valid",
+                    text: "No HP harus 11–13 digit!",
+                });
+                return;
+            }
         }
 
         /* =============================
