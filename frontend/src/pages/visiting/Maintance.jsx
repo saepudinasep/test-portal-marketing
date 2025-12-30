@@ -35,6 +35,12 @@ export default function Maintance() {
         "SLA Order In",
     ];
 
+    const aktivitasListSyariah = [
+        "Membangun Ikatan",
+        "Informasi SK",
+        "Sosialisasi Program",
+    ];
+
     const hasilList = ["Dapat Prospect", "Tidak Dapat Prospect"];
 
     useEffect(() => {
@@ -52,6 +58,93 @@ export default function Maintance() {
         window.addEventListener("beforeunload", handler);
         return () => window.removeEventListener("beforeunload", handler);
     }, [isDirty]);
+
+    const activeProduct =
+        userData?.product === "ALL BRAND"
+            ? form.product
+            : userData?.product || "";
+
+    const isSyariah =
+        ["MASKU", "HAJIKU"].includes(activeProduct?.toUpperCase());
+    // const isMobilMotor = ["MOBILKU", "MOTORKU", "MOTOR BARU"].includes(activeProduct);
+
+    const maField = isSyariah
+        ? {
+            nama: "NAMA MA",
+            noRef: "NO REF",
+        }
+        : {
+            nama: "TRIM NAMA",
+            noRef: "TRIM NO REF",
+        };
+
+    const mapRegionSyariah = (region) => {
+        const r = region?.toUpperCase();
+
+        const mapping = {
+            "JABODEBEK 1": "JABODEBEK",
+            "JABODEBEK 2": "JABODEBEK",
+            "JABODEBEK 3": "JABODEBEK",
+
+            "BANTEN 1": "BANTEN",
+            "BANTEN 2": "BANTEN",
+
+            "JABAR 1": "JABAR",
+            "JABAR 2": "JABAR",
+
+            "JATENGUT 1": "JATENGUT",
+            "JATENGUT 2": "JATENGUT",
+
+            "JATENGSEL 1": "JATENGSEL",
+            "JATENGSEL 2": "JATENGSEL",
+
+            "JATIM 1": "JATIM BALI",
+            "JATIM 2": "JATIM BALI",
+            "JATIM 3": "JATIM BALI",
+            "JATIM 5": "JATIM BALI",
+
+            "SUMBAGUT 1": "SUMBAGUT",
+            "SUMBAGUT 2": "SUMBAGUT",
+
+            "SUMBAGSEL 1": "SUMBAGSEL",
+            "SUMBAGSEL 2": "SUMBAGSEL",
+
+            "KALIMANTAN": "KALIMANTAN",
+
+            "SULAWESI 1": "SULAWESI",
+            "SULAWESI 2": "SULAWESI",
+        };
+
+        return mapping[r] || r; // fallback jika tidak ada di mapping
+    };
+
+    const SYARIAH_URL =
+        "https://script.google.com/macros/s/AKfycbwjSSisE6KcTnu-RzAx_JtDc-mzafAo3Wl6fbsavVN2Rhc8Xu6ax_-xrdGhjkFSxGTVKQ/exec";
+
+    const regionURL = {
+        "JABODEBEK 1": "https://script.google.com/macros/s/AKfycbx2HzaNUQWL5HWPFgnjWNI0FXXouiBywnva_ETScQO86P1x_jBucwlkzGp5CCOlZa1S0w/exec",
+        "JABODEBEK 2": "https://script.google.com/macros/s/AKfycbw38CD6092epGsBp7uBzIXx9j_obDQbDzSQplxYSHBGf3FhM242B6_4V1qbPprOYKrWIg/exec",
+        "JABODEBEK 3": "https://script.google.com/macros/s/AKfycby5LZjwtsU8IvllSo0nCWSfTFvkb2tSVK8oXKpXHtohbywFDiepJ42-HniuV_RDm9HR/exec",
+        "BANTEN 1": "https://script.google.com/macros/s/AKfycbxz8Mqsknwlaq7QprxGuhfyqculk8mBMYLTMeBsyEqExawjFpNviIV0jHEygDXfVRae/exec",
+        "BANTEN 2": "https://script.google.com/macros/s/AKfycbzVX0usKydMHVTOIf6zov1xpm1uYqFefI7LxAM4IGKhloptc5Dzg3PWoFeQa9HskKVS_w/exec",
+        "JABAR 1": "https://script.google.com/macros/s/AKfycbyWKzQbSyccX71Epy3K8B20ZSXxGcvulHHGS6Rr6NkE0JXThc00EoksdUT-lOQvqeXZ/exec",
+        "JABAR 2": "https://script.google.com/macros/s/AKfycbzOFSD0NrDqDGNeUMVaOuHt4G2cuHnT7PVLua8EQY5pvsZdbCeqQI5QkTTdOZPFXGE/exec",
+        "JATENGUT 1": "https://script.google.com/macros/s/AKfycbzXdANB18q9z-j5XuI6l68AzQC_-QZt931weOz-S6PAnSzGmbESKK5ZVbPZNgPn974R/exec",
+        "JATENGUT 2": "https://script.google.com/macros/s/AKfycbxcLPFV-oa8xM_HgQVie63LIrXalu9Ds82uZF_md2mB2dErvQgs7IG_nwrOig-D0vWf/exec",
+        "JATENGSEL 1": "https://script.google.com/macros/s/AKfycbx5p911jEBe1_1XjV_c91auKgTWm1UcsdyzgIx_reiCEai9tz02lm9TEoInooOtdYiF/exec",
+        "JATENGSEL 2": "https://script.google.com/macros/s/AKfycbwDo8ahB4ZoQATzO0ha7sWIBkgleS-P_TjeNRck6VHJzWg5viynZ6KBhSjCxDdauYT5Ww/exec",
+        "JATIM 1": "https://script.google.com/macros/s/AKfycbw9wwlNqz4naeu7W9ZFrvjKmw18i6UK_zuB1E8yrjucoFnsA7sF0NwCuZxSB4lm8fIhFA/exec",
+        "JATIM 2": "https://script.google.com/macros/s/AKfycbxuMhyYtoMk0bZeHNyJEpROQXQTjYXbUt60DY0RJTU9dR5wJwYbYrF-_vb5Vd6s2Nde/exec",
+        "JATIM 3": "https://script.google.com/macros/s/AKfycbwAYer7eAcwygWZYS64Y75sVgQsIglBgpUoGmzGg5VRLypcF-ALL5oc-daVegKbWJuX/exec",
+        "JATIM 5": "https://script.google.com/macros/s/AKfycbw2VlwMWV6HENkhYY7vCucEgty1urBmPUBuUCymOhivNEjGAbCl7bxTANqAJMmMZRrA0Q/exec",
+        "SUMBAGUT 1": "https://script.google.com/macros/s/AKfycbyBAxppLl4bmJCU5u6u8lYVGKewTZqclykLJ9mHy0WqMuDIJMFr9X4fgd6ggu7yVLjQ_Q/exec",
+        "SUMBAGUT 2": "https://script.google.com/macros/s/AKfycbwrWzoM64tUmw_7l8iBMcO2Tz5h20mWsf7WnziXYOoxAMwquJLYcQmbWWrTt5FL9wBAbQ/exec",
+        "SUMBAGSEL 1": "https://script.google.com/macros/s/AKfycby1Zr-SeUv48k6Jw5twT6oKMKZyGcRdc3dhZ4R4Y_KmEqt126Ct0BOC7qq91zg1GSCJ/exec",
+        "SUMBAGSEL 2": "https://script.google.com/macros/s/AKfycbzVqDSPobHghZ1-V-hVYFhkMM1hbKQz_4uvr9k6GfxLJbnSrFHmqxyueJrw6fV2RU8mIA/exec",
+        "KALIMANTAN": "https://script.google.com/macros/s/AKfycbzRKpaZmch4C7AT-Hs7hEdZ_X9-GEGnHXK7-m3J73PwElhIcQrh_PEZ4XgPixMhp97IOA/exec",
+        "SULAWESI 1": "https://script.google.com/macros/s/AKfycbzQMK6fKEE82Rg-ku18Qow5xzaMQwqJiPASpIMLbFKZIWTVegbuPkXDaTnwZ9lMlHakFQ/exec",
+        "SULAWESI 2": "https://script.google.com/macros/s/AKfycbzsZDPeAqwv_iOKhmiN_LYaqFBrtcTR_AVNvPTiP0H5fx_asK4LKvFAta2VRd03cSM0WA/exec"
+    };
 
     // ✅ Proteksi route & ambil data dari Apps Script
     useEffect(() => {
@@ -97,81 +190,109 @@ export default function Maintance() {
             product: parsedUser.product !== "ALL BRAND" ? parsedUser.product : "" // ⬅ FIX PENTING
         }));
 
-        const regionURL = {
-            "JABODEBEK 1": "https://script.google.com/macros/s/AKfycbx2HzaNUQWL5HWPFgnjWNI0FXXouiBywnva_ETScQO86P1x_jBucwlkzGp5CCOlZa1S0w/exec",
-            "JABODEBEK 2": "https://script.google.com/macros/s/AKfycbw38CD6092epGsBp7uBzIXx9j_obDQbDzSQplxYSHBGf3FhM242B6_4V1qbPprOYKrWIg/exec",
-            "JABODEBEK 3": "https://script.google.com/macros/s/AKfycby5LZjwtsU8IvllSo0nCWSfTFvkb2tSVK8oXKpXHtohbywFDiepJ42-HniuV_RDm9HR/exec",
-            "BANTEN 1": "https://script.google.com/macros/s/AKfycbxz8Mqsknwlaq7QprxGuhfyqculk8mBMYLTMeBsyEqExawjFpNviIV0jHEygDXfVRae/exec",
-            "BANTEN 2": "https://script.google.com/macros/s/AKfycbzVX0usKydMHVTOIf6zov1xpm1uYqFefI7LxAM4IGKhloptc5Dzg3PWoFeQa9HskKVS_w/exec",
-            "JABAR 1": "https://script.google.com/macros/s/AKfycbyWKzQbSyccX71Epy3K8B20ZSXxGcvulHHGS6Rr6NkE0JXThc00EoksdUT-lOQvqeXZ/exec",
-            "JABAR 2": "https://script.google.com/macros/s/AKfycbzOFSD0NrDqDGNeUMVaOuHt4G2cuHnT7PVLua8EQY5pvsZdbCeqQI5QkTTdOZPFXGE/exec",
-            "JATENGUT 1": "https://script.google.com/macros/s/AKfycbzXdANB18q9z-j5XuI6l68AzQC_-QZt931weOz-S6PAnSzGmbESKK5ZVbPZNgPn974R/exec",
-            "JATENGUT 2": "https://script.google.com/macros/s/AKfycbxcLPFV-oa8xM_HgQVie63LIrXalu9Ds82uZF_md2mB2dErvQgs7IG_nwrOig-D0vWf/exec",
-            "JATENGSEL 1": "https://script.google.com/macros/s/AKfycbx5p911jEBe1_1XjV_c91auKgTWm1UcsdyzgIx_reiCEai9tz02lm9TEoInooOtdYiF/exec",
-            "JATENGSEL 2": "https://script.google.com/macros/s/AKfycbwDo8ahB4ZoQATzO0ha7sWIBkgleS-P_TjeNRck6VHJzWg5viynZ6KBhSjCxDdauYT5Ww/exec",
-            "JATIM 1": "https://script.google.com/macros/s/AKfycbw9wwlNqz4naeu7W9ZFrvjKmw18i6UK_zuB1E8yrjucoFnsA7sF0NwCuZxSB4lm8fIhFA/exec",
-            "JATIM 2": "https://script.google.com/macros/s/AKfycbxuMhyYtoMk0bZeHNyJEpROQXQTjYXbUt60DY0RJTU9dR5wJwYbYrF-_vb5Vd6s2Nde/exec",
-            "JATIM 3": "https://script.google.com/macros/s/AKfycbwAYer7eAcwygWZYS64Y75sVgQsIglBgpUoGmzGg5VRLypcF-ALL5oc-daVegKbWJuX/exec",
-            "JATIM 5": "https://script.google.com/macros/s/AKfycbw2VlwMWV6HENkhYY7vCucEgty1urBmPUBuUCymOhivNEjGAbCl7bxTANqAJMmMZRrA0Q/exec",
-            "SUMBAGUT 1": "https://script.google.com/macros/s/AKfycbyBAxppLl4bmJCU5u6u8lYVGKewTZqclykLJ9mHy0WqMuDIJMFr9X4fgd6ggu7yVLjQ_Q/exec",
-            "SUMBAGUT 2": "https://script.google.com/macros/s/AKfycbwrWzoM64tUmw_7l8iBMcO2Tz5h20mWsf7WnziXYOoxAMwquJLYcQmbWWrTt5FL9wBAbQ/exec",
-            "SUMBAGSEL 1": "https://script.google.com/macros/s/AKfycby1Zr-SeUv48k6Jw5twT6oKMKZyGcRdc3dhZ4R4Y_KmEqt126Ct0BOC7qq91zg1GSCJ/exec",
-            "SUMBAGSEL 2": "https://script.google.com/macros/s/AKfycbzVqDSPobHghZ1-V-hVYFhkMM1hbKQz_4uvr9k6GfxLJbnSrFHmqxyueJrw6fV2RU8mIA/exec",
-            "KALIMANTAN": "https://script.google.com/macros/s/AKfycbzRKpaZmch4C7AT-Hs7hEdZ_X9-GEGnHXK7-m3J73PwElhIcQrh_PEZ4XgPixMhp97IOA/exec",
-            "SULAWESI 1": "https://script.google.com/macros/s/AKfycbzQMK6fKEE82Rg-ku18Qow5xzaMQwqJiPASpIMLbFKZIWTVegbuPkXDaTnwZ9lMlHakFQ/exec",
-            "SULAWESI 2": "https://script.google.com/macros/s/AKfycbzsZDPeAqwv_iOKhmiN_LYaqFBrtcTR_AVNvPTiP0H5fx_asK4LKvFAta2VRd03cSM0WA/exec"
-        };
 
-        const baseURL = regionURL[parsedUser.region] || "";
+        const fetchAllMA = async () => {
+            try {
+                setLoading(true);
 
-        const scriptURL =
-            baseURL +
-            "?nik=" + parsedUser.nik +
-            "&akses=" + encodeURIComponent(parsedUser.akses || "") +
-            "&region=" + encodeURIComponent(parsedUser.region || "") +
-            "&cabang=" + encodeURIComponent(parsedUser.cabang || "");
+                const regionSyariah = mapRegionSyariah(parsedUser.region);
 
+                /* =============================
+                   1️⃣ FETCH SYARIAH
+                ============================== */
+                const syariahURL =
+                    SYARIAH_URL +
+                    `?nik=${parsedUser.nik}` +
+                    `&akses=${encodeURIComponent(parsedUser.akses || "")}` +
+                    `&region=${encodeURIComponent(regionSyariah || "")}` +
+                    `&cabang=${encodeURIComponent(parsedUser.cabang || "")}`;
 
-        setLoading(true);
+                /* =============================
+                   2️⃣ FETCH KONVENSIONAL
+                ============================== */
+                const konvenBase = regionURL[parsedUser.region];
 
-        fetch(scriptURL)
-            .then((res) => res.json())
-            .then((data) => {
-                if (data && data.data) {
-                    setDataMA(data.data);
+                const konvenURL = konvenBase
+                    ? konvenBase +
+                    `?nik=${parsedUser.nik}` +
+                    `&akses=${encodeURIComponent(parsedUser.akses || "")}` +
+                    `&region=${encodeURIComponent(parsedUser.region || "")}` +
+                    `&cabang=${encodeURIComponent(parsedUser.cabang || "")}`
+                    : null;
+
+                /* =============================
+                   3️⃣ EXECUTE PARALEL
+                ============================== */
+                const requests = [
+                    fetch(syariahURL).then((r) => r.json()),
+                ];
+
+                if (konvenURL) {
+                    requests.push(fetch(konvenURL).then((r) => r.json()));
                 }
 
-            })
-            .catch((err) => console.error("Error fetching data:", err))
-            .finally(() => setLoading(false));
-    }, [isDirty, navigate]);
+                const results = await Promise.all(requests);
 
-    const activeProduct =
-        userData?.product === "ALL BRAND"
-            ? form.product
-            : userData?.product || "";
+                /* =============================
+                   4️⃣ GABUNGKAN DATA
+                ============================== */
+                const mergedData = results
+                    .flatMap((res) => res?.data || [])
+                    .filter(Boolean);
+
+                setDataMA(mergedData);
+            } catch (err) {
+                console.error("Fetch MA error:", err);
+                setDataMA([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAllMA();
+    }, [isDirty, navigate]);
 
     // 🔍 Filter hasil pencarian Nama MA + PRODUCT + ROLE
     const filteredMA = dataMA.filter((item) => {
+        /* =============================
+           1️⃣ FILTER PRODUCT
+        ============================== */
         const productMatch =
             !activeProduct ||
             item["PRODUCT"]?.toUpperCase() === activeProduct.toUpperCase();
 
-        const namaMatch = item["TRIM NAMA"]
+        /* =============================
+           2️⃣ FILTER NAMA MA
+        ============================== */
+        const namaMatch = item[maField.nama]
             ?.toLowerCase()
             .includes(form.namaMA.toLowerCase());
 
-        // --- FILTER BERDASARKAN ROLE ---
+        /* =============================
+           3️⃣ NORMALISASI REGION
+        ============================== */
+        const itemRegion = isSyariah
+            ? mapRegionSyariah(item["REGION"])
+            : item["REGION"]?.toUpperCase();
+
+        const userRegion = isSyariah
+            ? mapRegionSyariah(userData?.region)
+            : userData?.region?.toUpperCase();
+
+        /* =============================
+           4️⃣ ROLE-BASED FILTER
+        ============================== */
         if (userData?.akses === "MAO") {
             // MAO → NIK + PRODUCT + Nama
             const nikMatch =
                 item["NIK (PIC)"]?.toUpperCase() === userData.nik?.toUpperCase();
 
             return productMatch && namaMatch && nikMatch;
-        } else if (userData?.akses === "SURVEYOR") {
+        }
+
+        if (userData?.akses === "SURVEYOR") {
             // SURVEYOR → PRODUCT + REGION + CABANG + Nama
-            const regionMatch =
-                item["REGION"]?.toUpperCase() === userData.region?.toUpperCase();
+            const regionMatch = itemRegion === userRegion;
 
             const cabangMatch =
                 item["CABANG"]?.toUpperCase() === userData.cabang?.toUpperCase();
@@ -179,9 +300,12 @@ export default function Maintance() {
             return productMatch && namaMatch && regionMatch && cabangMatch;
         }
 
-        // Default: jika role tidak dikenal → hanya filter PRODUCT + Nama MA
+        /* =============================
+           5️⃣ DEFAULT
+        ============================== */
         return productMatch && namaMatch;
     });
+
 
     // console.log("product aktif" + activeProduct);
     // console.log(dataMA);
@@ -192,8 +316,8 @@ export default function Maintance() {
     const handleSelectMA = (item) => {
         setForm((prev) => ({
             ...prev,
-            namaMA: item["TRIM NAMA"],
-            noRef: item["TRIM NO REF"] || "",
+            namaMA: item[maField.nama] || "",
+            noRef: item[maField.noRef] || "",
             occupation: item["OCCUPATION WISE"] || "",
         }));
         setShowDropdown(false);
@@ -290,7 +414,7 @@ export default function Maintance() {
 
         // ❗ Validasi TRIM NAMA harus ada di database
         const kontrakAda = dataMA.some(
-            (item) => item["TRIM NAMA"] === form.namaMA
+            (item) => item[maField.nama] === form.namaMA
         );
 
         if (!kontrakAda) {
@@ -355,13 +479,21 @@ export default function Maintance() {
                 },
             });
 
-            const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbxbCyNE4T1d5kwbOL6_33t-LSFqrhUACwgUjXvgOJC8c0I7zpNcNnceHI7sRrGeD1Ud/exec",
-                {
-                    method: "POST",
-                    body: JSON.stringify(payload),
-                }
-            );
+            const SUBMIT_URL_KONVENSIONAL =
+                "https://script.google.com/macros/s/AKfycbxbCyNE4T1d5kwbOL6_33t-LSFqrhUACwgUjXvgOJC8c0I7zpNcNnceHI7sRrGeD1Ud/exec";
+
+            const SUBMIT_URL_SYARIAH =
+                "https://script.google.com/macros/s/AKfycbx2XTPLSP5MKJoj3Aq-sFp-_HyDBUpUS8EU1IbSCahR65TlKnyKPP-8Rla2UL6irsY/exec";
+
+
+            const submitURL = isSyariah
+                ? SUBMIT_URL_SYARIAH
+                : SUBMIT_URL_KONVENSIONAL;
+
+            const response = await fetch(submitURL, {
+                method: "POST",
+                body: JSON.stringify(payload),
+            });
 
             const result = await response.json();
             Swal.close();
@@ -446,6 +578,8 @@ export default function Maintance() {
                                 <option value="">Pilih Product</option>
                                 <option value="MOTORKU">MOTORKU</option>
                                 <option value="MOBILKU">MOBILKU</option>
+                                <option value="MASKU">MASKU</option>
+                                <option value="HAJIKU">HAJIKU</option>
                             </select>
                         </div>
                     </div>
@@ -491,7 +625,7 @@ export default function Maintance() {
                                                 onClick={() => handleSelectMA(item)}
                                                 className="px-3 py-2 hover:bg-indigo-100 cursor-pointer text-sm"
                                             >
-                                                {item["TRIM NAMA"]}
+                                                {item[maField.nama]}
                                             </li>
                                         ))
                                     ) : (
@@ -590,7 +724,10 @@ export default function Maintance() {
                                 required
                             >
                                 <option value="">Pilih Aktivitas</option>
-                                {aktivitasList.map((act, idx) => (
+                                {(isSyariah
+                                    ? aktivitasListSyariah
+                                    : aktivitasList
+                                ).map((act, idx) => (
                                     <option key={idx} value={act}>
                                         {act}
                                     </option>
