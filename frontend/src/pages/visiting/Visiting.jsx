@@ -595,7 +595,7 @@ export default function Visiting() {
                 "https://script.google.com/macros/s/AKfycbxf2dJP1xBTuMwSnvyadrH5j0xfnPItE0p7qZu34d7ooK5WnixKyU-jlxNBqnBt4G3k/exec";
 
             const SUBMIT_URL_SYARIAH =
-                "https://script.google.com/macros/s/AKfycbxkUkbeCzrzIOMqPFHV3DyNgJ6O3GaEE363-6i3WZ4m2PP4bSnYpMRXBBb0T2KKBSRBDQ/exec";
+                "https://script.google.com/macros/s/AKfycbwiJFZwsX-lvQ_pdiIwxM14Imd8UkEfQmSPoEV3_UpMiiMxKkOaomqVO2n_W4u9FnSVxA/exec";
 
 
             const submitURL = isSyariah
