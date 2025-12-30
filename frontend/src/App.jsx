@@ -26,6 +26,8 @@ import RekrutMA from "./pages/visiting/RekrutMA";
 import InputDatabase from "./pages/visiting/InputDatabase";
 import CekCredit from "./pages/kbij/CekCredit";
 
+import PageError from "./components/pageError";
+
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -107,10 +109,11 @@ export default function App() {
       </Route>
 
       {/* Fallback 404 */}
-      <Route
+      {/* <Route
         path="*"
         element={<div className="p-8 text-center">404 | Page Not Found</div>}
-      />
+      /> */}
+      <Route path="*" element={<PageError />} />
     </Routes>
   );
 }
