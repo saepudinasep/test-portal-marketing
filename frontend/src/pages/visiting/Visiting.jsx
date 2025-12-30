@@ -34,6 +34,7 @@ export default function Visiting() {
     });
 
     const hasilList = ["Bertemu", "Tidak Bertemu"];
+    const isInjectManual = form.sumberData === "INJECT MANUAL";
 
     // Opsi dinamis
     const aktivitasTidakBertemu = [
@@ -41,8 +42,18 @@ export default function Visiting() {
         "Alamat Pindah",
         "Titip Surat Penawaran",
     ];
+    const aktivitasTidakBertemuSyariah = [
+        "Rumah kosong",
+        "Bertemu keluarga/ART/Satpam",
+        "Alamat tidak sesuai"
+    ];
     const bertemuDenganList = ["Pemohon", "Pasangan"];
     const hasilBertemuList = ["Prospek", "Interest", "Tidak Berminat"];
+    const hasilBertemuListSyariah = [
+        "Berminat",
+        "Pikir-Pikir",
+        "Tidak Berminat",
+    ];
     const keteranganTidakBerminat = [
         "Angsuran Mahal",
         "Persyaratan Rumit",
@@ -50,6 +61,14 @@ export default function Visiting() {
         "Tidak Ingin Mengajukan Kembali",
         "Sedang Tidak Membutuhkan Dana",
         "Sudah Dapat Dana",
+    ];
+    const keteranganTidakBerminatSyariah = [
+        "Pricing",
+        "Ada kebutuhan lain",
+    ];
+    const keteranganPikirSyariah = [
+        "Pricing",
+        "Diskusi dengan keluarga/pasangan",
     ];
     const keteranganInterest = [
         "Konfirmasi Pasangan/Keluarga",
@@ -81,25 +100,111 @@ export default function Visiting() {
             product: parsedUser.product !== "ALL BRAND" ? parsedUser.product.toUpperCase() : "" // ⬅ FIX PENTING
         }));
 
-        const scriptURL =
-            "https://script.google.com/macros/s/AKfycbw8k0pA5XZX1SkdoWeaOCOrf9tBZu3fDPqGaM1H3fS-dyD1sdJAQjCloJP4_c7wRmvs/exec" +
-            `?region=${parsedUser.region}&cabang=${parsedUser.cabang}`;
+        const URL_MOTOR_MOBIL =
+            "https://script.google.com/macros/s/AKfycbw8k0pA5XZX1SkdoWeaOCOrf9tBZu3fDPqGaM1H3fS-dyD1sdJAQjCloJP4_c7wRmvs/exec";
+
+        const URL_HAJI_MASK =
+            "https://script.google.com/macros/s/AKfycbz8JNLWHBkXo1XNM9RsH3Dlw5OCLWpmsvTuAslZ9XILUNUB6Q5dvoEiGfu1QxW2auJl/exec";
+
+        const mapRegionSyariah = (region) => {
+            const r = region?.toUpperCase();
+
+            const mapping = {
+                "JABODEBEK 1": "JABODEBEK",
+                "JABODEBEK 2": "JABODEBEK",
+                "JABODEBEK 3": "JABODEBEK",
+
+                "BANTEN 1": "BANTEN",
+                "BANTEN 2": "BANTEN",
+
+                "JABAR 1": "JABAR",
+                "JABAR 2": "JABAR",
+
+                "JATENGUT 1": "JATENGUT",
+                "JATENGUT 2": "JATENGUT",
+
+                "JATENGSEL 1": "JATENGSEL",
+                "JATENGSEL 2": "JATENGSEL",
+
+                "JATIM 1": "JATIM BALI",
+                "JATIM 2": "JATIM BALI",
+                "JATIM 3": "JATIM BALI",
+                "JATIM 5": "JATIM BALI",
+
+                "SUMBAGUT 1": "SUMBAGUT",
+                "SUMBAGUT 2": "SUMBAGUT",
+
+                "SUMBAGSEL 1": "SUMBAGSEL",
+                "SUMBAGSEL 2": "SUMBAGSEL",
+
+                "KALIMANTAN": "KALIMANTAN",
+
+                "SULAWESI 1": "SULAWESI",
+                "SULAWESI 2": "SULAWESI",
+            };
+
+            return mapping[r] || r; // fallback jika tidak ada di mapping
+        };
+
+        const regionMotorMobil = parsedUser.region;                // asli
+        const regionSyariah = mapRegionSyariah(parsedUser.region); // hasil mapping
+        const product = parsedUser.product?.toUpperCase();
 
         setLoading(true);
-        fetch(scriptURL)
-            .then((res) => res.json())
-            .then((data) => {
-                if (data && data.data) {
-                    const fixed = data.data.map((item) => ({
+
+        let fetchPromises = [];
+
+        // MOTORKU & MOBILKU → region asli
+        if (product === "MOTORKU" || product === "MOBILKU") {
+            fetchPromises = [
+                fetch(
+                    `${URL_MOTOR_MOBIL}?region=${regionMotorMobil}&cabang=${parsedUser.cabang}`
+                ).then((res) => res.json()),
+            ];
+        }
+
+        // HAJIKU & MASKU → region hasil mapping
+        else if (product === "HAJIKU" || product === "MASKU" ||
+            product === "ALL SYARIAH") {
+            fetchPromises = [
+                fetch(
+                    `${URL_HAJI_MASK}?region=${regionSyariah}&cabang=${parsedUser.cabang}`
+                ).then((res) => res.json()),
+            ];
+        }
+
+        // ALL BRAND → gabungkan dua sumber + dua region
+        else if (product === "ALL BRAND") {
+            fetchPromises = [
+                // MOTOR & MOBIL
+                fetch(
+                    `${URL_MOTOR_MOBIL}?region=${regionMotorMobil}&cabang=${parsedUser.cabang}`
+                ).then((res) => res.json()),
+
+                // MASKU & HAJIKU
+                fetch(
+                    `${URL_HAJI_MASK}?region=${regionSyariah}&cabang=${parsedUser.cabang}`
+                ).then((res) => res.json()),
+            ];
+        }
+
+        Promise.all(fetchPromises)
+            .then((results) => {
+                const mergedData = results
+                    .flatMap((res) => res?.data || [])
+                    .map((item) => ({
                         ...item,
                         product: item["PRODUCT"]?.toUpperCase() || "",
                         sumberData: item["SUMBER DATA"]?.toUpperCase() || "",
                     }));
-                    setDataKontrak(fixed);
-                }
+
+                setDataKontrak(mergedData);
             })
-            .catch((err) => console.error("Error fetching kontrak:", err))
+            .catch((err) => {
+                console.error("Error fetching kontrak:", err);
+            })
             .finally(() => setLoading(false));
+
     }, [navigate]);
 
     // 🔍 Filter hasil pencarian No Kontrak
@@ -113,22 +218,36 @@ export default function Visiting() {
             : true;
 
         const matchProduct = form.product
-            ? item.product === form.product.toUpperCase()
+            ? form.product === "ALL SYARIAH"
+                ? ["MASKU", "HAJIKU"].includes(item.product)
+                : item.product === form.product.toUpperCase()
             : true;
 
         return matchNoKontrak && matchSumberData && matchProduct;
     });
 
     const sumberDataOptions = {
-        MOTORKU: [
+        "MOTORKU": [
             "MOTOR PRIORITY 1",
             "MOTOR PRIORITY 2",
             "MOTOR PRIORITY 3",
         ],
-        MOBILKU: [
+        "MOBILKU": [
             "MOBIL PRIORITY 1",
             "MOBIL PRIORITY 2",
             "MOBIL PRIORITY 3",
+        ],
+        "MASKU": [
+            "INJECT OLEH HO",
+            "INJECT MANUAL",
+        ],
+        "HAJIKU": [
+            "INJECT OLEH HO",
+            "INJECT MANUAL",
+        ],
+        "ALL SYARIAH": [
+            "INJECT OLEH HO",
+            "INJECT MANUAL",
         ],
     };
 
@@ -138,6 +257,10 @@ export default function Visiting() {
             : userData?.product;          // product fixed sesuai user
 
     const activeProduct = form.sumberData !== "" && selectedProduct !== "";
+
+    const isSyariah =
+        ["MASKU", "HAJIKU", "ALL SYARIAH"].includes(selectedProduct);
+    const isMobilMotor = ["MOBILKU", "MOTORKU", "MOTOR BARU"].includes(selectedProduct);
 
     // 🔹 Saat memilih kontrak
     const handleSelectKontrak = (item) => {
@@ -159,25 +282,62 @@ export default function Visiting() {
         setForm((prev) => {
             let updated = { ...prev, [name]: value };
 
+            /* =============================
+               1️⃣ GANTI PRODUCT (ALL BRAND)
+            ============================== */
             if (name === "product" && userData?.product === "ALL BRAND") {
-                // updated.product = value.toUpperCase();
-                updated.sumberData = "";     // reset sumber data
-                updated.noKontrak = "";      // reset kontrak
-                updated.namaDebitur = "";
-                updated.ket = "";
-            }
-
-            if (name === "sumberData") {
-                // updated.product = value.toUpperCase();
+                updated.sumberData = "";
                 updated.noKontrak = "";
                 updated.namaDebitur = "";
                 updated.ket = "";
+
+                // reset field turunan
+                updated.hasil = "";
+                updated.aktivitas = "";
+                updated.keterangan = "";
+            }
+
+            /* =============================
+               2️⃣ GANTI SUMBER DATA
+            ============================== */
+            if (name === "sumberData") {
+                updated.noKontrak = "";
+                updated.namaDebitur = "";
+                updated.ket = "";
+
+                // ❗ INJECT MANUAL tidak boleh ALL SYARIAH
+                if (
+                    value === "INJECT MANUAL" &&
+                    updated.product === "ALL SYARIAH"
+                ) {
+                    updated.product = "MASKU"; // default aman
+                }
+
+                // reset hasil & aktivitas
+                updated.hasil = "";
+                updated.aktivitas = "";
+                updated.keterangan = "";
+            }
+
+            /* =============================
+               3️⃣ GANTI HASIL VISIT
+            ============================== */
+            if (name === "hasil") {
+                updated.aktivitas = "";
+                updated.keterangan = "";
+            }
+
+            /* =============================
+               4️⃣ GANTI AKTIVITAS
+            ============================== */
+            if (name === "aktivitas") {
+                updated.keterangan = "";
             }
 
             return updated;
         });
 
-        // Tutup dropdown jika filter berubah
+        // Tutup dropdown pencarian kontrak
         if (name === "sumberData" || name === "product") {
             setShowDropdown(false);
         }
@@ -280,41 +440,52 @@ export default function Visiting() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Daftar field wajib (umum)
+        /* =============================
+           1️⃣ VALIDASI FIELD WAJIB UMUM
+        ============================== */
         const requiredFields = {
             product: "Product",
             sumberData: "Sumber Data",
             noKontrak: "No Kontrak",
             namaDebitur: "Nama Debitur",
+            hasil: "Hasil Visit",
+            detail: "Notes Visit",
         };
 
-        // 2. Aturan berdasarkan HASIL & bertemuDengan
+        /* =============================
+           2️⃣ VALIDASI BERDASARKAN HASIL
+        ============================== */
         if (form.hasil === "Tidak Bertemu") {
-            requiredFields.aktivitas = "Aktivitas";
-            requiredFields.detail = "Detail Visit";
+            requiredFields.aktivitas = "Aktivitas Visit";
         }
 
         if (form.hasil === "Bertemu") {
-            // Wajib isi No HP untuk semua yang bertemu
             requiredFields.noHp = "No HP Konsumen";
-            requiredFields.detail = "Detail Visit";
-            requiredFields.bertemuDengan = "Bertemu Dengan";
 
-            if (form.aktivitas === "Interest" || form.aktivitas === "Tidak Berminat") {
-                requiredFields.keterangan = "Keterangan";
+            if (!isSyariah) {
+                requiredFields.bertemuDengan = "Bertemu Dengan";
             }
 
-            // Prospek → keterangan tidak wajib
-            if (form.aktivitas === "Prospek") {
-                // tidak menambah keterangan
+            if (
+                ["Interest", "Tidak Berminat", "Pikir-Pikir"].includes(form.aktivitas)
+            ) {
+                requiredFields.keterangan = "Keterangan";
             }
         }
 
-        if (form.sumberData === "MOBIL PRIORITY 3" || form.sumberData === "MOTOR PRIORITY 3") {
+        /* =============================
+           3️⃣ PRIORITY 3
+        ============================== */
+        if (
+            form.sumberData === "MOBIL PRIORITY 3" ||
+            form.sumberData === "MOTOR PRIORITY 3"
+        ) {
             requiredFields.statusKonsumen = "Status Konsumen";
         }
 
-        // Cek field kosong
+        /* =============================
+           4️⃣ CEK FIELD KOSONG
+        ============================== */
         for (const key in requiredFields) {
             if (!form[key] || form[key].toString().trim() === "") {
                 Swal.fire({
@@ -326,85 +497,112 @@ export default function Visiting() {
             }
         }
 
-        // ❗ Validasi No Kontrak harus ada di database
-        const kontrakAda = dataKontrak.some(
-            (item) => item["NO KONTRAK"] === form.noKontrak
-        );
+        /* =============================
+           5️⃣ VALIDASI NO KONTRAK
+        ============================== */
+        if (form.sumberData !== "INJECT MANUAL") {
+            const kontrakAda = dataKontrak.some(
+                (item) => item["NO KONTRAK"] === form.noKontrak
+            );
 
-        if (!kontrakAda) {
-            Swal.fire({
-                icon: "error",
-                title: "No Kontrak Tidak Ditemukan",
-                text: "Pastikan No Kontrak sesuai dengan data yang tersedia.",
-            });
-            return; // ❌ hentikan submit
+            if (!kontrakAda) {
+                Swal.fire({
+                    icon: "error",
+                    title: "No Kontrak Tidak Ditemukan",
+                    text: "Pastikan No Kontrak sesuai dengan data yang tersedia.",
+                });
+                return;
+            }
         }
 
-        // 1) Validasi minimal 5 kata
-        const wordCount = form.detail.trim().split(/\s+/).length;
-        if (wordCount < 5) {
+        /* =============================
+           6️⃣ VALIDASI DETAIL VISIT
+        ============================== */
+        const words = form.detail.trim().split(/\s+/);
+        if (words.length < 5) {
             Swal.fire({
                 icon: "warning",
                 title: "Detail Terlalu Singkat",
-                text: "Detail Maintain minimal 5 kata!",
-                confirmButtonColor: "#3085d6",
+                text: "Detail visit minimal 5 kata!",
             });
             return;
         }
 
-        // 2) Validasi 5 karakter awal wajib huruf A-Z
-        const firstFive = form.detail.substring(0, 5);
-
-        if (!/^[A-Za-z]{5}$/.test(firstFive)) {
+        if (!/^[A-Za-z]{5}/.test(form.detail.substring(0, 5))) {
             Swal.fire({
                 icon: "warning",
                 title: "Format Detail Salah",
-                text: "5 karakter awal harus huruf tanpa angka, simbol, atau spasi!",
-                confirmButtonColor: "#3085d6",
+                text: "5 karakter awal harus huruf tanpa angka atau simbol!",
             });
             return;
         }
+
+        /* =============================
+           7️⃣ VALIDASI NO HP
+        ============================== */
         if (form.noHp && (form.noHp.length < 11 || form.noHp.length > 13)) {
             Swal.fire({
                 icon: "warning",
                 title: "No HP Tidak Valid",
-                text: "No HP Konsumen harus antara 11-13 digit!",
+                text: "No HP harus 11–13 digit!",
             });
             return;
         }
 
+        /* =============================
+           8️⃣ FOTO WAJIB
+        ============================== */
         if (!photo) {
             Swal.fire({
                 icon: "warning",
                 title: "Foto Belum Diambil",
-                text: "Harap ambil foto terlebih dahulu!",
+                text: "Harap ambil foto visit terlebih dahulu!",
             });
             return;
         }
 
+        /* =============================
+           9️⃣ PREPARE PAYLOAD
+        ============================== */
         const statusMap = {
             Pil1: "No HP Konsumen sama dengan data di WISe dan Bersedia Di Lakukan Penawaran",
             Pil2: "No HP Konsumen sama dengan data di WISe dan Tidak Bersedia Di Lakukan Penawaran",
             Pil3: "No HP Konsumen berganti dan CMO melakukan pengkinian data pada Form Perubahan Data Konsumen",
         };
 
-        const payload = { ...form, sumberData: form.sumberData.toUpperCase(), statusKonsumen: statusMap[form.statusKonsumen] || "", photoBase64: photo };
+        const payload = {
+            ...form,
+            sumberData: form.sumberData.toUpperCase(),
+            product: selectedProduct,
+            statusKonsumen: statusMap[form.statusKonsumen] || "",
+            photoBase64: photo,
+        };
 
+        /* =============================
+           🔟 SUBMIT
+        ============================== */
         try {
             Swal.fire({
                 title: "Menyimpan data...",
-                text: "Mohon tunggu sebentar",
                 allowOutsideClick: false,
                 didOpen: () => Swal.showLoading(),
             });
 
-            const response = await fetch(
-                "https://script.google.com/macros/s/AKfycbxf2dJP1xBTuMwSnvyadrH5j0xfnPItE0p7qZu34d7ooK5WnixKyU-jlxNBqnBt4G3k/exec",
-                {
-                    method: "POST",
-                    body: JSON.stringify(payload),
-                }
-            );
+            const SUBMIT_URL_KONVENSIONAL =
+                "https://script.google.com/macros/s/AKfycbxf2dJP1xBTuMwSnvyadrH5j0xfnPItE0p7qZu34d7ooK5WnixKyU-jlxNBqnBt4G3k/exec";
+
+            const SUBMIT_URL_SYARIAH =
+                "https://script.google.com/macros/s/AKfycbzx5h4AzBRdPq_DcYPOJNTgiURMWQeiYMO7p1dNV_GGhC0B1Q94LhBi1clL-ocP_FgnOg/exec";
+
+
+            const submitURL = isSyariah
+                ? SUBMIT_URL_SYARIAH
+                : SUBMIT_URL_KONVENSIONAL;
+
+            const response = await fetch(submitURL, {
+                method: "POST",
+                body: JSON.stringify(payload),
+            });
 
             const result = await response.json();
             Swal.close();
@@ -412,13 +610,22 @@ export default function Visiting() {
             if (result.success) {
                 Swal.fire({
                     icon: "success",
-                    title: "Data visit Berhasil disimpan!",
+                    title: "Data Visit Berhasil Disimpan",
                     text: result.message,
                     confirmButtonColor: "#16a34a",
                 });
 
+                // 🔁 RESET FORM AMAN
                 setForm({
-                    ...form,
+                    region: userData?.region || "",
+                    cabang: userData?.cabang || "",
+                    picVisit: userData?.name || "",
+                    nik: userData?.nik || "",
+                    jabatan: userData?.position || "",
+                    product: userData?.product !== "ALL BRAND"
+                        ? userData?.product
+                        : "",
+                    sumberData: "",
                     noKontrak: "",
                     namaDebitur: "",
                     hasil: "",
@@ -427,44 +634,27 @@ export default function Visiting() {
                     keterangan: "",
                     noHp: "",
                     detail: "",
-                    region: userData?.region || "",
-                    cabang: userData?.cabang || "",
-                    sumberData: "",
-                    picVisit: userData?.name || "",
-                    nik: userData?.nik || "",
-                    jabatan: userData?.position || "",
-                    product: userData?.product !== "ALL BRAND" ? userData.product : "",
                     statusKonsumen: "",
                     ket: "",
                 });
+
                 setPhoto(null);
-                // kosongkan kembali input file
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = "";
-                }
-            } else if (result.limitReached) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "Batas Input Tercapai",
-                    text: result.message,
-                    confirmButtonColor: "#f59e0b",
-                });
+                if (fileInputRef.current) fileInputRef.current.value = "";
             } else {
                 Swal.fire({
-                    icon: "error",
-                    title: "Gagal",
+                    icon: result.limitReached ? "warning" : "error",
+                    title: result.limitReached ? "Batas Input Tercapai" : "Gagal",
                     text: result.message || "Gagal menyimpan data.",
                 });
-                console.log("Error response:", result);
             }
-        } catch (error) {
+        } catch (err) {
             Swal.close();
             Swal.fire({
                 icon: "error",
                 title: "Koneksi Gagal",
                 text: "Periksa jaringan Anda!",
             });
-            console.log(error);
+            console.error(err);
         }
     };
 
@@ -509,6 +699,9 @@ export default function Visiting() {
                                     <>
                                         <option value="MOTORKU">MOTORKU</option>
                                         <option value="MOBILKU">MOBILKU</option>
+                                        <option value="MASKU">MASKU</option>
+                                        <option value="HAJIKU">HAJIKU</option>
+                                        <option value="ALL SYARIAH">ALL SYARIAH</option>
                                     </>
                                 )}
                             </select>
@@ -566,9 +759,11 @@ export default function Visiting() {
                             <input
                                 type="text"
                                 placeholder={
-                                    !activeProduct
-                                        ? "Pilih Sumber Data atau Product terlebih dahulu"
-                                        : "Cari No Kontrak..."
+                                    isInjectManual
+                                        ? "Masukkan No Kontrak"
+                                        : !activeProduct
+                                            ? "Pilih Sumber Data atau Product terlebih dahulu"
+                                            : "Cari No Kontrak..."
                                 }
                                 value={form.noKontrak}
                                 onChange={(e) =>
@@ -578,18 +773,17 @@ export default function Visiting() {
                                     }))
                                 }
                                 onFocus={() => {
-                                    if (activeProduct) setShowDropdown(true); // dropdown aktif jika sumber data sudah dipilih
+                                    if (activeProduct && !isInjectManual) setShowDropdown(true);
                                 }}
-                                readOnly={!activeProduct} // ⛔ dikunci sebelum pilih sumber data
-                                className={`w-full border rounded-lg p-2 transition ${!activeProduct
+                                className={`w-full border rounded-lg p-2 uppercase transition ${!activeProduct
                                     ? "bg-gray-100 cursor-not-allowed text-gray-500"
                                     : "bg-white"
                                     }`}
-                                required
+                                readOnly={!activeProduct || isInjectManual === false ? false : false}
                             />
 
-                            {/* Dropdown muncul hanya jika sumber data sudah dipilih */}
-                            {form.sumberData && showDropdown && (
+                            {/* Dropdown hanya untuk NON inject manual */}
+                            {!isInjectManual && form.sumberData && showDropdown && (
                                 <ul className="absolute z-10 bg-white border rounded-lg w-full max-h-48 overflow-y-auto shadow-md mt-1">
                                     {filteredKontrak.length > 0 ? (
                                         filteredKontrak.map((item, idx) => (
@@ -616,9 +810,11 @@ export default function Visiting() {
                                 type="text"
                                 name="namaDebitur"
                                 value={form.namaDebitur}
-                                className="w-full border rounded-lg p-2 bg-gray-100"
+                                onChange={handleChange}
+                                className={`w-full border rounded-lg p-2 ${isInjectManual ? "bg-white" : "bg-gray-100"
+                                    }`}
+                                readOnly={!isInjectManual}
                                 required
-                                readOnly
                             />
                         </div>
                     </div>
@@ -724,7 +920,10 @@ export default function Visiting() {
                                 className="w-full border rounded-lg p-2"
                             >
                                 <option value="">Pilih Aktivitas</option>
-                                {aktivitasTidakBertemu.map((act, idx) => (
+                                {(isSyariah
+                                    ? aktivitasTidakBertemuSyariah
+                                    : aktivitasTidakBertemu
+                                ).map((act, idx) => (
                                     <option key={idx} value={act}>
                                         {act}
                                     </option>
@@ -736,24 +935,26 @@ export default function Visiting() {
                     {form.hasil === "Bertemu" && (
                         <>
                             {/* Bertemu dengan */}
-                            <div>
-                                <label className="block text-sm font-medium mb-1">
-                                    Bertemu Dengan
-                                </label>
-                                <select
-                                    name="bertemuDengan"
-                                    value={form.bertemuDengan}
-                                    onChange={handleChange}
-                                    className="w-full border rounded-lg p-2"
-                                >
-                                    <option value="">Pilih</option>
-                                    {bertemuDenganList.map((b, idx) => (
-                                        <option key={idx} value={b}>
-                                            {b}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+                            {isMobilMotor && (
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">
+                                        Bertemu Dengan
+                                    </label>
+                                    <select
+                                        name="bertemuDengan"
+                                        value={form.bertemuDengan}
+                                        onChange={handleChange}
+                                        className="w-full border rounded-lg p-2"
+                                    >
+                                        <option value="">Pilih</option>
+                                        {bertemuDenganList.map((b, idx) => (
+                                            <option key={idx} value={b}>
+                                                {b}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
 
                             {/* Hasil Bertemu */}
                             <div>
@@ -767,7 +968,10 @@ export default function Visiting() {
                                     className="w-full border rounded-lg p-2"
                                 >
                                     <option value="">Pilih Hasil Bertemu</option>
-                                    {hasilBertemuList.map((b, idx) => (
+                                    {(isSyariah
+                                        ? hasilBertemuListSyariah
+                                        : hasilBertemuList
+                                    ).map((b, idx) => (
                                         <option key={idx} value={b}>
                                             {b}
                                         </option>
@@ -776,23 +980,25 @@ export default function Visiting() {
                             </div>
 
                             {/* Nomor HP */}
-                            <div>
-                                <label className="block text-sm font-medium mb-1">
-                                    Nomor HP Konsumen
-                                </label>
-                                <input
-                                    type="text"
-                                    name="noHp"
-                                    value={form.noHp}
-                                    onChange={(e) => {
-                                        const value = e.target.value.replace(/\D/g, "").slice(0, 13);
-                                        setForm({ ...form, noHp: value });
-                                    }}
-                                    placeholder="Masukkan nomor HP"
-                                    className="w-full border rounded-lg p-2"
-                                    inputMode="numeric"
-                                />
-                            </div>
+                            {isMobilMotor && (
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">
+                                        Nomor HP Konsumen
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="noHp"
+                                        value={form.noHp}
+                                        onChange={(e) => {
+                                            const value = e.target.value.replace(/\D/g, "").slice(0, 13);
+                                            setForm({ ...form, noHp: value });
+                                        }}
+                                        placeholder="Masukkan nomor HP"
+                                        className="w-full border rounded-lg p-2"
+                                        inputMode="numeric"
+                                    />
+                                </div>
+                            )}
 
                             {/* Keterangan tambahan */}
                             {form.aktivitas === "Tidak Berminat" && (
@@ -807,7 +1013,31 @@ export default function Visiting() {
                                         className="w-full border rounded-lg p-2"
                                     >
                                         <option value="">Pilih Keterangan</option>
-                                        {keteranganTidakBerminat.map((k, idx) => (
+                                        {(isSyariah
+                                            ? keteranganTidakBerminatSyariah
+                                            : keteranganTidakBerminat
+                                        ).map((k, idx) => (
+                                            <option key={idx} value={k}>
+                                                {k}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            {form.aktivitas === "Pikir-Pikir" && isSyariah && (
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">
+                                        Keterangan Pikir-Pikir
+                                    </label>
+                                    <select
+                                        name="keterangan"
+                                        value={form.keterangan}
+                                        onChange={handleChange}
+                                        className="w-full border rounded-lg p-2"
+                                    >
+                                        <option value="">Pilih Keterangan</option>
+                                        {keteranganPikirSyariah.map((k, idx) => (
                                             <option key={idx} value={k}>
                                                 {k}
                                             </option>
