@@ -12,7 +12,6 @@ export default function Visiting() {
     const [userData, setUserData] = useState(null);
     const [isMobile, setIsMobile] = useState(true);
     const fileInputRef = useRef(null);
-    const galleryInputRef = useRef(null);
 
     const [form, setForm] = useState({
         region: "",
@@ -365,8 +364,9 @@ export default function Visiting() {
                 setPhoto(compressed);
 
                 // 👉 kosongkan input file setelah foto diambil
-                if (fileInputRef.current) fileInputRef.current.value = "";
-                if (galleryInputRef.current) galleryInputRef.current.value = "";
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                }
             };
             reader.readAsDataURL(file);
         }
@@ -1126,64 +1126,35 @@ export default function Visiting() {
                         />
                     </div>
 
-                    {/* ================= FOTO ================= */}
+                    {/* Foto */}
                     <div>
                         <label className="block text-sm font-medium mb-1">
-                            Foto Visit
+                            Ambil Foto Visit
                         </label>
-
-                        {/* Kamera */}
                         <input
                             ref={fileInputRef}
                             type="file"
                             accept="image/*"
-                            capture="environment"
+                            {...(!isSyariah && { capture: "environment" })}
                             onChange={handleTakePhoto}
+                            id="cameraInput"
                             className="hidden"
                             disabled={!isMobile}
                         />
 
-                        {/* Galeri (HANYA SYARIAH) */}
-                        {isSyariah && (
-                            <input
-                                ref={galleryInputRef}
-                                type="file"
-                                accept="image/*"
-                                onChange={handleTakePhoto}
-                                className="hidden"
-                            />
-                        )}
+                        {/* tombol custom */}
+                        <button
+                            type="button"
+                            onClick={() => isMobile && document.getElementById("cameraInput").click()}
+                            className={`w-full p-2 rounded-lg text-white ${isMobile ? "bg-blue-600" : "bg-gray-400 cursor-not-allowed"
+                                }`}
+                        >
+                            {photo ? "Ulangi Foto" : "Ambil Foto"}
+                        </button>
 
-                        <div className="flex gap-2">
-                            {/* Tombol Kamera */}
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    isMobile && fileInputRef.current?.click()
-                                }
-                                className={`flex-1 p-2 rounded-lg text-white ${isMobile
-                                        ? "bg-blue-600"
-                                        : "bg-gray-400 cursor-not-allowed"
-                                    }`}
-                            >
-                                📷 Kamera
-                            </button>
-
-                            {/* Tombol Galeri (Syariah saja) */}
-                            {isSyariah && (
-                                <button
-                                    type="button"
-                                    onClick={() => galleryInputRef.current?.click()}
-                                    className="flex-1 p-2 rounded-lg text-white bg-emerald-600"
-                                >
-                                    🖼️ Galeri
-                                </button>
-                            )}
-                        </div>
-
-                        {!isMobile && !isSyariah && (
+                        {!isMobile && (
                             <p className="text-red-600 text-sm mt-1">
-                                Kamera hanya tersedia di perangkat mobile.
+                                Fitur foto hanya bisa digunakan di perangkat mobile.
                             </p>
                         )}
 
