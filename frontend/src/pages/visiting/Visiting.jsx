@@ -738,8 +738,8 @@ export default function Visiting() {
 
                                 {userData?.product === "ALL BRAND" && (
                                     <>
-                                        <option value="MOTORKU">MOTORKU</option>
-                                        <option value="MOBILKU">MOBILKU</option>
+                                        {/* <option value="MOTORKU">MOTORKU</option>
+                                        <option value="MOBILKU">MOBILKU</option> */}
                                         <option value="MASKU">MASKU</option>
                                         <option value="HAJIKU">HAJIKU</option>
                                         <option value="ALL SYARIAH">ALL SYARIAH</option>

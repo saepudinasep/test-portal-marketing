@@ -576,8 +576,8 @@ export default function Maintance() {
                                 className="w-full rounded-lg p-2 border border-gray-300"
                             >
                                 <option value="">Pilih Product</option>
-                                <option value="MOTORKU">MOTORKU</option>
-                                <option value="MOBILKU">MOBILKU</option>
+                                {/* <option value="MOTORKU">MOTORKU</option>
+                                <option value="MOBILKU">MOBILKU</option> */}
                                 <option value="MASKU">MASKU</option>
                                 <option value="HAJIKU">HAJIKU</option>
                             </select>
