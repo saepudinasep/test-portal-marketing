@@ -646,7 +646,7 @@ export default function RekrutMA() {
                         <input
                             type="file"
                             accept="image/*"
-                            capture="environment"
+                            {...(!isMaskuHajiku && { capture: "environment" })}
                             onChange={handleTakePhoto}
                             className="w-full border rounded-lg p-2"
                             required

@@ -783,7 +783,7 @@ export default function Maintance() {
                             ref={fileInputRef}
                             type="file"
                             accept="image/*"
-                            capture="environment"
+                            {...(!isSyariah && { capture: "environment" })}
                             onChange={handleTakePhoto}
                             id="cameraInput"
                             className="hidden"
