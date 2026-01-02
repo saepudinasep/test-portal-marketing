@@ -11,7 +11,8 @@ export default function Visiting() {
     const [photo, setPhoto] = useState(null);
     const [userData, setUserData] = useState(null);
     const [isMobile, setIsMobile] = useState(true);
-    const fileInputRef = useRef(null);
+    const cameraInputRef = useRef(null);
+    const galleryInputRef = useRef(null);
 
     const [form, setForm] = useState({
         region: "",
@@ -364,9 +365,8 @@ export default function Visiting() {
                 setPhoto(compressed);
 
                 // 👉 kosongkan input file setelah foto diambil
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = "";
-                }
+                if (cameraInputRef.current) cameraInputRef.current.value = "";
+                if (galleryInputRef.current) galleryInputRef.current.value = "";
             };
             reader.readAsDataURL(file);
         }
@@ -680,7 +680,7 @@ export default function Visiting() {
                 });
 
                 setPhoto(null);
-                if (fileInputRef.current) fileInputRef.current.value = "";
+                if (cameraInputRef.current) cameraInputRef.current.value = "";
             } else {
                 Swal.fire({
                     icon: result.limitReached ? "warning" : "error",
@@ -1132,7 +1132,7 @@ export default function Visiting() {
                             Ambil Foto Visit
                         </label>
                         <input
-                            ref={fileInputRef}
+                            ref={cameraInputRef}
                             type="file"
                             accept="image/*"
                             capture="environment"
@@ -1141,6 +1141,17 @@ export default function Visiting() {
                             className="hidden"
                             disabled={!isMobile}    // ⛔ Tidak bisa di laptop
                         />
+
+                        {isSyariah && (
+                            <input
+                                ref={galleryInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleTakePhoto}
+                                className="hidden"
+                                disabled={!isMobile}
+                            />
+                        )}
 
                         {/* tombol custom */}
                         <button
