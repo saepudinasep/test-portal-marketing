@@ -82,35 +82,46 @@ export default function Maintance() {
         const r = region?.toUpperCase();
 
         const mapping = {
+            "JABODEBEK": "JABODEBEK",
             "JABODEBEK 1": "JABODEBEK",
             "JABODEBEK 2": "JABODEBEK",
             "JABODEBEK 3": "JABODEBEK",
 
+            "BANTEN": "BANTEN",
             "BANTEN 1": "BANTEN",
             "BANTEN 2": "BANTEN",
 
+            "JABAR": "JABAR",
             "JABAR 1": "JABAR",
             "JABAR 2": "JABAR",
 
+            "JATENGUT": "JATENGUT",
             "JATENGUT 1": "JATENGUT",
             "JATENGUT 2": "JATENGUT",
 
+            "JATENGSEL": "JATENGSEL",
             "JATENGSEL 1": "JATENGSEL",
             "JATENGSEL 2": "JATENGSEL",
 
+            "JATIM": "JATIM BALI",
             "JATIM 1": "JATIM BALI",
             "JATIM 2": "JATIM BALI",
             "JATIM 3": "JATIM BALI",
             "JATIM 5": "JATIM BALI",
 
+            "SUMBAGUT": "SUMBAGUT",
             "SUMBAGUT 1": "SUMBAGUT",
             "SUMBAGUT 2": "SUMBAGUT",
 
+            "SUMBAGSEL": "SUMBAGSEL",
             "SUMBAGSEL 1": "SUMBAGSEL",
             "SUMBAGSEL 2": "SUMBAGSEL",
 
             "KALIMANTAN": "KALIMANTAN",
+            "KALIMANTAN 1": "KALIMANTAN",
+            "KALIMANTAN 2": "KALIMANTAN",
 
+            "SULAWESI": "SULAWESI",
             "SULAWESI 1": "SULAWESI",
             "SULAWESI 2": "SULAWESI",
         };
@@ -141,7 +152,8 @@ export default function Maintance() {
         "SUMBAGUT 2": "https://script.google.com/macros/s/AKfycbwrWzoM64tUmw_7l8iBMcO2Tz5h20mWsf7WnziXYOoxAMwquJLYcQmbWWrTt5FL9wBAbQ/exec",
         "SUMBAGSEL 1": "https://script.google.com/macros/s/AKfycby1Zr-SeUv48k6Jw5twT6oKMKZyGcRdc3dhZ4R4Y_KmEqt126Ct0BOC7qq91zg1GSCJ/exec",
         "SUMBAGSEL 2": "https://script.google.com/macros/s/AKfycbzVqDSPobHghZ1-V-hVYFhkMM1hbKQz_4uvr9k6GfxLJbnSrFHmqxyueJrw6fV2RU8mIA/exec",
-        "KALIMANTAN": "https://script.google.com/macros/s/AKfycbzRKpaZmch4C7AT-Hs7hEdZ_X9-GEGnHXK7-m3J73PwElhIcQrh_PEZ4XgPixMhp97IOA/exec",
+        "KALIMANTAN 1": "https://script.google.com/macros/s/AKfycbzRKpaZmch4C7AT-Hs7hEdZ_X9-GEGnHXK7-m3J73PwElhIcQrh_PEZ4XgPixMhp97IOA/exec",
+        "KALIMANTAN 2": "https://script.google.com/macros/s/AKfycbzxN_WZswGQ9c0mvwYlctOQ6H-C_bEq5NUN9SJpHsaqt5moIa6IuuYkxlWKtiKaepaV_g/exec",
         "SULAWESI 1": "https://script.google.com/macros/s/AKfycbzQMK6fKEE82Rg-ku18Qow5xzaMQwqJiPASpIMLbFKZIWTVegbuPkXDaTnwZ9lMlHakFQ/exec",
         "SULAWESI 2": "https://script.google.com/macros/s/AKfycbzsZDPeAqwv_iOKhmiN_LYaqFBrtcTR_AVNvPTiP0H5fx_asK4LKvFAta2VRd03cSM0WA/exec"
     };
@@ -480,7 +492,7 @@ export default function Maintance() {
             });
 
             const SUBMIT_URL_KONVENSIONAL =
-                "https://script.google.com/macros/s/AKfycbzIxIvdlpsfAPSxlP8dSxK-_EzASPVhmajIAS1XHLLy54cApQClJfIJec3Fce8YXhqO/exec";
+                "https://script.google.com/macros/s/AKfycbzQ4KweETqcsp1t0TGy-qbCiUWQHjs3yYgnZZvL2F8YQ8zMovyC9vJulb5QlEhlG_g_/exec";
 
             const SUBMIT_URL_SYARIAH =
                 "https://script.google.com/macros/s/AKfycbx2XTPLSP5MKJoj3Aq-sFp-_HyDBUpUS8EU1IbSCahR65TlKnyKPP-8Rla2UL6irsY/exec";

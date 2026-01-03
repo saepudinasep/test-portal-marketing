@@ -110,35 +110,46 @@ export default function Visiting() {
             const r = region?.toUpperCase();
 
             const mapping = {
+                "JABODEBEK": "JABODEBEK",
                 "JABODEBEK 1": "JABODEBEK",
                 "JABODEBEK 2": "JABODEBEK",
                 "JABODEBEK 3": "JABODEBEK",
 
+                "BANTEN": "BANTEN",
                 "BANTEN 1": "BANTEN",
                 "BANTEN 2": "BANTEN",
 
+                "JABAR": "JABAR",
                 "JABAR 1": "JABAR",
                 "JABAR 2": "JABAR",
 
+                "JATENGUT": "JATENGUT",
                 "JATENGUT 1": "JATENGUT",
                 "JATENGUT 2": "JATENGUT",
 
+                "JATENGSEL": "JATENGSEL",
                 "JATENGSEL 1": "JATENGSEL",
                 "JATENGSEL 2": "JATENGSEL",
 
+                "JATIM": "JATIM BALI",
                 "JATIM 1": "JATIM BALI",
                 "JATIM 2": "JATIM BALI",
                 "JATIM 3": "JATIM BALI",
                 "JATIM 5": "JATIM BALI",
 
+                "SUMBAGUT": "SUMBAGUT",
                 "SUMBAGUT 1": "SUMBAGUT",
                 "SUMBAGUT 2": "SUMBAGUT",
 
+                "SUMBAGSEL": "SUMBAGSEL",
                 "SUMBAGSEL 1": "SUMBAGSEL",
                 "SUMBAGSEL 2": "SUMBAGSEL",
 
                 "KALIMANTAN": "KALIMANTAN",
+                "KALIMANTAN 1": "KALIMANTAN",
+                "KALIMANTAN 2": "KALIMANTAN",
 
+                "SULAWESI": "SULAWESI",
                 "SULAWESI 1": "SULAWESI",
                 "SULAWESI 2": "SULAWESI",
             };
