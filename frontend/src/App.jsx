@@ -102,7 +102,7 @@ export default function App() {
         />
 
         {/* Visiting Pages */}
-        <Route path="maintance" element={<Maintance user={userData} />} />
+        {/* <Route path="maintance" element={<Maintance user={userData} />} /> */}
         <Route path="visiting" element={<Visiting user={userData} />} />
         <Route path="rekrutMA" element={<RekrutMA user={userData} />} />
         <Route path="leads" element={<InputDatabase user={userData} />} />

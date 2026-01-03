@@ -480,7 +480,7 @@ export default function Maintance() {
             });
 
             const SUBMIT_URL_KONVENSIONAL =
-                "https://script.google.com/macros/s/AKfycbxbCyNE4T1d5kwbOL6_33t-LSFqrhUACwgUjXvgOJC8c0I7zpNcNnceHI7sRrGeD1Ud/exec";
+                "https://script.google.com/macros/s/AKfycbzIxIvdlpsfAPSxlP8dSxK-_EzASPVhmajIAS1XHLLy54cApQClJfIJec3Fce8YXhqO/exec";
 
             const SUBMIT_URL_SYARIAH =
                 "https://script.google.com/macros/s/AKfycbx2XTPLSP5MKJoj3Aq-sFp-_HyDBUpUS8EU1IbSCahR65TlKnyKPP-8Rla2UL6irsY/exec";
@@ -576,8 +576,8 @@ export default function Maintance() {
                                 className="w-full rounded-lg p-2 border border-gray-300"
                             >
                                 <option value="">Pilih Product</option>
-                                {/* <option value="MOTORKU">MOTORKU</option>
-                                <option value="MOBILKU">MOBILKU</option> */}
+                                <option value="MOTORKU">MOTORKU</option>
+                                <option value="MOBILKU">MOBILKU</option>
                                 <option value="MASKU">MASKU</option>
                                 <option value="HAJIKU">HAJIKU</option>
                             </select>

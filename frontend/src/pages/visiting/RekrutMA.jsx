@@ -296,8 +296,8 @@ export default function RekrutMA() {
             const APPSCRIPT_URL = {
                 "MASKU": "https://script.google.com/macros/s/AKfycbzhJE2xkZHehj4UyBsEDf85V0VZPf31n0SX1LyBjcHInRpWAGnXkmSnevluYp29r_sp/exec",
                 "HAJIKU": "https://script.google.com/macros/s/AKfycbzhJE2xkZHehj4UyBsEDf85V0VZPf31n0SX1LyBjcHInRpWAGnXkmSnevluYp29r_sp/exec",
-                "MOBILKU": "https://script.google.com/macros/s/AKfycbxWnypU6wzN8_bqk7l0UlzNyfdCShmOstNwpndS32DzzV4IwAIqt1f99VV48ig_tblB/exec",
-                "MOTORKU": "https://script.google.com/macros/s/AKfycbxWnypU6wzN8_bqk7l0UlzNyfdCShmOstNwpndS32DzzV4IwAIqt1f99VV48ig_tblB/exec",
+                "MOBILKU": "https://script.google.com/macros/s/AKfycbxxIa_6WBLSmtop780F_Oan92ak-zCp6LTuDfwCGFHmBga66hwDnBzz_ZXcvL6MwQkT/exec",
+                "MOTORKU": "https://script.google.com/macros/s/AKfycbxxIa_6WBLSmtop780F_Oan92ak-zCp6LTuDfwCGFHmBga66hwDnBzz_ZXcvL6MwQkT/exec",
                 "MOTOR BARU": "https://script.google.com/macros/s/URL_MOTORKU/exec",
             };
 

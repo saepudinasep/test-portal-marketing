@@ -630,7 +630,7 @@ export default function Visiting() {
             });
 
             const SUBMIT_URL_KONVENSIONAL =
-                "https://script.google.com/macros/s/AKfycbxf2dJP1xBTuMwSnvyadrH5j0xfnPItE0p7qZu34d7ooK5WnixKyU-jlxNBqnBt4G3k/exec";
+                "https://script.google.com/macros/s/AKfycbzuGy6SFwDXjLBFsyj1hFBTrlBdmszfPmvJswMmedCaxhHMh1bfkgpX0aEgzhDxK1oK/exec";
 
             const SUBMIT_URL_SYARIAH =
                 "https://script.google.com/macros/s/AKfycbwiJFZwsX-lvQ_pdiIwxM14Imd8UkEfQmSPoEV3_UpMiiMxKkOaomqVO2n_W4u9FnSVxA/exec";
@@ -738,8 +738,8 @@ export default function Visiting() {
 
                                 {userData?.product === "ALL BRAND" && (
                                     <>
-                                        {/* <option value="MOTORKU">MOTORKU</option>
-                                        <option value="MOBILKU">MOBILKU</option> */}
+                                        <option value="MOTORKU">MOTORKU</option>
+                                        <option value="MOBILKU">MOBILKU</option>
                                         <option value="MASKU">MASKU</option>
                                         <option value="HAJIKU">HAJIKU</option>
                                         <option value="ALL SYARIAH">ALL SYARIAH</option>
