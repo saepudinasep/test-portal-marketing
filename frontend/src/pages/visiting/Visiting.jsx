@@ -641,7 +641,7 @@ export default function Visiting() {
             });
 
             const SUBMIT_URL_KONVENSIONAL =
-                "https://script.google.com/macros/s/AKfycbzuGy6SFwDXjLBFsyj1hFBTrlBdmszfPmvJswMmedCaxhHMh1bfkgpX0aEgzhDxK1oK/exec";
+                "https://script.google.com/macros/s/AKfycbzAUuHX0vQNVr1Ih-npXjEaIldV1N-Au4ACgmIbZRt-Hplk0SfhxGzPSBaCzW0CP-TK/exec";
 
             const SUBMIT_URL_SYARIAH =
                 "https://script.google.com/macros/s/AKfycbwiJFZwsX-lvQ_pdiIwxM14Imd8UkEfQmSPoEV3_UpMiiMxKkOaomqVO2n_W4u9FnSVxA/exec";
