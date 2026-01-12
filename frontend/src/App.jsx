@@ -93,7 +93,7 @@ export default function App() {
         <Route path="ticket" element={<Ticket user={userData} />} />
         <Route path="ticket/new" element={<NewTicket user={userData} />} />
         <Route path="ticket/:id" element={<DetailTicket user={userData} />} />
-        {/* <Route path="cekBiro" element={<CekCredit user={userData} />} /> */}
+        <Route path="cekBiro" element={<CekCredit user={userData} />} />
         <Route path="report" element={<Report user={userData} />} />
         <Route path="panduan" element={<Panduan user={userData} />} />
         <Route
