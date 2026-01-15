@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 export default function NewTicket() {
     const user = JSON.parse(sessionStorage.getItem("userData")) || {};
     const [form, setForm] = useState({
-        product: "",
+        product: user.product === "ALL BRAND" ? "" : user.product,
         kendalaSystem: "",
         subKendala: "",
         namaCustomer: "",
@@ -446,7 +446,7 @@ export default function NewTicket() {
 
                     <div className="grid md:grid-cols-2 gap-4">
                         {/* Product (hidden if user.product !== ALL BRAND) */}
-                        <div hidden={user.product !== "ALL BRAND"}>
+                        <div>
                             <label className="block text-sm font-medium mb-1">
                                 Product <span className="text-red-500">*</span>
                             </label>
