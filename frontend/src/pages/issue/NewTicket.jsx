@@ -282,6 +282,13 @@ export default function NewTicket() {
             if (!ok) hasError = true;
         });
 
+        // 🔴 VALIDASI KHUSUS PRODUCT UNTUK USER ALL BRAND
+        if (user.product === "ALL BRAND" && !form.product) {
+            setErrors((prev) => ({ ...prev, product: true }));
+            toast.error("Product wajib dipilih");
+            return;
+        }
+
         if (!form.file) {
             setErrors((prev) => ({ ...prev, file: true }));
             toast.error("Foto/Video wajib diupload");
