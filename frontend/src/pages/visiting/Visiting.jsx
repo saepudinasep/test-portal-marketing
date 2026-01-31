@@ -464,6 +464,18 @@ export default function Visiting() {
         };
 
         /* =============================
+            VALIDASI SYARIAH ATAU BUKAN
+        ============================== */
+        if (!isSyariah) {
+            Swal.fire({
+                icon: "warning",
+                title: "Form Belum Lengkap",
+                text: `Maintain Sudah Di Tutup Silahkan Hubungi Admin!`,
+            });
+            return;
+        }
+
+        /* =============================
            2️⃣ VALIDASI BERDASARKAN HASIL
         ============================== */
         if (form.hasil === "Tidak Bertemu") {
