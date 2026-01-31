@@ -466,14 +466,14 @@ export default function Visiting() {
         /* =============================
             VALIDASI SYARIAH ATAU BUKAN
         ============================== */
-        // if (!isSyariah) {
-        //     Swal.fire({
-        //         icon: "warning",
-        //         title: "Form Belum Lengkap",
-        //         text: `Visit Sudah Di Tutup Silahkan Hubungi Admin!`,
-        //     });
-        //     return;
-        // }
+        if (!isSyariah) {
+            Swal.fire({
+                icon: "warning",
+                title: "Form Belum Lengkap",
+                text: `Visit Sudah Di Tutup Silahkan Hubungi Admin!`,
+            });
+            return;
+        }
 
         /* =============================
            2️⃣ VALIDASI BERDASARKAN HASIL
