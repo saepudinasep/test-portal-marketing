@@ -424,6 +424,18 @@ export default function Maintance() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        /* =============================
+            VALIDASI SYARIAH ATAU BUKAN
+        ============================== */
+        if (!isSyariah) {
+            Swal.fire({
+                icon: "warning",
+                title: "Form Belum Lengkap",
+                text: `Maintain Sudah Di Tutup Silahkan Hubungi Admin!`,
+            });
+            return;
+        }
+
         // ❗ Validasi TRIM NAMA harus ada di database
         const kontrakAda = dataMA.some(
             (item) => item[maField.nama] === form.namaMA
