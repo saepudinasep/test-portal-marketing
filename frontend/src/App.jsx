@@ -27,6 +27,7 @@ import InputDatabase from "./pages/visiting/InputDatabase";
 import CekCredit from "./pages/kbij/CekCredit";
 
 import PageError from "./components/pageError";
+import VisitNC from "./pages/visiting/VisitNC";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -104,6 +105,7 @@ export default function App() {
         {/* Visiting Pages */}
         <Route path="maintance" element={<Maintance user={userData} />} />
         <Route path="visiting" element={<Visiting user={userData} />} />
+        {/* <Route path="visitNC" element={<VisitNC user={userData} />} /> */}
         <Route path="rekrutMA" element={<RekrutMA user={userData} />} />
         <Route path="leads" element={<InputDatabase user={userData} />} />
       </Route>

@@ -427,14 +427,14 @@ export default function Maintance() {
         /* =============================
             VALIDASI SYARIAH ATAU BUKAN
         ============================== */
-        if (!isSyariah) {
-            Swal.fire({
-                icon: "warning",
-                title: "Form Belum Lengkap",
-                text: `Maintain Sudah Di Tutup Silahkan Hubungi Admin!`,
-            });
-            return;
-        }
+        // if (!isSyariah) {
+        //     Swal.fire({
+        //         icon: "warning",
+        //         title: "Form Belum Lengkap",
+        //         text: `Maintain Sudah Di Tutup Silahkan Hubungi Admin!`,
+        //     });
+        //     return;
+        // }
 
         // ❗ Validasi TRIM NAMA harus ada di database
         const kontrakAda = dataMA.some(
