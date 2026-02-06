@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 export default function VisitNC() {
     const navigate = useNavigate();
 
-    const [dataKontrak, setDataKontrak] = useState([]);
+    const [dataKodeUnik, setDataKodeUnik] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showDropdown, setShowDropdown] = useState(false);
     const [photo, setPhoto] = useState(null);
@@ -28,54 +28,19 @@ export default function VisitNC() {
         keterangan: "",
         noHp: "",
         detail: "",
-        product: "",
-        statusKonsumen: "",
         ket: "",
     });
 
     const hasilList = ["Bertemu", "Tidak Bertemu"];
-    const isInjectManual = form.sumberData === "INJECT MANUAL";
 
     // Opsi dinamis
     const aktivitasTidakBertemu = [
         "Rumah Kosong",
         "Alamat Pindah",
+        "Alamat tidak sesuai",
         "Titip Surat Penawaran",
     ];
-    const aktivitasTidakBertemuSyariah = [
-        "Rumah kosong",
-        "Bertemu keluarga/ART/Satpam",
-        "Alamat tidak sesuai"
-    ];
-    const bertemuDenganList = ["Pemohon", "Pasangan"];
-    const hasilBertemuList = ["Prospek", "Interest", "Tidak Berminat"];
-    const hasilBertemuListSyariah = [
-        "Berminat",
-        "Pikir-Pikir",
-        "Tidak Berminat",
-    ];
-    const keteranganTidakBerminat = [
-        "Angsuran Mahal",
-        "Persyaratan Rumit",
-        "Pencairan Tidak Sesuai",
-        "Tidak Ingin Mengajukan Kembali",
-        "Sedang Tidak Membutuhkan Dana",
-        "Sudah Dapat Dana",
-    ];
-    const keteranganTidakBerminatSyariah = [
-        "Pricing",
-        "Ada kebutuhan lain",
-    ];
-    const keteranganPikirSyariah = [
-        "Pricing",
-        "Diskusi dengan keluarga/pasangan",
-    ];
-    const keteranganInterest = [
-        "Konfirmasi Pasangan/Keluarga",
-        "Nego Angsuran",
-        "Nego Pencairan",
-        "Unit Diluar Kota",
-    ];
+    const bertemuDenganList = ["Konsumen", "Pasangan"];
 
     // ✅ Proteksi & ambil data kontrak berdasarkan region dan cabang user
     useEffect(() => {
@@ -209,7 +174,7 @@ export default function VisitNC() {
                         sumberData: item["SUMBER DATA"]?.toUpperCase() || "",
                     }));
 
-                setDataKontrak(mergedData);
+                setDataKodeUnik(mergedData);
             })
             .catch((err) => {
                 console.error("Error fetching kontrak:", err);
@@ -218,74 +183,6 @@ export default function VisitNC() {
 
     }, [navigate]);
 
-    // 🔍 Filter hasil pencarian No Kontrak
-    const filteredKontrak = dataKontrak.filter((item) => {
-        const matchNoKontrak = item["NO KONTRAK"]
-            ?.toUpperCase()
-            .includes(form.noKontrak.toUpperCase());
-
-        const matchSumberData = form.sumberData
-            ? item.sumberData === form.sumberData.toUpperCase()
-            : true;
-
-        const matchProduct = form.product
-            ? form.product === "ALL SYARIAH"
-                ? ["MASKU", "HAJIKU"].includes(item.product)
-                : item.product === form.product.toUpperCase()
-            : true;
-
-        return matchNoKontrak && matchSumberData && matchProduct;
-    });
-
-    const sumberDataOptions = {
-        "MOTORKU": [
-            "MOTOR PRIORITY 1",
-            "MOTOR PRIORITY 2",
-            "MOTOR PRIORITY 3",
-        ],
-        "MOBILKU": [
-            "MOBIL PRIORITY 1",
-            "MOBIL PRIORITY 2",
-            "MOBIL PRIORITY 3",
-        ],
-        "MASKU": [
-            "INJECT OLEH HO",
-            "INJECT MANUAL",
-        ],
-        "HAJIKU": [
-            "INJECT OLEH HO",
-            "INJECT MANUAL",
-        ],
-        "ALL SYARIAH": [
-            "INJECT OLEH HO",
-            "INJECT MANUAL",
-        ],
-    };
-
-    const selectedProduct =
-        userData?.product === "ALL BRAND"
-            ? form.product                // user pilih product
-            : userData?.product;          // product fixed sesuai user
-
-    const activeProduct = form.sumberData !== "" && selectedProduct !== "";
-
-    const isSyariah =
-        ["MASKU", "HAJIKU", "ALL SYARIAH"].includes(selectedProduct);
-    const isMobilMotor = ["MOBILKU", "MOTORKU", "MOTOR BARU"].includes(selectedProduct);
-
-    // 🔹 Saat memilih kontrak
-    const handleSelectKontrak = (item) => {
-        setForm((prev) => ({
-            ...prev,
-            noKontrak: item["NO KONTRAK"],
-            namaDebitur: item["NAMA KONSUMEN"] || "",
-            sumberData: (item["SUMBER DATA"] || "").toUpperCase(),
-            product: (item["PRODUCT"] || "").toUpperCase(),
-            ket: item["KETERANGAN"] || "",
-        }));
-        setShowDropdown(false);
-    };
-
     // 🔹 Input berubah
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -293,42 +190,6 @@ export default function VisitNC() {
         setForm((prev) => {
             let updated = { ...prev, [name]: value };
 
-            /* =============================
-               1️⃣ GANTI PRODUCT (ALL BRAND)
-            ============================== */
-            if (name === "product" && userData?.product === "ALL BRAND") {
-                updated.sumberData = "";
-                updated.noKontrak = "";
-                updated.namaDebitur = "";
-                updated.ket = "";
-
-                // reset field turunan
-                updated.hasil = "";
-                updated.aktivitas = "";
-                updated.keterangan = "";
-            }
-
-            /* =============================
-               2️⃣ GANTI SUMBER DATA
-            ============================== */
-            if (name === "sumberData") {
-                updated.noKontrak = "";
-                updated.namaDebitur = "";
-                updated.ket = "";
-
-                // ❗ INJECT MANUAL tidak boleh ALL SYARIAH
-                if (
-                    value === "INJECT MANUAL" &&
-                    updated.product === "ALL SYARIAH"
-                ) {
-                    updated.product = "MASKU"; // default aman
-                }
-
-                // reset hasil & aktivitas
-                updated.hasil = "";
-                updated.aktivitas = "";
-                updated.keterangan = "";
-            }
 
             /* =============================
                3️⃣ GANTI HASIL VISIT
@@ -457,55 +318,11 @@ export default function VisitNC() {
         const requiredFields = {
             product: "Product",
             sumberData: "Sumber Data",
-            noKontrak: "No Kontrak",
+            kodeUnik: "Kode Unik",
             namaDebitur: "Nama Debitur",
             hasil: "Hasil Visit",
             detail: "Notes Visit",
         };
-
-        /* =============================
-            VALIDASI SYARIAH ATAU BUKAN
-        ============================== */
-        // if (!isSyariah) {
-        //     Swal.fire({
-        //         icon: "warning",
-        //         title: "Form Belum Lengkap",
-        //         text: `Visit Sudah Di Tutup Silahkan Hubungi Admin!`,
-        //     });
-        //     return;
-        // }
-
-        /* =============================
-           2️⃣ VALIDASI BERDASARKAN HASIL
-        ============================== */
-        if (form.hasil === "Tidak Bertemu") {
-            requiredFields.aktivitas = "Aktivitas Visit";
-        }
-
-        if (form.hasil === "Bertemu") {
-
-            // ❗ NO HP WAJIB HANYA NON-SYARIAH
-            if (!isSyariah) {
-                requiredFields.noHp = "No HP Konsumen";
-                requiredFields.bertemuDengan = "Bertemu Dengan";
-            }
-
-            if (
-                ["Interest", "Tidak Berminat", "Pikir-Pikir"].includes(form.aktivitas)
-            ) {
-                requiredFields.keterangan = "Keterangan";
-            }
-        }
-
-        /* =============================
-           3️⃣ PRIORITY 3
-        ============================== */
-        if (
-            form.sumberData === "MOBIL PRIORITY 3" ||
-            form.sumberData === "MOTOR PRIORITY 3"
-        ) {
-            requiredFields.statusKonsumen = "Status Konsumen";
-        }
 
         /* =============================
            4️⃣ CEK FIELD KOSONG
@@ -516,62 +333,6 @@ export default function VisitNC() {
                     icon: "warning",
                     title: "Form Belum Lengkap",
                     text: `${requiredFields[key]} tidak boleh kosong!`,
-                });
-                return;
-            }
-        }
-
-        /* =============================
-        5️⃣ VALIDASI NO KONTRAK
-        ============================= */
-        if (form.sumberData === "INJECT MANUAL") {
-            // 🔹 Inject Manual → validasi format & wajib isi
-            if (!form.noKontrak || form.noKontrak.trim() === "") {
-                Swal.fire({
-                    icon: "warning",
-                    title: "No Kontrak Wajib Diisi",
-                    text: "Untuk Inject Manual, No Kontrak tidak boleh kosong.",
-                });
-                return;
-            }
-
-            if (!/^\d+$/.test(form.noKontrak)) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "No Kontrak Tidak Valid",
-                    text: "No Kontrak harus berupa angka saja.",
-                });
-                return;
-            }
-
-            if (form.noKontrak.length < 16) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "No Kontrak Terlalu Pendek",
-                    text: "No Kontrak minimal 16 digit.",
-                });
-                return;
-            }
-
-            if (!form.namaDebitur || form.namaDebitur.trim() === "") {
-                Swal.fire({
-                    icon: "warning",
-                    title: "Nama Debitur Wajib Diisi",
-                    text: "Nama Debitur tidak boleh kosong untuk Inject Manual.",
-                });
-                return;
-            }
-        } else {
-            // 🔹 NON Inject Manual → harus ada di data kontrak
-            const kontrakAda = dataKontrak.some(
-                (item) => item["NO KONTRAK"] === form.noKontrak
-            );
-
-            if (!kontrakAda) {
-                Swal.fire({
-                    icon: "error",
-                    title: "No Kontrak Tidak Ditemukan",
-                    text: "Pastikan No Kontrak sesuai dengan data yang tersedia.",
                 });
                 return;
             }
@@ -600,20 +361,6 @@ export default function VisitNC() {
         }
 
         /* =============================
-           7️⃣ VALIDASI NO HP
-        ============================== */
-        if (!isSyariah && form.noHp) {
-            if (form.noHp.length < 11 || form.noHp.length > 13) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "No HP Tidak Valid",
-                    text: "No HP harus 11–13 digit!",
-                });
-                return;
-            }
-        }
-
-        /* =============================
            8️⃣ FOTO WAJIB
         ============================== */
         if (!photo) {
@@ -637,7 +384,6 @@ export default function VisitNC() {
         const payload = {
             ...form,
             sumberData: form.sumberData.toUpperCase(),
-            product: selectedProduct,
             statusKonsumen: statusMap[form.statusKonsumen] || "",
             photoBase64: photo,
         };
@@ -652,18 +398,10 @@ export default function VisitNC() {
                 didOpen: () => Swal.showLoading(),
             });
 
-            const SUBMIT_URL_KONVENSIONAL =
+            const URL_SUBMIT =
                 "https://script.google.com/macros/s/AKfycbxu_6_PsIK7NFu3yndt7UJ6i-XyE5Aciffk-trtyIaehFwoAhSPqzcWVyqKn8RE5VAL/exec";
 
-            const SUBMIT_URL_SYARIAH =
-                "https://script.google.com/macros/s/AKfycbwDEpYs5LODd3OmWRmiiRmTMnoILr4dwPWAj7YRe1TKNrkNTDYTp69RW-QEDtMzUqhg4g/exec";
-
-
-            const submitURL = isSyariah
-                ? SUBMIT_URL_SYARIAH
-                : SUBMIT_URL_KONVENSIONAL;
-
-            const response = await fetch(submitURL, {
+            const response = await fetch(URL_SUBMIT, {
                 method: "POST",
                 body: JSON.stringify(payload),
             });
@@ -736,41 +474,8 @@ export default function VisitNC() {
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
             <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-3xl">
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Sumber Data & Brand */}
+                    {/* Sumber Data & Code Unik */}
                     <div className="grid md:grid-cols-2 gap-4">
-                        <div hidden={userData.product !== "ALL BRAND"}>
-                            <label className="block text-sm font-medium mb-1">
-                                Product
-                            </label>
-                            <select
-                                name="product"
-                                value={
-                                    userData?.product === "ALL BRAND"
-                                        ? form.product
-                                        : userData?.product || ""
-                                }
-                                onChange={handleChange}
-                                className="w-full rounded-lg p-2 border border-gray-300"
-                                disabled={userData?.product !== "ALL BRAND"} // ⛔ Dikunci jika bukan ALL BRAND
-                            >
-                                <option value="">
-                                    {userData?.product === "ALL BRAND"
-                                        ? "Pilih Product"
-                                        : `Product: ${userData?.product}`}
-                                </option>
-
-                                {userData?.product === "ALL BRAND" && (
-                                    <>
-                                        <option value="MOTORKU">MOTORKU</option>
-                                        <option value="MOBILKU">MOBILKU</option>
-                                        <option value="MASKU">MASKU</option>
-                                        <option value="HAJIKU">HAJIKU</option>
-                                        <option value="ALL SYARIAH">ALL SYARIAH</option>
-                                    </>
-                                )}
-                            </select>
-                        </div>
-
                         <div>
                             <label className="block text-sm font-medium mb-1">
                                 Sumber Data
@@ -781,54 +486,21 @@ export default function VisitNC() {
                                 value={form.sumberData}
                                 onChange={handleChange}
                                 className="w-full rounded-lg p-2 border border-gray-300"
-                                disabled={
-                                    !(
-                                        userData?.product === "ALL BRAND"
-                                            ? form.product
-                                            : userData?.product
-                                    )
-                                } // ⛔ Disable kalau product belum terpilih
+                                disabled // ⛔ Disable kalau product belum terpilih
                             >
-                                <option value="">
-                                    {userData?.product === "ALL BRAND"
-                                        ? form.product
-                                            ? "Pilih Sumber Data"
-                                            : "Pilih Sumber Data"
-                                        : `Pilih Sumber Data`}
+                                <option value="1">Mobil Uncontaced MIF
                                 </option>
-
-                                {/* Jika user ALL BRAND → pakai form.product */}
-                                {userData?.product === "ALL BRAND" && form.product &&
-                                    sumberDataOptions[form.product?.toUpperCase()]?.map((s, idx) => (
-                                        <option key={idx} value={s}>{s}</option>
-                                    ))
-                                }
-
-                                {/* Jika user bukan ALL BRAND → pakai userData.product */}
-                                {userData?.product !== "ALL BRAND" &&
-                                    sumberDataOptions[userData?.product?.toUpperCase()]?.map((s, idx) => (
-                                        <option key={idx} value={s}>{s}</option>
-                                    ))
-                                }
                             </select>
                         </div>
-                    </div>
-                    {/* 🔹 No Kontrak & Nama Debitur */}
-                    <div className="grid md:grid-cols-2 gap-4">
+
                         <div className="relative dropdown-kontrak">
                             <label className="block text-sm font-medium mb-1">
-                                No Kontrak
+                                Kode Unik
                             </label>
 
                             <input
                                 type="text"
-                                placeholder={
-                                    isInjectManual
-                                        ? "Masukkan No Kontrak"
-                                        : !activeProduct
-                                            ? "Pilih Sumber Data atau Product terlebih dahulu"
-                                            : "Cari No Kontrak..."
-                                }
+                                placeholder="Cari Kode Unik..."
                                 value={form.noKontrak}
                                 onChange={(e) =>
                                     setForm((prev) => ({
@@ -836,36 +508,18 @@ export default function VisitNC() {
                                         noKontrak: e.target.value,
                                     }))
                                 }
-                                onFocus={() => {
-                                    if (activeProduct && !isInjectManual) setShowDropdown(true);
-                                }}
-                                className={`w-full border rounded-lg p-2 uppercase transition ${!activeProduct
-                                    ? "bg-gray-100 cursor-not-allowed text-gray-500"
-                                    : "bg-white"
-                                    }`}
-                                readOnly={!activeProduct || isInjectManual === false ? false : false}
+                                className="w-full border rounded-lg p-2 uppercase transition"
                             />
 
                             {/* Dropdown hanya untuk NON inject manual */}
-                            {!isInjectManual && form.sumberData && showDropdown && (
+                            {form.sumberData && showDropdown && (
                                 <ul className="absolute z-10 bg-white border rounded-lg w-full max-h-48 overflow-y-auto shadow-md mt-1">
-                                    {filteredKontrak.length > 0 ? (
-                                        filteredKontrak.map((item, idx) => (
-                                            <li
-                                                key={idx}
-                                                onClick={() => handleSelectKontrak(item)}
-                                                className="px-3 py-2 hover:bg-indigo-100 cursor-pointer text-sm"
-                                            >
-                                                {item["NO KONTRAK"]}
-                                            </li>
-                                        ))
-                                    ) : (
-                                        <li className="px-3 py-2 text-gray-500 text-sm">Tidak ditemukan</li>
-                                    )}
                                 </ul>
                             )}
                         </div>
-
+                    </div>
+                    {/* 🔹 No Kontrak & Nama Debitur */}
+                    <div className="grid md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium mb-1">
                                 Nama Debitur
@@ -875,12 +529,13 @@ export default function VisitNC() {
                                 name="namaDebitur"
                                 value={form.namaDebitur}
                                 onChange={handleChange}
-                                className={`w-full border rounded-lg p-2 ${isInjectManual ? "bg-white" : "bg-gray-100"
-                                    }`}
-                                readOnly={!isInjectManual}
+                                className="w-full border rounded-lg p-2 bg-gray-100"
+                                readOnly="true"
                                 required
                             />
                         </div>
+
+
                     </div>
 
                     {/* Region & Cabang */}
@@ -984,9 +639,7 @@ export default function VisitNC() {
                                 className="w-full border rounded-lg p-2"
                             >
                                 <option value="">Pilih Aktivitas</option>
-                                {(isSyariah
-                                    ? aktivitasTidakBertemuSyariah
-                                    : aktivitasTidakBertemu
+                                {(aktivitasTidakBertemu
                                 ).map((act, idx) => (
                                     <option key={idx} value={act}>
                                         {act}
@@ -999,137 +652,24 @@ export default function VisitNC() {
                     {form.hasil === "Bertemu" && (
                         <>
                             {/* Bertemu dengan */}
-                            {isMobilMotor && (
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">
-                                        Bertemu Dengan
-                                    </label>
-                                    <select
-                                        name="bertemuDengan"
-                                        value={form.bertemuDengan}
-                                        onChange={handleChange}
-                                        className="w-full border rounded-lg p-2"
-                                    >
-                                        <option value="">Pilih</option>
-                                        {bertemuDenganList.map((b, idx) => (
-                                            <option key={idx} value={b}>
-                                                {b}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
-
-                            {/* Hasil Bertemu */}
                             <div>
                                 <label className="block text-sm font-medium mb-1">
-                                    Hasil Bertemu
+                                    Bertemu Dengan
                                 </label>
                                 <select
-                                    name="aktivitas"
-                                    value={form.aktivitas}
+                                    name="bertemuDengan"
+                                    value={form.bertemuDengan}
                                     onChange={handleChange}
                                     className="w-full border rounded-lg p-2"
                                 >
-                                    <option value="">Pilih Hasil Bertemu</option>
-                                    {(isSyariah
-                                        ? hasilBertemuListSyariah
-                                        : hasilBertemuList
-                                    ).map((b, idx) => (
+                                    <option value="">Pilih</option>
+                                    {bertemuDenganList.map((b, idx) => (
                                         <option key={idx} value={b}>
                                             {b}
                                         </option>
                                     ))}
                                 </select>
                             </div>
-
-                            {/* Nomor HP */}
-                            {isMobilMotor && (
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">
-                                        Nomor HP Konsumen
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="noHp"
-                                        value={form.noHp}
-                                        onChange={(e) => {
-                                            const value = e.target.value.replace(/\D/g, "").slice(0, 13);
-                                            setForm({ ...form, noHp: value });
-                                        }}
-                                        placeholder="Masukkan nomor HP"
-                                        className="w-full border rounded-lg p-2"
-                                        inputMode="numeric"
-                                    />
-                                </div>
-                            )}
-
-                            {/* Keterangan tambahan */}
-                            {form.aktivitas === "Tidak Berminat" && (
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">
-                                        Keterangan Tidak Berminat
-                                    </label>
-                                    <select
-                                        name="keterangan"
-                                        value={form.keterangan}
-                                        onChange={handleChange}
-                                        className="w-full border rounded-lg p-2"
-                                    >
-                                        <option value="">Pilih Keterangan</option>
-                                        {(isSyariah
-                                            ? keteranganTidakBerminatSyariah
-                                            : keteranganTidakBerminat
-                                        ).map((k, idx) => (
-                                            <option key={idx} value={k}>
-                                                {k}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
-
-                            {form.aktivitas === "Pikir-Pikir" && isSyariah && (
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">
-                                        Keterangan Pikir-Pikir
-                                    </label>
-                                    <select
-                                        name="keterangan"
-                                        value={form.keterangan}
-                                        onChange={handleChange}
-                                        className="w-full border rounded-lg p-2"
-                                    >
-                                        <option value="">Pilih Keterangan</option>
-                                        {keteranganPikirSyariah.map((k, idx) => (
-                                            <option key={idx} value={k}>
-                                                {k}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
-
-                            {form.aktivitas === "Interest" && (
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">
-                                        Keterangan Interest
-                                    </label>
-                                    <select
-                                        name="keterangan"
-                                        value={form.keterangan}
-                                        onChange={handleChange}
-                                        className="w-full border rounded-lg p-2"
-                                    >
-                                        <option value="">Pilih Keterangan</option>
-                                        {keteranganInterest.map((k, idx) => (
-                                            <option key={idx} value={k}>
-                                                {k}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
                         </>
                     )}
 
@@ -1158,7 +698,7 @@ export default function VisitNC() {
                             ref={fileInputRef}
                             type="file"
                             accept="image/*"
-                            {...(!isSyariah && { capture: "environment" })}
+                            capture="environment"
                             onChange={handleTakePhoto}
                             id="cameraInput"
                             className="hidden"

@@ -59,7 +59,7 @@ export default function Navbar({ userData }) {
                 ],
             },
             { name: "Visit Konsumen", path: "/dashboard/visiting" },
-            // { name: "Visit Uncontacted MIF", path: "/dashboard/visitNC" },
+            { name: "Visit Uncontacted MIF", path: "/dashboard/visitNC" },
             { name: "Panduan", path: "/dashboard/panduan" },
             { name: "Setting", path: "/dashboard/setting" },
         ];
@@ -121,7 +121,7 @@ export default function Navbar({ userData }) {
                 ],
             },
             { name: "Visit Konsumen", path: "/dashboard/visiting" },
-            // { name: "Visit Uncontacted MIF", path: "/dashboard/visitNC" },
+            { name: "Visit Uncontacted MIF", path: "/dashboard/visitNC" },
             { name: "Cek Biro Kredit", path: "/dashboard/cekBiro" },
             { name: "Panduan", path: "/dashboard/panduan" },
             { name: "Setting", path: "/dashboard/setting" },

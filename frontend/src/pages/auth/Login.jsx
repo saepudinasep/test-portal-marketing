@@ -36,6 +36,7 @@ export default function Login() {
             setLoading(false);
 
             if (!result.success) {
+                console.log(JSON.stringify({ action: "login", username, password }));
                 Swal.fire("Login Gagal", result.message, "error");
                 return;
             }
