@@ -19,7 +19,7 @@ export default function VisitNC() {
         picVisit: "",
         nikPIC: "",
         jabatanPIC: "",
-        sumberData: "Mobil Uncontaced MIF",
+        sumberData: "MOBIL UNCONTACED MIF",
         kodeUnik: "",
         namaDebitur: "",
         alamat: "",
@@ -242,12 +242,11 @@ export default function VisitNC() {
            1️⃣ VALIDASI FIELD WAJIB UMUM
         ============================== */
         const requiredFields = {
-            product: "Product",
             sumberData: "Sumber Data",
             kodeUnik: "Kode Unik",
             namaDebitur: "Nama Debitur",
-            hasil: "Hasil Visit",
-            detail: "Notes Visit",
+            hasilVisit: "Hasil Visit",
+            notesVisit: "Notes Visit",
         };
 
         /* =============================
@@ -264,23 +263,50 @@ export default function VisitNC() {
             }
         }
 
-        /* =============================
-           6️⃣ VALIDASI DETAIL VISIT
-        ============================== */
-        const words = form.detail.trim().split(/\s+/);
-        if (words.length < 5) {
+        if (form.hasilVisit === "Bertemu" && !form.bertemuDengan) {
             Swal.fire({
                 icon: "warning",
-                title: "Detail Terlalu Singkat",
-                text: "Detail visit minimal 5 kata!",
+                title: "Data Belum Lengkap",
+                text: "Field Bertemu Dengan wajib diisi",
             });
             return;
         }
 
-        if (!/^[A-Za-z]{5}/.test(form.detail.substring(0, 5))) {
+        if (form.hasilVisit === "Tidak Bertemu" && !form.tidakBertemu) {
             Swal.fire({
                 icon: "warning",
-                title: "Format Detail Salah",
+                title: "Data Belum Lengkap",
+                text: "Field Hasil Tidak Bertemu wajib diisi",
+            });
+            return;
+        }
+
+        if (form.noHpKonsumen && !/^\d{9,13}$/.test(form.noHpKonsumen)) {
+            Swal.fire({
+                icon: "warning",
+                title: "No HP Tidak Valid",
+                text: "No HP harus angka 9–13 digit",
+            });
+            return;
+        }
+
+        /* =============================
+           6️⃣ VALIDASI Notes VISIT
+        ============================== */
+        const words = form.notesVisit.trim().split(/\s+/);
+        if (words.length < 5) {
+            Swal.fire({
+                icon: "warning",
+                title: "Notes Terlalu Singkat",
+                text: "Notes visit minimal 5 kata!",
+            });
+            return;
+        }
+
+        if (!/^[A-Za-z]{5}/.test(form.notesVisit.substring(0, 5))) {
+            Swal.fire({
+                icon: "warning",
+                title: "Format Notes Salah",
                 text: "5 karakter awal harus huruf tanpa angka atau simbol!",
             });
             return;
@@ -298,19 +324,38 @@ export default function VisitNC() {
             return;
         }
 
-        /* =============================
-           9️⃣ PREPARE PAYLOAD
-        ============================== */
-        const statusMap = {
-            Pil1: "No HP Konsumen sama dengan data di WISe dan Bersedia Di Lakukan Penawaran",
-            Pil2: "No HP Konsumen sama dengan data di WISe dan Tidak Bersedia Di Lakukan Penawaran",
-            Pil3: "No HP Konsumen berganti dan CMO melakukan pengkinian data pada Form Perubahan Data Konsumen",
-        };
 
         const payload = {
-            ...form,
+            region: form.region,
+            cabang: form.cabang,
+
+            picVisit: form.picVisit,
+            nikPIC: form.nikPIC,
+            jabatanPIC: form.jabatanPIC,
+
             sumberData: form.sumberData.toUpperCase(),
-            statusKonsumen: statusMap[form.statusKonsumen] || "",
+
+            kodeUnik: form.kodeUnik.toUpperCase(),
+            namaDebitur: form.namaDebitur.toUpperCase(),
+            alamat: form.alamat,
+            unit: form.unit,
+            tahun: form.tahun,
+
+            hasilVisit: form.hasilVisit,
+
+            bertemuDengan:
+                form.hasilVisit === "Bertemu"
+                    ? form.bertemuDengan
+                    : "",
+
+            tidakBertemu:
+                form.hasilVisit === "Tidak Bertemu"
+                    ? form.tidakBertemu
+                    : "",
+
+            noHpKonsumen: form.noHpKonsumen || "",
+            notesVisit: form.notesVisit || "",
+
             photoBase64: photo,
         };
 
@@ -325,7 +370,7 @@ export default function VisitNC() {
             });
 
             const URL_SUBMIT =
-                "https://script.google.com/macros/s/AKfycbxu_6_PsIK7NFu3yndt7UJ6i-XyE5Aciffk-trtyIaehFwoAhSPqzcWVyqKn8RE5VAL/exec";
+                "https://script.google.com/macros/s/AKfycbzfPkkpKZAdqHzIsc6WBA2N6HMBd7Dlv2jrLDxWYKd60mEjHWEHDpsgSjYtSZ4ExuKjPQ/exec";
 
             const response = await fetch(URL_SUBMIT, {
                 method: "POST",
@@ -347,10 +392,10 @@ export default function VisitNC() {
                 setForm({
                     region: userData?.region || "",
                     cabang: userData?.cabang || "",
-                    picVisit: userData?.name || "",
-                    nikPIC: userData?.nik || "",
                     jabatanPIC: userData?.position || "",
-                    sumberData: "Mobil Uncontaced MIF",
+                    nikPIC: userData?.nik || "",
+                    picVisit: userData?.name || "",
+                    sumberData: "MOBIL UNCONTACED MIF",
                     kodeUnik: "",
                     namaDebitur: "",
                     alamat: "",
@@ -476,7 +521,7 @@ export default function VisitNC() {
                                 className="w-full rounded-lg p-2 border border-gray-300"
                                 disabled // ⛔ Disable kalau product belum terpilih
                             >
-                                <option value="Mobil Uncontaced MIF">Mobil Uncontaced MIF</option>
+                                <option value="MOBIL UNCONTACED MIF">MOBIL UNCONTACED MIF</option>
                             </select>
                         </div>
                     </div>
@@ -673,17 +718,17 @@ export default function VisitNC() {
                         </div>
                     </div>
 
-                    {/* Detail Visit */}
+                    {/* Notes Visit */}
                     <div>
                         <label className="block text-sm font-medium mb-1">
                             Notes Visit
                         </label>
                         <textarea
-                            name="detail"
-                            value={form.detail}
+                            name="notesVisit"
+                            value={form.notesVisit}
                             onChange={handleChange}
                             rows="4"
-                            placeholder="Tuliskan detail minimal 5 kata..."
+                            placeholder="Tuliskan notes minimal 5 kata..."
                             className="w-full border rounded-lg p-2 resize-none"
                             required
                         />
