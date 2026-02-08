@@ -14,33 +14,34 @@ export default function VisitNC() {
     const fileInputRef = useRef(null);
 
     const [form, setForm] = useState({
-        sumberData: "",
-        kodeUnik: "",
-        namaDebitur: "",
         region: "",
         cabang: "",
         picVisit: "",
-        nik: "",
-        jabatan: "",
-        hasil: "",
-        aktivitas: "",
+        nikPIC: "",
+        jabatanPIC: "",
+        sumberData: "Mobil Uncontaced MIF",
+        kodeUnik: "",
+        namaDebitur: "",
+        alamat: "",
+        unit: "",
+        tahun: "",
+        hasilVisit: "Bertemu",
+        tidakBertemu: "",
         bertemuDengan: "",
-        keterangan: "",
-        noHp: "",
-        detail: "",
-        ket: "",
+        noHpKonsumen: "",
+        notesVisit: "",
     });
 
     const hasilList = ["Bertemu", "Tidak Bertemu"];
+    const bertemuDenganList = ["Konsumen", "Pasangan"];
 
     // Opsi dinamis
-    const aktivitasTidakBertemu = [
+    const hasilTidakBertemu = [
         "Rumah Kosong",
         "Alamat Pindah",
         "Alamat tidak sesuai",
         "Titip Surat Penawaran",
     ];
-    const bertemuDenganList = ["Konsumen", "Pasangan"];
 
     // ✅ Proteksi & ambil data kontrak berdasarkan region dan cabang user
     useEffect(() => {
@@ -60,128 +61,64 @@ export default function VisitNC() {
             region: parsedUser.region || "",
             cabang: parsedUser.cabang || "",
             picVisit: parsedUser.name || "",
-            nik: parsedUser.nik || "",
-            jabatan: parsedUser.position || "",
-            product: parsedUser.product !== "ALL BRAND" ? parsedUser.product.toUpperCase() : "" // ⬅ FIX PENTING
+            nikPIC: parsedUser.nik || "",
+            jabatanPIC: parsedUser.position || "",
         }));
 
-        const URL_MOTOR_MOBIL =
-            "https://script.google.com/macros/s/AKfycbw8k0pA5XZX1SkdoWeaOCOrf9tBZu3fDPqGaM1H3fS-dyD1sdJAQjCloJP4_c7wRmvs/exec";
+        const fetchKodeUnik = async () => {
+            try {
+                setLoading(true);
 
-        const URL_HAJI_MASK =
-            "https://script.google.com/macros/s/AKfycbz8JNLWHBkXo1XNM9RsH3Dlw5OCLWpmsvTuAslZ9XILUNUB6Q5dvoEiGfu1QxW2auJl/exec";
+                const url =
+                    "https://script.google.com/macros/s/AKfycbwJzKfG1uqG0tdE4HPusUB1uM1LsA0vKpFOhU5anmaT62ErT0oJce4JQfk4vFZ4lr2xqg/exec" +
+                    `?region=${encodeURIComponent(parsedUser.region)}` +
+                    `&cabang=${encodeURIComponent(parsedUser.cabang)}`;
 
-        const mapRegionSyariah = (region) => {
-            const r = region?.toUpperCase();
+                const res = await fetch(url);
+                const json = await res.json();
 
-            const mapping = {
-                "JABODEBEK": "JABODEBEK",
-                "JABODEBEK 1": "JABODEBEK",
-                "JABODEBEK 2": "JABODEBEK",
-                "JABODEBEK 3": "JABODEBEK",
-
-                "BANTEN": "BANTEN",
-                "BANTEN 1": "BANTEN",
-                "BANTEN 2": "BANTEN",
-
-                "JABAR": "JABAR",
-                "JABAR 1": "JABAR",
-                "JABAR 2": "JABAR",
-
-                "JATENGUT": "JATENGUT",
-                "JATENGUT 1": "JATENGUT",
-                "JATENGUT 2": "JATENGUT",
-
-                "JATENGSEL": "JATENGSEL",
-                "JATENGSEL 1": "JATENGSEL",
-                "JATENGSEL 2": "JATENGSEL",
-
-                "JATIM": "JATIM BALI",
-                "JATIM 1": "JATIM BALI",
-                "JATIM 2": "JATIM BALI",
-                "JATIM 3": "JATIM BALI",
-                "JATIM 5": "JATIM BALI",
-
-                "SUMBAGUT": "SUMBAGUT",
-                "SUMBAGUT 1": "SUMBAGUT",
-                "SUMBAGUT 2": "SUMBAGUT",
-
-                "SUMBAGSEL": "SUMBAGSEL",
-                "SUMBAGSEL 1": "SUMBAGSEL",
-                "SUMBAGSEL 2": "SUMBAGSEL",
-
-                "KALIMANTAN": "KALIMANTAN",
-                "KALIMANTAN 1": "KALIMANTAN",
-                "KALIMANTAN 2": "KALIMANTAN",
-
-                "SULAWESI": "SULAWESI",
-                "SULAWESI 1": "SULAWESI",
-                "SULAWESI 2": "SULAWESI",
-            };
-
-            return mapping[r] || r; // fallback jika tidak ada di mapping
-        };
-
-        const regionMotorMobil = parsedUser.region;                // asli
-        const regionSyariah = mapRegionSyariah(parsedUser.region); // hasil mapping
-        const product = parsedUser.product?.toUpperCase();
-
-        setLoading(true);
-
-        let fetchPromises = [];
-
-        // MOTORKU & MOBILKU → region asli
-        if (product === "MOTORKU" || product === "MOBILKU") {
-            fetchPromises = [
-                fetch(
-                    `${URL_MOTOR_MOBIL}?region=${regionMotorMobil}&cabang=${parsedUser.cabang}`
-                ).then((res) => res.json()),
-            ];
-        }
-
-        // HAJIKU & MASKU → region hasil mapping
-        else if (product === "HAJIKU" || product === "MASKU" ||
-            product === "ALL SYARIAH") {
-            fetchPromises = [
-                fetch(
-                    `${URL_HAJI_MASK}?region=${regionSyariah}&cabang=${parsedUser.cabang}`
-                ).then((res) => res.json()),
-            ];
-        }
-
-        // ALL BRAND → gabungkan dua sumber + dua region
-        else if (product === "ALL BRAND") {
-            fetchPromises = [
-                // MOTOR & MOBIL
-                fetch(
-                    `${URL_MOTOR_MOBIL}?region=${regionMotorMobil}&cabang=${parsedUser.cabang}`
-                ).then((res) => res.json()),
-
-                // MASKU & HAJIKU
-                fetch(
-                    `${URL_HAJI_MASK}?region=${regionSyariah}&cabang=${parsedUser.cabang}`
-                ).then((res) => res.json()),
-            ];
-        }
-
-        Promise.all(fetchPromises)
-            .then((results) => {
-                const mergedData = results
-                    .flatMap((res) => res?.data || [])
-                    .map((item) => ({
-                        ...item,
-                        product: item["PRODUCT"]?.toUpperCase() || "",
-                        sumberData: item["SUMBER DATA"]?.toUpperCase() || "",
-                    }));
+                const mergedData = (json?.data || []).map((item) => ({
+                    ...item,
+                    namaDebitur: item["NAMA KONSUMEN"]?.toUpperCase() || "",
+                    alamat: item["ALAMAT"] || "",
+                    unit: item["UNIT"] || "",
+                    tahun: item["TAHUN UNIT"] || "",
+                }));
 
                 setDataKodeUnik(mergedData);
-            })
-            .catch((err) => {
-                console.error("Error fetching kontrak:", err);
-            })
-            .finally(() => setLoading(false));
+                // console.log("Kode unik:", mergedData);
+            } catch (err) {
+                console.error("Error fetching kode unik:", err);
+                setDataKodeUnik([]);
+            } finally {
+                setLoading(false);
+            }
+        };
 
+        fetchKodeUnik();
     }, [navigate]);
+
+    // 🔍 Filter hasil pencarian Kode Unik
+    const filteredKodeUnik = dataKodeUnik.filter((item) => {
+        const matchKodeUnik = item["KODE UNIQUE"]
+            ?.toUpperCase()
+            .includes(form.kodeUnik);
+
+        return matchKodeUnik;
+    });
+
+    // 🔹 Saat memilih Kode Unik
+    const handleSelectKodeUnik = (item) => {
+        setForm((prev) => ({
+            ...prev,
+            kodeUnik: item["KODE UNIQUE"],
+            namaDebitur: item["NAMA KONSUMEN"] || "",
+            alamat: item["ALAMAT"] || "",
+            unit: item["UNIT"] || "",
+            tahun: item["TAHUN UNIT"] || "",
+        }));
+        setShowDropdown(false);
+    };
 
     // 🔹 Input berubah
     const handleChange = (e) => {
@@ -190,28 +127,42 @@ export default function VisitNC() {
         setForm((prev) => {
             let updated = { ...prev, [name]: value };
 
-
             /* =============================
-               3️⃣ GANTI HASIL VISIT
+               1️⃣ GANTI HASIL VISIT
             ============================== */
-            if (name === "hasil") {
-                updated.aktivitas = "";
-                updated.keterangan = "";
+            if (name === "hasilVisit") {
+                updated.tidakBertemu = "";
+                updated.bertemuDengan = "";
             }
 
             /* =============================
-               4️⃣ GANTI AKTIVITAS
+               2️⃣ GANTI TIDAK BERTEMU
             ============================== */
-            if (name === "aktivitas") {
-                updated.keterangan = "";
+            if (name === "tidakBertemu") {
+                updated.bertemuDengan = "";
+            }
+
+            /* =============================
+               3️⃣ NORMALISASI NO HP (NUMBER ONLY)
+            ============================== */
+            if (name === "noHpKonsumen") {
+                const angka = value.replace(/\D/g, "").slice(0, 13);
+                setForm({ ...form, [name]: angka });
+            }
+
+            /* =============================
+               4️⃣ KODE UNIK → UPPERCASE
+            ============================== */
+            if (name === "kodeUnik") {
+                updated.kodeUnik = value.toUpperCase();
             }
 
             return updated;
         });
 
-        // Tutup dropdown pencarian kontrak
-        if (name === "sumberData" || name === "product") {
-            setShowDropdown(false);
+        // Tutup dropdown saat user mengetik
+        if (name === "kodeUnik") {
+            setShowDropdown(true);
         }
     };
 
@@ -282,31 +233,6 @@ export default function VisitNC() {
         setIsMobile(mobileCheck);
     }, []);
 
-    const getCharsPerRow = () => {
-        const w = window.innerWidth;
-
-        if (w < 240) return 14;      // Ultra tiny (feature phone / mini Android ekstrem)
-        if (w < 360) return 20;      // Extra small (HP mini)
-        if (w < 480) return 24;      // Small mobile
-        if (w < 640) return 28;      // Mobile
-        if (w < 1024) return 38;     // Tablet
-        return 50;                  // Desktop
-    };
-
-    const MAX_ROWS = 80;
-
-    const [charsPerRow, setCharsPerRow] = useState(getCharsPerRow());
-
-    useEffect(() => {
-        const handleResize = () => {
-            setCharsPerRow(getCharsPerRow());
-        };
-
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
-    const estimatedRows = Math.ceil(form.ket.length / charsPerRow);
 
     // 🔹 Submit form
     const handleSubmit = async (e) => {
@@ -422,22 +348,19 @@ export default function VisitNC() {
                     region: userData?.region || "",
                     cabang: userData?.cabang || "",
                     picVisit: userData?.name || "",
-                    nik: userData?.nik || "",
-                    jabatan: userData?.position || "",
-                    product: userData?.product !== "ALL BRAND"
-                        ? userData?.product
-                        : "",
-                    sumberData: "",
-                    noKontrak: "",
+                    nikPIC: userData?.nik || "",
+                    jabatanPIC: userData?.position || "",
+                    sumberData: "Mobil Uncontaced MIF",
+                    kodeUnik: "",
                     namaDebitur: "",
-                    hasil: "",
-                    aktivitas: "",
+                    alamat: "",
+                    unit: "",
+                    tahun: "",
+                    hasilVisit: "Bertemu",
+                    tidakBertemu: "",
                     bertemuDengan: "",
-                    keterangan: "",
-                    noHp: "",
-                    detail: "",
-                    statusKonsumen: "",
-                    ket: "",
+                    noHpKonsumen: "",
+                    notesVisit: "",
                 });
 
                 setPhoto(null);
@@ -474,70 +397,6 @@ export default function VisitNC() {
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
             <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-3xl">
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Sumber Data & Code Unik */}
-                    <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium mb-1">
-                                Sumber Data
-                            </label>
-
-                            <select
-                                name="sumberData"
-                                value={form.sumberData}
-                                onChange={handleChange}
-                                className="w-full rounded-lg p-2 border border-gray-300"
-                                disabled // ⛔ Disable kalau product belum terpilih
-                            >
-                                <option value="1">Mobil Uncontaced MIF
-                                </option>
-                            </select>
-                        </div>
-
-                        <div className="relative dropdown-kontrak">
-                            <label className="block text-sm font-medium mb-1">
-                                Kode Unik
-                            </label>
-
-                            <input
-                                type="text"
-                                placeholder="Cari Kode Unik..."
-                                value={form.noKontrak}
-                                onChange={(e) =>
-                                    setForm((prev) => ({
-                                        ...prev,
-                                        noKontrak: e.target.value,
-                                    }))
-                                }
-                                className="w-full border rounded-lg p-2 uppercase transition"
-                            />
-
-                            {/* Dropdown hanya untuk NON inject manual */}
-                            {form.sumberData && showDropdown && (
-                                <ul className="absolute z-10 bg-white border rounded-lg w-full max-h-48 overflow-y-auto shadow-md mt-1">
-                                </ul>
-                            )}
-                        </div>
-                    </div>
-                    {/* 🔹 No Kontrak & Nama Debitur */}
-                    <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium mb-1">
-                                Nama Debitur
-                            </label>
-                            <input
-                                type="text"
-                                name="namaDebitur"
-                                value={form.namaDebitur}
-                                onChange={handleChange}
-                                className="w-full border rounded-lg p-2 bg-gray-100"
-                                readOnly="true"
-                                required
-                            />
-                        </div>
-
-
-                    </div>
-
                     {/* Region & Cabang */}
                     <div className="grid md:grid-cols-2 gap-4">
                         <div>
@@ -565,113 +424,254 @@ export default function VisitNC() {
                         </div>
                     </div>
 
-                    {/* Keterangan akan terisi berdasarkan no kontrak */}
-                    <div>
-                        <label className="block text-sm font-medium mb-1">
-                            Keterangan
-                        </label>
-                        <textarea
-                            value={form.ket}
-                            rows={Math.min(estimatedRows, MAX_ROWS)}
-                            className="w-full border rounded-lg p-2 bg-gray-100 resize-none text-sm"
-                            readOnly
-                        />
-                    </div>
-
-
-                    {/* Status Konsumen hanya muncul jika Sumber Data adalah Mobil Priority 3 atau Motor Priority 3 */}
-                    {(form.sumberData === "MOBIL PRIORITY 3" || form.sumberData === "MOTOR PRIORITY 3") && (
+                    {/* Jabatan PIC & PIC Visit */}
+                    <div className="grid md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium mb-1">
-                                Status Konsumen
+                                Jabatan PIC
                             </label>
+                            <input
+                                type="text"
+                                value={form.jabatanPIC}
+                                className="w-full border rounded-lg p-2 bg-gray-100"
+                                required
+                                readOnly
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                PIC Visit
+                            </label>
+                            <input
+                                type="text"
+                                value={form.picVisit}
+                                className="w-full border rounded-lg p-2 bg-gray-100"
+                                readOnly
+                            />
+                        </div>
+                    </div>
+
+                    {/* NIK PIC Visit & Sumber Data */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                NIK PIC Visit
+                            </label>
+                            <input
+                                type="text"
+                                value={form.nikPIC}
+                                className="w-full border rounded-lg p-2 bg-gray-100"
+                                readOnly
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                Sumber Data
+                            </label>
+
                             <select
-                                name="statusKonsumen"
-                                value={form.statusKonsumen}
+                                name="sumberData"
+                                value={form.sumberData}
                                 onChange={handleChange}
                                 className="w-full rounded-lg p-2 border border-gray-300"
+                                disabled // ⛔ Disable kalau product belum terpilih
                             >
-                                <option value="">Pilih Status Konsumen</option>
-                                <option value="Pil1">
-                                    No HP Konsumen sama dengan data di WISe dan Bersedia Di Lakukan Penawaran
-                                </option>
-                                <option value="Pil2">
-                                    No HP Konsumen sama dengan data di WISe dan Tidak Bersedia Di Lakukan Penawaran
-                                </option>
-                                <option value="Pil3">
-                                    No HP Konsumen berganti dan CMO melakukan pengkinian data pada Form Perubahan Data Konsumen
-                                </option>
+                                <option value="Mobil Uncontaced MIF">Mobil Uncontaced MIF</option>
                             </select>
                         </div>
-                    )}
-
-                    {/* 🔹 Hasil Visit */}
-                    <div>
-                        <label className="block text-sm font-medium mb-1">
-                            Hasil Visit
-                        </label>
-                        <select
-                            name="hasil"
-                            value={form.hasil}
-                            onChange={handleChange}
-                            className="w-full border rounded-lg p-2"
-                            required
-                        >
-                            <option value="">Pilih Hasil</option>
-                            {hasilList.map((hasil, idx) => (
-                                <option key={idx} value={hasil}>
-                                    {hasil}
-                                </option>
-                            ))}
-                        </select>
                     </div>
 
-                    {/* 🔹 Aktivitas dinamis berdasarkan hasil */}
-                    {form.hasil === "Tidak Bertemu" && (
+                    {/* 🔹 Kode Unik & Nama Debitur */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div className="relative dropdown-kontrak">
+                            <label className="block text-sm font-medium mb-1">
+                                Kode Unik
+                            </label>
+
+                            <input
+                                type="text"
+                                placeholder="Cari Kode Unik..."
+                                value={form.kodeUnik}
+                                onChange={(e) =>
+                                    setForm((prev) => ({
+                                        ...prev,
+                                        kodeUnik: e.target.value,
+                                    }))
+                                }
+                                onFocus={() => {
+                                    setShowDropdown(true);
+                                }}
+                                className="w-full border rounded-lg p-2 uppercase transition"
+                            />
+
+                            {/* Dropdown hanya untuk NON inject manual */}
+                            {showDropdown && (
+                                <ul className="absolute z-10 bg-white border rounded-lg w-full max-h-48 overflow-y-auto shadow-md mt-1">
+                                    {filteredKodeUnik.length > 0 ? (
+                                        filteredKodeUnik.map((item, idx) => (
+                                            <li
+                                                key={idx}
+                                                onClick={() => handleSelectKodeUnik(item)}
+                                                className="px-3 py-2 hover:bg-indigo-100 cursor-pointer text-sm"
+                                            >
+                                                {item["KODE UNIQUE"]}
+                                            </li>
+                                        ))
+                                    ) : (
+                                        <li className="px-3 py-2 text-gray-500 text-sm">Tidak ditemukan</li>
+                                    )}
+                                </ul>
+                            )}
+                        </div>
+
                         <div>
                             <label className="block text-sm font-medium mb-1">
-                                Aktivitas Visit
+                                Nama Debitur
+                            </label>
+                            <input
+                                type="text"
+                                name="namaDebitur"
+                                value={form.namaDebitur}
+                                onChange={handleChange}
+                                className="w-full border rounded-lg p-2 bg-gray-100"
+                                readOnly
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    {/* 🔹 Aamat & Unit */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                Alamat Debitur
+                            </label>
+                            <textarea
+                                name="alamat"
+                                value={form.alamat}
+                                onChange={handleChange}
+                                rows="4"
+                                className="w-full border rounded-lg p-2 resize-none bg-gray-100"
+                                readOnly
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                Unit Debitur
+                            </label>
+                            <input
+                                type="text"
+                                name="unit"
+                                value={form.unit}
+                                onChange={handleChange}
+                                className="w-full border rounded-lg p-2 bg-gray-100"
+                                readOnly
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    {/* 🔹 Tahun & Hasil Visit */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                Tahun Unit
+                            </label>
+                            <input
+                                type="text"
+                                name="tahun"
+                                value={form.tahun}
+                                onChange={handleChange}
+                                className="w-full border rounded-lg p-2 bg-gray-100"
+                                readOnly
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                Hasil Visit
                             </label>
                             <select
-                                name="aktivitas"
-                                value={form.aktivitas}
+                                name="hasilVisit"
+                                value={form.hasilVisit}
                                 onChange={handleChange}
                                 className="w-full border rounded-lg p-2"
+                                required
                             >
-                                <option value="">Pilih Aktivitas</option>
-                                {(aktivitasTidakBertemu
-                                ).map((act, idx) => (
-                                    <option key={idx} value={act}>
-                                        {act}
+                                <option value="">Pilih Hasil</option>
+                                {hasilList.map((hasil, idx) => (
+                                    <option key={idx} value={hasil}>
+                                        {hasil}
                                     </option>
                                 ))}
                             </select>
                         </div>
-                    )}
+                    </div>
 
-                    {form.hasil === "Bertemu" && (
-                        <>
-                            {/* Bertemu dengan */}
+
+                    {/* 🔹 Tahun & Hasil Visit */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                        {/* 🔹 Aktivitas dinamis berdasarkan hasil */}
+                        {form.hasilVisit === "Tidak Bertemu" && (
                             <div>
                                 <label className="block text-sm font-medium mb-1">
-                                    Bertemu Dengan
+                                    Hasil Tidak Bertemu
                                 </label>
                                 <select
-                                    name="bertemuDengan"
-                                    value={form.bertemuDengan}
+                                    name="tidakBertemu"
+                                    value={form.tidakBertemu}
                                     onChange={handleChange}
                                     className="w-full border rounded-lg p-2"
                                 >
-                                    <option value="">Pilih</option>
-                                    {bertemuDenganList.map((b, idx) => (
-                                        <option key={idx} value={b}>
-                                            {b}
+                                    <option value="">Pilih Hasil Tidak Bertemu</option>
+                                    {(hasilTidakBertemu
+                                    ).map((act, idx) => (
+                                        <option key={idx} value={act}>
+                                            {act}
                                         </option>
                                     ))}
                                 </select>
                             </div>
-                        </>
-                    )}
+                        )}
+
+                        {form.hasilVisit === "Bertemu" && (
+                            <>
+                                {/* Bertemu dengan */}
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">
+                                        Bertemu Dengan
+                                    </label>
+                                    <select
+                                        name="bertemuDengan"
+                                        value={form.bertemuDengan}
+                                        onChange={handleChange}
+                                        className="w-full border rounded-lg p-2"
+                                    >
+                                        <option value="">Pilih</option>
+                                        {bertemuDenganList.map((b, idx) => (
+                                            <option key={idx} value={b}>
+                                                {b}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </>
+                        )}
+                        <div>
+                            <label className="text-sm font-semibold">No HP Konsumen</label>
+                            <input
+                                type="text"
+                                name="noHpKonsumen"
+                                value={form.noHpKonsumen}
+                                onChange={handleChange}
+                                required
+                                className="w-full border rounded-lg p-2"
+                                inputMode="numeric"
+                                placeholder="Masukan No HP Konsumen"
+                            />
+                        </div>
+                    </div>
 
                     {/* Detail Visit */}
                     <div>
