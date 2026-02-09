@@ -70,7 +70,7 @@ export default function VisitNC() {
                 setLoading(true);
 
                 const url =
-                    "https://script.google.com/macros/s/AKfycbwJzKfG1uqG0tdE4HPusUB1uM1LsA0vKpFOhU5anmaT62ErT0oJce4JQfk4vFZ4lr2xqg/exec" +
+                    "https://script.google.com/macros/s/AKfycbwL-E705fycNjOR7304J_B1Dz2eMRce4dyEfBMBqPWs2BS03lueZfR8Q_x26D91java/exec" +
                     `?region=${encodeURIComponent(parsedUser.region)}` +
                     `&cabang=${encodeURIComponent(parsedUser.cabang)}`;
 
@@ -370,7 +370,7 @@ export default function VisitNC() {
             });
 
             const URL_SUBMIT =
-                "https://script.google.com/macros/s/AKfycbzfPkkpKZAdqHzIsc6WBA2N6HMBd7Dlv2jrLDxWYKd60mEjHWEHDpsgSjYtSZ4ExuKjPQ/exec";
+                "https://script.google.com/macros/s/AKfycbz6B30aTdLf6WSL5hXxPPMk4SWnVMZkvCPC1SRD5JXIT9eTp7p7izyHw_11_KwrfSNcIw/exec";
 
             const response = await fetch(URL_SUBMIT, {
                 method: "POST",
