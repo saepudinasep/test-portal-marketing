@@ -31,6 +31,8 @@ export default function Visiting() {
         product: "",
         statusKonsumen: "",
         ket: "",
+        penawaran_product: "",
+        penawaran_product_cust: ""
     });
 
     const hasilList = ["Bertemu", "Tidak Bertemu"];
@@ -101,7 +103,7 @@ export default function Visiting() {
         }));
 
         const URL_MOTOR_MOBIL =
-            "https://script.google.com/macros/s/AKfycbw8k0pA5XZX1SkdoWeaOCOrf9tBZu3fDPqGaM1H3fS-dyD1sdJAQjCloJP4_c7wRmvs/exec";
+            "https://script.google.com/macros/s/AKfycbxn3OYbv4SedQKbVlkP1Yn10O2S8nNWtfH7wvCTmtF68op9GWPo5Dwh-16r2eK_MjV2/exec";
 
         const URL_HAJI_MASK =
             "https://script.google.com/macros/s/AKfycbz8JNLWHBkXo1XNM9RsH3Dlw5OCLWpmsvTuAslZ9XILUNUB6Q5dvoEiGfu1QxW2auJl/exec";
@@ -219,10 +221,30 @@ export default function Visiting() {
     }, [navigate]);
 
     // 🔍 Filter hasil pencarian No Kontrak
+    // const filteredKontrak = dataKontrak.filter((item) => {
+    //     const matchNoKontrak = item["NO KONTRAK"]
+    //         ?.toUpperCase()
+    //         .includes(form.noKontrak.toUpperCase());
+
+    //     const matchSumberData = form.sumberData
+    //         ? item.sumberData === form.sumberData.toUpperCase()
+    //         : true;
+
+    //     const matchProduct = form.product
+    //         ? form.product === "ALL SYARIAH"
+    //             ? ["MASKU", "HAJIKU"].includes(item.product)
+    //             : item.product === form.product.toUpperCase()
+    //         : true;
+
+    //     return matchNoKontrak && matchSumberData && matchProduct;
+    // });
+
     const filteredKontrak = dataKontrak.filter((item) => {
-        const matchNoKontrak = item["NO KONTRAK"]
-            ?.toUpperCase()
-            .includes(form.noKontrak.toUpperCase());
+        const keyword = form.noKontrak.toUpperCase();
+
+        const matchKeyword =
+            item["NO KONTRAK"]?.toUpperCase().includes(keyword) ||
+            item["NAMA KONSUMEN"]?.toUpperCase().includes(keyword);
 
         const matchSumberData = form.sumberData
             ? item.sumberData === form.sumberData.toUpperCase()
@@ -234,7 +256,7 @@ export default function Visiting() {
                 : item.product === form.product.toUpperCase()
             : true;
 
-        return matchNoKontrak && matchSumberData && matchProduct;
+        return matchKeyword && matchSumberData && matchProduct;
     });
 
     const sumberDataOptions = {
@@ -563,15 +585,30 @@ export default function Visiting() {
             }
         } else {
             // 🔹 NON Inject Manual → harus ada di data kontrak
-            const kontrakAda = dataKontrak.some(
-                (item) => item["NO KONTRAK"] === form.noKontrak
+            const selectedKontrak = dataKontrak.find(
+                (item) =>
+                    item["NO KONTRAK"]?.toUpperCase().trim() ===
+                    form.noKontrak.toUpperCase().trim()
             );
 
-            if (!kontrakAda) {
+            if (!selectedKontrak) {
                 Swal.fire({
                     icon: "error",
-                    title: "No Kontrak Tidak Ditemukan",
-                    text: "Pastikan No Kontrak sesuai dengan data yang tersedia.",
+                    title: "Kontrak Tidak Valid",
+                    text: "Silakan pilih No Kontrak dari daftar yang tersedia.",
+                });
+                return;
+            }
+
+            // 🔒 Optional: pastikan nama debitur sesuai juga
+            if (
+                selectedKontrak["NAMA KONSUMEN"]?.toUpperCase().trim() !==
+                form.namaDebitur.toUpperCase().trim()
+            ) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Data Tidak Sinkron",
+                    text: "Nama debitur tidak sesuai dengan data kontrak.",
                 });
                 return;
             }
@@ -653,7 +690,7 @@ export default function Visiting() {
             });
 
             const SUBMIT_URL_KONVENSIONAL =
-                "https://script.google.com/macros/s/AKfycbxu_6_PsIK7NFu3yndt7UJ6i-XyE5Aciffk-trtyIaehFwoAhSPqzcWVyqKn8RE5VAL/exec";
+                "https://script.google.com/macros/s/AKfycbxeJKJRfFx4zQwm-7GhMgv62EkqzaCnVnYJ-R3UngHOu3vUQzblVPsq8DTPKLcvcx2v/exec";
 
             const SUBMIT_URL_SYARIAH =
                 "https://script.google.com/macros/s/AKfycbwDEpYs5LODd3OmWRmiiRmTMnoILr4dwPWAj7YRe1TKNrkNTDYTp69RW-QEDtMzUqhg4g/exec";
@@ -827,7 +864,7 @@ export default function Visiting() {
                                         ? "Masukkan No Kontrak"
                                         : !activeProduct
                                             ? "Pilih Sumber Data atau Product terlebih dahulu"
-                                            : "Cari No Kontrak..."
+                                            : "Cari No Kontrak atau Nama Debitur..."
                                 }
                                 value={form.noKontrak}
                                 onChange={(e) =>
@@ -856,7 +893,8 @@ export default function Visiting() {
                                                 onClick={() => handleSelectKontrak(item)}
                                                 className="px-3 py-2 hover:bg-indigo-100 cursor-pointer text-sm"
                                             >
-                                                {item["NO KONTRAK"]}
+                                                {/* {item["NO KONTRAK"]} */}
+                                                {item["NO KONTRAK"]} - {item["NAMA KONSUMEN"]}
                                             </li>
                                         ))
                                     ) : (
