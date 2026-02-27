@@ -12,6 +12,7 @@ export default function Visiting() {
     const [userData, setUserData] = useState(null);
     const [isMobile, setIsMobile] = useState(true);
     const fileInputRef = useRef(null);
+    const [searchKeyword, setSearchKeyword] = useState("");
 
     const [form, setForm] = useState({
         region: "",
@@ -240,7 +241,7 @@ export default function Visiting() {
     // });
 
     const filteredKontrak = dataKontrak.filter((item) => {
-        const keyword = form.noKontrak.toUpperCase();
+        const keyword = searchKeyword.toUpperCase().trim();
 
         const matchKeyword =
             item["NO KONTRAK"]?.toUpperCase().includes(keyword) ||
@@ -296,6 +297,18 @@ export default function Visiting() {
     const isMobilMotor = ["MOBILKU", "MOTORKU", "MOTOR BARU"].includes(selectedProduct);
 
     // 🔹 Saat memilih kontrak
+    // const handleSelectKontrak = (item) => {
+    //     setForm((prev) => ({
+    //         ...prev,
+    //         noKontrak: item["NO KONTRAK"],
+    //         namaDebitur: item["NAMA KONSUMEN"] || "",
+    //         sumberData: (item["SUMBER DATA"] || "").toUpperCase(),
+    //         product: (item["PRODUCT"] || "").toUpperCase(),
+    //         ket: item["KETERANGAN"] || "",
+    //     }));
+    //     setShowDropdown(false);
+    // };
+
     const handleSelectKontrak = (item) => {
         setForm((prev) => ({
             ...prev,
@@ -305,6 +318,11 @@ export default function Visiting() {
             product: (item["PRODUCT"] || "").toUpperCase(),
             ket: item["KETERANGAN"] || "",
         }));
+
+        setSearchKeyword(
+            `${item["NO KONTRAK"]} - ${item["NAMA KONSUMEN"]}`
+        );
+
         setShowDropdown(false);
     };
 
@@ -851,13 +869,13 @@ export default function Visiting() {
                         </div>
                     </div>
                     {/* 🔹 No Kontrak & Nama Debitur */}
-                    <div className="grid md:grid-cols-2 gap-4">
+                    <div className="grid md:grid-cols-1 gap-4">
                         <div className="relative dropdown-kontrak">
                             <label className="block text-sm font-medium mb-1">
-                                No Kontrak
+                                Search No Kontrak - Nama Debitur
                             </label>
 
-                            <input
+                            {/* <input
                                 type="text"
                                 placeholder={
                                     isInjectManual
@@ -881,6 +899,29 @@ export default function Visiting() {
                                     : "bg-white"
                                     }`}
                                 readOnly={!activeProduct || isInjectManual === false ? false : false}
+                            /> */}
+
+                            <input
+                                type="text"
+                                placeholder={
+                                    isInjectManual
+                                        ? "Masukkan No Kontrak"
+                                        : !activeProduct
+                                            ? "Pilih Sumber Data atau Product terlebih dahulu"
+                                            : "Cari No Kontrak atau Nama Debitur..."
+                                }
+                                value={searchKeyword}
+                                onChange={(e) => {
+                                    setSearchKeyword(e.target.value);
+                                    if (!isInjectManual) setShowDropdown(true);
+                                }}
+                                onFocus={() => {
+                                    if (activeProduct && !isInjectManual) setShowDropdown(true);
+                                }}
+                                className={`w-full border rounded-lg p-2 uppercase transition ${!activeProduct
+                                    ? "bg-gray-100 cursor-not-allowed text-gray-500"
+                                    : "bg-white"
+                                    }`}
                             />
 
                             {/* Dropdown hanya untuk NON inject manual */}
@@ -904,6 +945,25 @@ export default function Visiting() {
                             )}
                         </div>
 
+
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                No Kontrak
+                            </label>
+                            <input
+                                type="number"
+                                name="noKontrak"
+                                value={form.noKontrak}
+                                onChange={handleChange}
+                                className={`w-full border rounded-lg p-2 ${isInjectManual ? "bg-white" : "bg-gray-100"
+                                    }`}
+                                readOnly={!isInjectManual}
+                                required
+                            />
+                        </div>
                         <div>
                             <label className="block text-sm font-medium mb-1">
                                 Nama Debitur
