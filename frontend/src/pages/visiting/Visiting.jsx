@@ -833,6 +833,8 @@ export default function Visiting() {
 
                 setPhoto(null);
                 if (fileInputRef.current) fileInputRef.current.value = "";
+                setSearchKeyword("");   // 🔹 reset field pencarian
+                setShowDropdown(false); // 🔹 tutup dropdown jika masih terbuka
             } else {
                 Swal.fire({
                     icon: result.limitReached ? "warning" : "error",
