@@ -715,6 +715,30 @@ export default function Visiting() {
         }
 
         /* =============================
+   7️⃣.1 VALIDASI PENAWARAN PRODUCT (KHUSUS MOTOR/MOBIL)
+============================= */
+        if (isMobilMotor) {
+            if (!form.penawaran_product_cust || form.penawaran_product_cust.trim() === "") {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Penawaran Belum Dipilih",
+                    text: "Silakan pilih apakah konsumen bersedia di-visit kembali.",
+                });
+                return;
+            }
+
+            // Optional: jika Tidak Bersedia, pastikan memang ada penawaran_product dari sistem
+            if (!form.penawaran_product || form.penawaran_product.trim() === "") {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Data Penawaran Tidak Ditemukan",
+                    text: "Penawaran produk tidak tersedia untuk kontrak ini.",
+                });
+                return;
+            }
+        }
+
+        /* =============================
            8️⃣ FOTO WAJIB
         ============================== */
         if (!photo) {
@@ -754,7 +778,7 @@ export default function Visiting() {
             });
 
             const SUBMIT_URL_KONVENSIONAL =
-                "https://script.google.com/macros/s/AKfycbxeJKJRfFx4zQwm-7GhMgv62EkqzaCnVnYJ-R3UngHOu3vUQzblVPsq8DTPKLcvcx2v/exec";
+                "https://script.google.com/macros/s/AKfycbzCDpFdFo_tT75mDGW6W9XocSSkIiySbsPxoiQnJaBvXZQ1itEeMAPN9yDw57CISmkm/exec";
 
             const SUBMIT_URL_SYARIAH =
                 "https://script.google.com/macros/s/AKfycbwDEpYs5LODd3OmWRmiiRmTMnoILr4dwPWAj7YRe1TKNrkNTDYTp69RW-QEDtMzUqhg4g/exec";
