@@ -995,9 +995,12 @@ export default function Visiting() {
                                 onFocus={() => {
                                     if (activeProduct && !isInjectManual) setShowDropdown(true);
                                 }}
-                                className={`w-full border rounded-lg p-2 uppercase transition ${!activeProduct
-                                    ? "bg-gray-100 cursor-not-allowed text-gray-500"
-                                    : "bg-white"
+                                className={`w-full border rounded-lg p-2 uppercase transition
+                                    ${!activeProduct
+                                        ? "bg-gray-100 cursor-not-allowed text-gray-500"
+                                        : isInjectManual
+                                            ? "bg-gray-100"
+                                            : "bg-white"
                                     }`}
                             />
 
