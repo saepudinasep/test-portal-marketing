@@ -80,6 +80,12 @@ export default function Visiting() {
         "Unit Diluar Kota",
     ];
 
+    const penawaranProductCust = [
+        "Bersedia",
+        "Tidak Bersedia",
+        "Tidak dilakukan penawaran karena tidak bertemu",
+    ];
+
     // ✅ Proteksi & ambil data kontrak berdasarkan region dan cabang user
     useEffect(() => {
         const user = sessionStorage.getItem("userData");
@@ -317,6 +323,7 @@ export default function Visiting() {
             sumberData: (item["SUMBER DATA"] || "").toUpperCase(),
             product: (item["PRODUCT"] || "").toUpperCase(),
             ket: item["KETERANGAN"] || "",
+            penawaran_product: item["PENAWARAN PRODUK"] || "",
         }));
 
         setSearchKeyword(
@@ -355,6 +362,7 @@ export default function Visiting() {
                 updated.noKontrak = "";
                 updated.namaDebitur = "";
                 updated.ket = "";
+                updated.penawaran_product = "";
 
                 // ❗ INJECT MANUAL tidak boleh ALL SYARIAH
                 if (
@@ -565,8 +573,11 @@ export default function Visiting() {
         5️⃣ VALIDASI NO KONTRAK
         ============================= */
         if (form.sumberData === "INJECT MANUAL") {
-            // 🔹 Inject Manual → validasi format & wajib isi
-            if (!form.noKontrak || form.noKontrak.trim() === "") {
+            const noKontrak = form.noKontrak?.trim();
+            const namaDebitur = form.namaDebitur?.trim();
+
+            // 🔹 Wajib isi
+            if (!noKontrak) {
                 Swal.fire({
                     icon: "warning",
                     title: "No Kontrak Wajib Diisi",
@@ -575,7 +586,8 @@ export default function Visiting() {
                 return;
             }
 
-            if (!/^\d+$/.test(form.noKontrak)) {
+            // 🔹 Harus angka saja
+            if (!/^\d+$/.test(noKontrak)) {
                 Swal.fire({
                     icon: "warning",
                     title: "No Kontrak Tidak Valid",
@@ -584,16 +596,28 @@ export default function Visiting() {
                 return;
             }
 
-            if (form.noKontrak.length < 16) {
+            // 🔹 Harus tepat 16 digit
+            if (noKontrak.length !== 16) {
                 Swal.fire({
                     icon: "warning",
-                    title: "No Kontrak Terlalu Pendek",
-                    text: "No Kontrak minimal 16 digit.",
+                    title: "Format Tidak Sesuai",
+                    text: "No Kontrak harus tepat 16 digit.",
                 });
                 return;
             }
 
-            if (!form.namaDebitur || form.namaDebitur.trim() === "") {
+            // 🔹 Optional: tidak boleh diawali 0
+            if (noKontrak.startsWith("0")) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Format Tidak Valid",
+                    text: "No Kontrak tidak boleh diawali angka 0.",
+                });
+                return;
+            }
+
+            // 🔹 Nama wajib isi
+            if (!namaDebitur) {
                 Swal.fire({
                     icon: "warning",
                     title: "Nama Debitur Wajib Diisi",
@@ -601,32 +625,54 @@ export default function Visiting() {
                 });
                 return;
             }
+
+            // 🔹 Minimal 3 karakter
+            if (namaDebitur.length < 3) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Nama Terlalu Pendek",
+                    text: "Nama Debitur minimal 3 karakter.",
+                });
+                return;
+            }
+
         } else {
-            // 🔹 NON Inject Manual → harus ada di data kontrak
+            const noKontrak = form.noKontrak?.trim();
+            const namaDebitur = form.namaDebitur?.trim();
+
+            // 🔹 Pastikan tidak kosong
+            if (!noKontrak) {
+                Swal.fire({
+                    icon: "error",
+                    title: "No Kontrak Kosong",
+                    text: "Silakan pilih No Kontrak dari daftar.",
+                });
+                return;
+            }
+
+            if (!namaDebitur) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Nama Debitur Kosong",
+                    text: "Silakan pilih data kontrak yang valid.",
+                });
+                return;
+            }
+
+            // 🔹 Cari kontrak sesuai kombinasi lengkap
             const selectedKontrak = dataKontrak.find(
                 (item) =>
-                    item["NO KONTRAK"]?.toUpperCase().trim() ===
-                    form.noKontrak.toUpperCase().trim()
+                    item["NO KONTRAK"]?.toUpperCase().trim() === noKontrak.toUpperCase() &&
+                    item["NAMA KONSUMEN"]?.toUpperCase().trim() === namaDebitur.toUpperCase() &&
+                    item.sumberData === form.sumberData?.toUpperCase() &&
+                    item.product === form.product?.toUpperCase()
             );
 
             if (!selectedKontrak) {
                 Swal.fire({
                     icon: "error",
-                    title: "Kontrak Tidak Valid",
-                    text: "Silakan pilih No Kontrak dari daftar yang tersedia.",
-                });
-                return;
-            }
-
-            // 🔒 Optional: pastikan nama debitur sesuai juga
-            if (
-                selectedKontrak["NAMA KONSUMEN"]?.toUpperCase().trim() !==
-                form.namaDebitur.toUpperCase().trim()
-            ) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Data Tidak Sinkron",
-                    text: "Nama debitur tidak sesuai dengan data kontrak.",
+                    title: "Data Tidak Valid",
+                    text: "Kontrak tidak ditemukan atau tidak sesuai dengan filter yang dipilih.",
                 });
                 return;
             }
@@ -755,6 +801,8 @@ export default function Visiting() {
                     detail: "",
                     statusKonsumen: "",
                     ket: "",
+                    penawaran_product: "",
+                    penawaran_product_cust: ""
                 });
 
                 setPhoto(null);
@@ -1226,6 +1274,46 @@ export default function Visiting() {
                                             </option>
                                         ))}
                                     </select>
+                                </div>
+                            )}
+
+
+                            <div>
+                                <label className="block text-sm font-medium mb-1">
+                                    Penawaran Product
+                                </label>
+                                <textarea
+                                    value={form.penawaran_product}
+                                    rows={Math.min(estimatedRows, MAX_ROWS)}
+                                    className="w-full border rounded-lg p-2 bg-gray-100 resize-none text-sm"
+                                    readOnly
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-1">
+                                    Apakah bersedia di visit Kembali?
+                                </label>
+                                <select
+                                    name="penawaran_product_cust"
+                                    value={form.penawaran_product_cust}
+                                    onChange={handleChange}
+                                    className="w-full border rounded-lg p-2"
+                                >
+                                    <option value="">Pilih Penawaran</option>
+                                    {penawaranProductCust.map((k, idx) => (
+                                        <option key={idx} value={k}>
+                                            {k}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {form.penawaran_product_cust === "Tidak Bersedia" && (
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">
+                                        Notes : Jika dilakukan revisit kembali maka field ini diisi sesuai ketersediaan konsumen bersedia dilakukan penawaran atau tidak
+                                    </label>
                                 </div>
                             )}
                         </>
