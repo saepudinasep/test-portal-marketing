@@ -986,6 +986,7 @@ export default function Visiting() {
                                             ? "Pilih Sumber Data atau Product terlebih dahulu"
                                             : "Cari No Kontrak atau Nama Debitur..."
                                 }
+                                readOnly={isInjectManual}
                                 value={searchKeyword}
                                 onChange={(e) => {
                                     setSearchKeyword(e.target.value);
