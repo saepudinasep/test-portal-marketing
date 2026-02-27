@@ -1312,6 +1312,7 @@ export default function Visiting() {
                                 Penawaran Product
                             </label>
                             <textarea
+                                name="penawaran_product"
                                 value={form.penawaran_product}
                                 rows={Math.min(estimatedRows, MAX_ROWS)}
                                 className="w-full border rounded-lg p-2 bg-gray-100 resize-none text-sm"
