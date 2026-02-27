@@ -504,7 +504,7 @@ export default function Maintance() {
             });
 
             const SUBMIT_URL_KONVENSIONAL =
-                "https://script.google.com/macros/s/AKfycbzQ4KweETqcsp1t0TGy-qbCiUWQHjs3yYgnZZvL2F8YQ8zMovyC9vJulb5QlEhlG_g_/exec";
+                "https://script.google.com/macros/s/AKfycbyiORTK4Ck-R8SR8JDsYEqhlkMVbZ37YEtlzSCC0DOOD7GLrU0-MWcG7fkbJ9KcCrId/exec";
 
             const SUBMIT_URL_SYARIAH =
                 "https://script.google.com/macros/s/AKfycbwM_EUzMICMEiQ8GuI5dMHInGpqTy46fVMjuCIffH05xxgN7NnrHH1dA-zPybtVI2c/exec";
