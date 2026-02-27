@@ -764,6 +764,8 @@ export default function Visiting() {
             sumberData: form.sumberData.toUpperCase(),
             product: selectedProduct,
             statusKonsumen: statusMap[form.statusKonsumen] || "",
+            penawaran_product: form.penawaran_product,
+            penawaran_product_cust: form.penawaran_product_cust,
             photoBase64: photo,
         };
 
@@ -778,7 +780,7 @@ export default function Visiting() {
             });
 
             const SUBMIT_URL_KONVENSIONAL =
-                "https://script.google.com/macros/s/AKfycbzCDpFdFo_tT75mDGW6W9XocSSkIiySbsPxoiQnJaBvXZQ1itEeMAPN9yDw57CISmkm/exec";
+                "https://script.google.com/macros/s/AKfycbwZdOVFRw_-q-4qC1Xkz3jRLnFEcCsGXY7Zie9qPOjhPRFLgQXvODi_7wZ4iPh9OAAB/exec";
 
             const SUBMIT_URL_SYARIAH =
                 "https://script.google.com/macros/s/AKfycbwDEpYs5LODd3OmWRmiiRmTMnoILr4dwPWAj7YRe1TKNrkNTDYTp69RW-QEDtMzUqhg4g/exec";
