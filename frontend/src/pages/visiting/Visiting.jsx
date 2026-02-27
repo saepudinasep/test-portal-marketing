@@ -1345,7 +1345,7 @@ export default function Visiting() {
                             </select>
                         </div>
 
-                        {form.penawaran_product_cust === "Tidak Bersedia" && (
+                        {form.penawaran_product_cust === "Tidak dilakukan penawaran karena tidak bertemu" && (
                             <div>
                                 <label className="block text-sm font-medium mb-1">
                                     Notes : Jika dilakukan revisit kembali maka field ini diisi sesuai ketersediaan konsumen bersedia dilakukan penawaran atau tidak
