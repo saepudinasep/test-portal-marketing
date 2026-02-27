@@ -1276,47 +1276,50 @@ export default function Visiting() {
                                     </select>
                                 </div>
                             )}
-
-
-                            <div>
-                                <label className="block text-sm font-medium mb-1">
-                                    Penawaran Product
-                                </label>
-                                <textarea
-                                    value={form.penawaran_product}
-                                    rows={Math.min(estimatedRows, MAX_ROWS)}
-                                    className="w-full border rounded-lg p-2 bg-gray-100 resize-none text-sm"
-                                    readOnly
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium mb-1">
-                                    Apakah bersedia di visit Kembali?
-                                </label>
-                                <select
-                                    name="penawaran_product_cust"
-                                    value={form.penawaran_product_cust}
-                                    onChange={handleChange}
-                                    className="w-full border rounded-lg p-2"
-                                >
-                                    <option value="">Pilih Penawaran</option>
-                                    {penawaranProductCust.map((k, idx) => (
-                                        <option key={idx} value={k}>
-                                            {k}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {form.penawaran_product_cust === "Tidak Bersedia" && (
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">
-                                        Notes : Jika dilakukan revisit kembali maka field ini diisi sesuai ketersediaan konsumen bersedia dilakukan penawaran atau tidak
-                                    </label>
-                                </div>
-                            )}
                         </>
+                    )}
+
+
+                    {isMobilMotor && (<>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                Penawaran Product
+                            </label>
+                            <textarea
+                                value={form.penawaran_product}
+                                rows={Math.min(estimatedRows, MAX_ROWS)}
+                                className="w-full border rounded-lg p-2 bg-gray-100 resize-none text-sm"
+                                readOnly
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                Apakah bersedia di visit Kembali?
+                            </label>
+                            <select
+                                name="penawaran_product_cust"
+                                value={form.penawaran_product_cust}
+                                onChange={handleChange}
+                                className="w-full border rounded-lg p-2"
+                            >
+                                <option value="">Pilih Penawaran</option>
+                                {penawaranProductCust.map((k, idx) => (
+                                    <option key={idx} value={k}>
+                                        {k}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {form.penawaran_product_cust === "Tidak Bersedia" && (
+                            <div>
+                                <label className="block text-sm font-medium mb-1">
+                                    Notes : Jika dilakukan revisit kembali maka field ini diisi sesuai ketersediaan konsumen bersedia dilakukan penawaran atau tidak
+                                </label>
+                            </div>
+                        )}
+                    </>
                     )}
 
                     {/* Detail Visit */}
