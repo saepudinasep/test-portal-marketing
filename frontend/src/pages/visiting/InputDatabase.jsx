@@ -122,8 +122,8 @@ export default function InputDatabase() {
             const APPSCRIPT_URL = {
                 "MASKU": "https://script.google.com/macros/s/AKfycbwumQZ25mdrpl0VV-LFZizJVd-40g4rb0Pht7JuaRkTxaVfppk9UaBwyPLdobIPADhI/exec",
                 "HAJIKU": "https://script.google.com/macros/s/AKfycbwumQZ25mdrpl0VV-LFZizJVd-40g4rb0Pht7JuaRkTxaVfppk9UaBwyPLdobIPADhI/exec",
-                "MOBILKU": "https://script.google.com/macros/s/AKfycbyKq9ek8KxSx-1mZimL7oXQ7vi5Hu_Cfx6ERQb-9Qb-pe9Rxrcso9gYjwQBXBnUb5hmGA/exec",
-                "MOTORKU": "https://script.google.com/macros/s/AKfycbyKq9ek8KxSx-1mZimL7oXQ7vi5Hu_Cfx6ERQb-9Qb-pe9Rxrcso9gYjwQBXBnUb5hmGA/exec",
+                "MOBILKU": "https://script.google.com/macros/s/AKfycbyc4JyrcufFyFEOcSjF2sDYBfQoJQ2RmfdOB8H_QMzlrYi-DauPUuF1n9cajvQz25fj/exec",
+                "MOTORKU": "https://script.google.com/macros/s/AKfycbyc4JyrcufFyFEOcSjF2sDYBfQoJQ2RmfdOB8H_QMzlrYi-DauPUuF1n9cajvQz25fj/exec",
                 "MOTOR BARU": "https://script.google.com/macros/s/URL_MOTORKU/exec",
             };
 
