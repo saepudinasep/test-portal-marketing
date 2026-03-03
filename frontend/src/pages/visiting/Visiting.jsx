@@ -33,7 +33,8 @@ export default function Visiting() {
         statusKonsumen: "",
         ket: "",
         penawaran_product: "",
-        penawaran_product_cust: ""
+        penawaran_product_cust: "",
+        informasi_product: ""
     });
 
     const hasilList = ["Bertemu", "Tidak Bertemu"];
@@ -110,7 +111,7 @@ export default function Visiting() {
         }));
 
         const URL_MOTOR_MOBIL =
-            "https://script.google.com/macros/s/AKfycbxn3OYbv4SedQKbVlkP1Yn10O2S8nNWtfH7wvCTmtF68op9GWPo5Dwh-16r2eK_MjV2/exec";
+            "https://script.google.com/macros/s/AKfycbwpzTVq_qBT2s10GSiTKjkCrOmJ9FDitYIWtqsccSKYBbCTFmInvsdDMbEK8avEC0s/exec";
 
         const URL_HAJI_MASK =
             "https://script.google.com/macros/s/AKfycbz8JNLWHBkXo1XNM9RsH3Dlw5OCLWpmsvTuAslZ9XILUNUB6Q5dvoEiGfu1QxW2auJl/exec";
@@ -324,6 +325,7 @@ export default function Visiting() {
             product: (item["PRODUCT"] || "").toUpperCase(),
             ket: item["KETERANGAN"] || "",
             penawaran_product: item["PENAWARAN PRODUK"] || "",
+            informasi_product: item["INFORMASI PRODUK"] || "",
         }));
 
         setSearchKeyword(
@@ -1315,7 +1317,7 @@ export default function Visiting() {
                     {isMobilMotor && (<>
                         <div>
                             <label className="block text-sm font-medium mb-1">
-                                Penawaran Product
+                                Penawaran Product WOM Finance
                             </label>
                             <textarea
                                 name="penawaran_product"
@@ -1328,7 +1330,20 @@ export default function Visiting() {
 
                         <div>
                             <label className="block text-sm font-medium mb-1">
-                                Apakah bersedia di visit Kembali?
+                                Informasi Product WOM Finance
+                            </label>
+                            <textarea
+                                name="informasi_product"
+                                value={form.informasi_product}
+                                rows={Math.min(estimatedRows, MAX_ROWS)}
+                                className="w-full border rounded-lg p-2 bg-gray-100 resize-none text-sm"
+                                readOnly
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                Apakah bersedia divisit kembali untuk diinformasikan dan penawaran product WOM Finance?
                             </label>
                             <select
                                 name="penawaran_product_cust"
