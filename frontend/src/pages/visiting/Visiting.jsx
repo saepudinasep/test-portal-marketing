@@ -395,6 +395,17 @@ export default function Visiting() {
                 updated.keterangan = "";
             }
 
+            // 🔹 Jika hasil Tidak Bertemu
+            if (name === "hasil" && value === "Tidak Bertemu") {
+                updated.penawaran_product_cust =
+                    "Tidak dilakukan penawaran karena tidak bertemu";
+            }
+
+            // 🔹 Jika hasil berubah lagi, kosongkan kembali
+            if (name === "hasil" && value !== "Tidak Bertemu") {
+                updated.penawaran_product_cust = "";
+            }
+
             return updated;
         });
 
@@ -1349,7 +1360,9 @@ export default function Visiting() {
                                 name="penawaran_product_cust"
                                 value={form.penawaran_product_cust}
                                 onChange={handleChange}
-                                className="w-full border rounded-lg p-2"
+                                disabled={form.hasil === "Tidak Bertemu"}
+                                className={`w-full border rounded-lg p-2 ${form.hasil === "Tidak Bertemu" ? "bg-gray-100 cursor-not-allowed" : ""
+                                    }`}
                             >
                                 <option value="">Pilih Penawaran</option>
                                 {penawaranProductCust.map((k, idx) => (
