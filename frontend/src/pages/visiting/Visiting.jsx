@@ -84,7 +84,6 @@ export default function Visiting() {
     const penawaranProductCust = [
         "Bersedia",
         "Tidak Bersedia",
-        "Tidak dilakukan penawaran karena tidak bertemu",
     ];
 
     // ✅ Proteksi & ambil data kontrak berdasarkan region dan cabang user
