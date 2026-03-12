@@ -382,10 +382,10 @@ export default function Visiting() {
             /* =============================
                3️⃣ GANTI HASIL VISIT
             ============================== */
-            if (name === "hasil") {
-                updated.aktivitas = "";
-                updated.keterangan = "";
-            }
+            // if (name === "hasil") {
+            //     updated.aktivitas = "";
+            //     updated.keterangan = "";
+            // }
 
             /* =============================
                4️⃣ GANTI AKTIVITAS
@@ -394,15 +394,17 @@ export default function Visiting() {
                 updated.keterangan = "";
             }
 
-            // 🔹 Jika hasil Tidak Bertemu
-            if (name === "hasil" && value === "Tidak Bertemu") {
-                updated.penawaran_product_cust =
-                    "Tidak dilakukan penawaran karena tidak bertemu";
-            }
+            if (name === "hasil") {
+                updated.aktivitas = "";
+                updated.keterangan = "";
 
-            // 🔹 Jika hasil berubah lagi, kosongkan kembali
-            if (name === "hasil" && value !== "Tidak Bertemu") {
-                updated.penawaran_product_cust = "";
+                if (value === "Tidak Bertemu") {
+                    updated.penawaran_product_cust =
+                        "Tidak dilakukan penawaran karena tidak bertemu";
+                } else {
+                    // jika berubah ke Bertemu
+                    updated.penawaran_product_cust = "";
+                }
             }
 
             return updated;
@@ -1360,15 +1362,25 @@ export default function Visiting() {
                                 value={form.penawaran_product_cust}
                                 onChange={handleChange}
                                 disabled={form.hasil === "Tidak Bertemu"}
-                                className={`w-full border rounded-lg p-2 ${form.hasil === "Tidak Bertemu" ? "bg-gray-100 cursor-not-allowed" : ""
+                                className={`w-full border rounded-lg p-2 ${form.hasil === "Tidak Bertemu"
+                                    ? "bg-gray-100 cursor-not-allowed"
+                                    : "bg-white"
                                     }`}
                             >
                                 <option value="">Pilih Penawaran</option>
-                                {penawaranProductCust.map((k, idx) => (
-                                    <option key={idx} value={k}>
-                                        {k}
+
+                                {form.hasil === "Tidak Bertemu" && (
+                                    <option value="Tidak dilakukan penawaran karena tidak bertemu">
+                                        Tidak dilakukan penawaran karena tidak bertemu
                                     </option>
-                                ))}
+                                )}
+
+                                {form.hasil !== "Tidak Bertemu" &&
+                                    penawaranProductCust.map((k, idx) => (
+                                        <option key={idx} value={k}>
+                                            {k}
+                                        </option>
+                                    ))}
                             </select>
                         </div>
 
